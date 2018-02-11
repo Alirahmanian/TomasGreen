@@ -1,0 +1,96 @@
+﻿@model TomasGreen.Model.Models.Company
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Company</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Balance)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Balance)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Ruble)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Ruble)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Discount)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Discount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Purchases)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Purchases)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SouldToUs)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SouldToUs)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Paid)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Paid)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Received)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Received)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastBalance)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastBalance)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastBalanceDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastBalanceDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Locked)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Locked)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreditReceived)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreditReceived)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreditLimit)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreditLimit)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

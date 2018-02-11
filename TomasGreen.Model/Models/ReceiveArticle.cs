@@ -5,6 +5,8 @@ namespace TomasGreen.Model.Models
 {
     public class ReceiveArticle : BaseEntity
     {
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
         [Required(ErrorMessage ="Please choose an article.")]
         [Display(Name = "Article")]

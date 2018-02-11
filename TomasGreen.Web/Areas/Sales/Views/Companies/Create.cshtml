@@ -1,0 +1,94 @@
+﻿@model TomasGreen.Model.Models.Company
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Company</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Balance" class="control-label"></label>
+                <input asp-for="Balance" class="form-control" />
+                <span asp-validation-for="Balance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Ruble" /> @Html.DisplayNameFor(model => model.Ruble)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount" class="control-label"></label>
+                <input asp-for="Discount" class="form-control" />
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Purchases" class="control-label"></label>
+                <input asp-for="Purchases" class="form-control" />
+                <span asp-validation-for="Purchases" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SouldToUs" class="control-label"></label>
+                <input asp-for="SouldToUs" class="form-control" />
+                <span asp-validation-for="SouldToUs" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Paid" class="control-label"></label>
+                <input asp-for="Paid" class="form-control" />
+                <span asp-validation-for="Paid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Received" class="control-label"></label>
+                <input asp-for="Received" class="form-control" />
+                <span asp-validation-for="Received" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastBalance" class="control-label"></label>
+                <input asp-for="LastBalance" class="form-control" />
+                <span asp-validation-for="LastBalance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastBalanceDate" class="control-label"></label>
+                <input asp-for="LastBalanceDate" class="form-control" />
+                <span asp-validation-for="LastBalanceDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Locked" /> @Html.DisplayNameFor(model => model.Locked)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreditReceived" class="control-label"></label>
+                <input asp-for="CreditReceived" class="form-control" />
+                <span asp-validation-for="CreditReceived" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreditLimit" class="control-label"></label>
+                <input asp-for="CreditLimit" class="form-control" />
+                <span asp-validation-for="CreditLimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

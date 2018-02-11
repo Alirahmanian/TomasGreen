@@ -21,6 +21,8 @@ namespace TomasGreen.Model.Models
         public decimal Received { get; set; }
         [Display(Name = "Last balance")]
         public decimal LastBalance { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Last balance date")]
         public DateTime LastBalanceDate { get; set; }
         public bool Locked { get; set; }

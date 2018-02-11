@@ -17,18 +17,18 @@ namespace TomasGreen.Model.Models
         [Required]
         [Range(0, Int32.MaxValue)]
         public decimal BoxWeight { get; set; }
-       
 
-        public Int64 ArticleCategoryID { get; set; }
         [Display(Name = "Article category")]
-
-        public Int64 CountryID { get; set; }
+        public Int64 ArticleCategoryID { get; set; }
+        
         [Display(Name = "Country")]
-        public Country Country { get; set; }
+        public Int64 CountryID { get; set; }
+        
 
 
         //nav.
         public ArticleCategory ArticleCategory { get; set; }
-        
+        public Country Country { get; set; }
+
     }
 }

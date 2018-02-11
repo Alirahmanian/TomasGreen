@@ -11,13 +11,12 @@ using System.Reflection;
 
 namespace TomasGreen.Web.Data
 {
-    public class ApplicationDbContext : DbContext //IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, UserManager<ApplicationUser> userManager)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            _userManager = userManager;
+          
         }
 
         public DbSet<UserType> UserTypes { get; set; }
@@ -34,8 +33,13 @@ namespace TomasGreen.Web.Data
         public DbSet<ReceiveArticle> ReceiveArticles { get; set; }
         public DbSet<ArticleWarehouseBalance> ArticleWarehouseBalances { get; set; }
 
+        public virtual async Task<int> SaveChangesAsync()
+        {
+            PutBaseEntityValues();
+            return await base.SaveChangesAsync();
+        }
         
-        public override int SaveChanges()
+        public void PutBaseEntityValues()
         {
             foreach (var entry in ChangeTracker.Entries().Where(x => x.Entity.GetType().GetProperty("AddedDate") != null))
             {
@@ -63,14 +67,14 @@ namespace TomasGreen.Web.Data
                // entry.Property("UserName").CurrentValue = 
             }
 
-            return base.SaveChanges();
+           
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Employee>()
-            .HasIndex(p => new { p.FirstName, p.LastName })
-            .IsUnique(true);
+            //modelBuilder.Entity<Employee>()
+            //.HasIndex(p => new { p.FirstName, p.LastName })
+            //.IsUnique(true);
             modelBuilder.Entity<Employee>()
             .HasIndex(p => p.Email)
             .IsUnique(true);
@@ -83,6 +87,12 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Warehouse>()
             .HasIndex(p => p.Name)
             .IsUnique(true);
+            modelBuilder.Entity<UserType>()
+            .HasIndex(p => p.Name)
+            .IsUnique(true);
+            modelBuilder.Entity<UserType>()
+           .HasIndex(p => p.DbTableName)
+           .IsUnique(true);
 
 
 

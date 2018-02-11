@@ -1,0 +1,131 @@
+﻿@model IEnumerable<TomasGreen.Model.Models.Order>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.EmpoyeeID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AmountArticle)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AmountReserve)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalPrice)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrderDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PaymentDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PaidDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LoadingDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LoadedDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AmountPaid)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Coments)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrderdBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PaymentWarning)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ForcedPaid)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrderPaid)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cash)
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Company)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmpoyeeID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountArticle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountReserve)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaidDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoadingDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoadedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountPaid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Coments)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderdBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentWarning)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ForcedPaid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderPaid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cash)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Company.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

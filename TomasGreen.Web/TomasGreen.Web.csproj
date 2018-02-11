@@ -22,4 +22,19 @@
     <ProjectReference Include="..\TomasGreen.Model\TomasGreen.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Accountment\Data\" />
+    <Folder Include="Areas\Accountment\Models\" />
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Management\Data\" />
+    <Folder Include="Areas\Management\Models\" />
+    <Folder Include="Areas\Purchase\Data\" />
+    <Folder Include="Areas\Purchase\Models\" />
+    <Folder Include="Areas\Sales\Data\" />
+    <Folder Include="Areas\Sales\Models\" />
+    <Folder Include="Areas\Stock\Data\" />
+    <Folder Include="Areas\Stock\Models\" />
+  </ItemGroup>
+
 </Project>

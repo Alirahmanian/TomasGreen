@@ -1,0 +1,89 @@
+﻿@model IEnumerable<TomasGreen.Model.Models.ArticleWarehouseBalance>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyBoxesIn)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyKgIn)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyTotalWeightIn)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyBoxesOnhand)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyKgOnhand)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyTotalWeightOnhand)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyBoxesReserved)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.QtyTotalWeightReserved)
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Article)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Warehouse)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyBoxesIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyKgIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyTotalWeightIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyBoxesOnhand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyKgOnhand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyTotalWeightOnhand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyBoxesReserved)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyTotalWeightReserved)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Article.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Warehouse.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
