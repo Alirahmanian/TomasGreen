@@ -64,9 +64,16 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(article);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (VerifyUniqueName(article.Name, 0))
+                {
+                    _context.Add(article);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(article.Name), "Name is already taken.");
+                }
             }
            
             ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
@@ -87,7 +94,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             {
                 return NotFound();
             }
-            ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "ID", article.ArticleCategoryID);
+            ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name", article.ArticleCategoryID);
             ViewData["CountryID"] = new SelectList(_context.Countries, "ID", "Name", article.CountryID);
             return View(article);
         }
@@ -108,8 +115,19 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             {
                 try
                 {
-                    _context.Update(article);
-                    await _context.SaveChangesAsync();
+                    if(VerifyUniqueName(article.Name, (int)article.ID))
+                    {
+                        _context.Update(article);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(nameof(article.Name), "Name is already taken.");
+                        ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "ID", article.ArticleCategoryID);
+                        ViewData["CountryID"] = new SelectList(_context.Countries, "ID", "Name", article.CountryID);
+                        return View(article);
+                    }
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -164,5 +182,26 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             return _context.Articles.Any(e => e.ID == id);
         }
+        #region Validations
+        public bool VerifyUniqueName(string name, int id)
+        {
+
+            var article = _context.Articles.Where(a => a.Name == name).AsNoTracking().FirstOrDefault();
+            if (article != null)
+            {
+                if (id != 0)
+                {
+                    if (article.ID != id)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
     }
 }

@@ -59,9 +59,17 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(articleCategory);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (VerifyUniqueName(articleCategory.Name, 0))
+                {
+                    _context.Add(articleCategory);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(articleCategory.Name), "Name is already taken.");
+                }
+                    
             }
             return View(articleCategory);
         }
@@ -98,8 +106,18 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             {
                 try
                 {
-                    _context.Update(articleCategory);
-                    await _context.SaveChangesAsync();
+                    if (VerifyUniqueName(articleCategory.Name, (int)articleCategory.ID))
+                    {
+                        _context.Update(articleCategory);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(nameof(articleCategory.Name), "Name is already taken.");
+                        return View(articleCategory);
+
+                    }
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -150,5 +168,27 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             return _context.ArticleCategories.Any(e => e.ID == id);
         }
+
+        #region Validations
+        public bool VerifyUniqueName(string name, int id)
+        {
+
+            var articleCategory = _context.ArticleCategories.Where(a => a.Name == name).AsNoTracking().FirstOrDefault();
+            if (articleCategory != null)
+            {
+                if (id != 0)
+                {
+                    if (articleCategory.ID != id)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
     }
 }

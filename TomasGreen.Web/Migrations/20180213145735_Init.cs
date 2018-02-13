@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace TomasGreen.Web.Migrations
 {
-    public partial class initDB : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -121,7 +121,26 @@ namespace TomasGreen.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTypes",
+                name: "ReceiveArticles",
+                columns: table => new
+                {
+                    ID = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddedDate = table.Column<DateTime>(nullable: false),
+                    ArticleID = table.Column<long>(nullable: false),
+                    CompanyID = table.Column<long>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    ModifiedDate = table.Column<DateTime>(nullable: true),
+                    UserName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReceiveArticles", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserType",
                 columns: table => new
                 {
                     ID = table.Column<long>(nullable: false)
@@ -134,7 +153,7 @@ namespace TomasGreen.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTypes", x => x.ID);
+                    table.PrimaryKey("PK_UserType", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -270,84 +289,6 @@ namespace TomasGreen.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ArticleWarehouseBalances",
-                columns: table => new
-                {
-                    ID = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AddedDate = table.Column<DateTime>(nullable: false),
-                    ArticleID = table.Column<long>(nullable: false),
-                    ModifiedDate = table.Column<DateTime>(nullable: true),
-                    QtyBoxesIn = table.Column<int>(nullable: false),
-                    QtyBoxesOnhand = table.Column<int>(nullable: false),
-                    QtyBoxesReserved = table.Column<int>(nullable: false),
-                    QtyKgIn = table.Column<decimal>(nullable: false),
-                    QtyKgOnhand = table.Column<decimal>(nullable: false),
-                    QtyTotalWeightIn = table.Column<decimal>(nullable: false),
-                    QtyTotalWeightOnhand = table.Column<decimal>(nullable: false),
-                    QtyTotalWeightReserved = table.Column<decimal>(nullable: false),
-                    UserName = table.Column<string>(nullable: true),
-                    WarehouseID = table.Column<long>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ArticleWarehouseBalances", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ArticleWarehouseBalances_Articles_ArticleID",
-                        column: x => x.ArticleID,
-                        principalTable: "Articles",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ArticleWarehouseBalances_Warehouses_WarehouseID",
-                        column: x => x.WarehouseID,
-                        principalTable: "Warehouses",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReceiveArticles",
-                columns: table => new
-                {
-                    ID = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AddedDate = table.Column<DateTime>(nullable: false),
-                    ArticleID = table.Column<long>(nullable: false),
-                    CompanyID = table.Column<long>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    ModifiedDate = table.Column<DateTime>(nullable: true),
-                    QtyBoxes = table.Column<int>(nullable: false),
-                    QtyKg = table.Column<decimal>(nullable: false),
-                    UserName = table.Column<string>(nullable: true),
-                    WarehouseID = table.Column<int>(nullable: false),
-                    WarehouseID1 = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReceiveArticles", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ReceiveArticles_Articles_ArticleID",
-                        column: x => x.ArticleID,
-                        principalTable: "Articles",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ReceiveArticles_Companies_CompanyID",
-                        column: x => x.CompanyID,
-                        principalTable: "Companies",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ReceiveArticles_Warehouses_WarehouseID1",
-                        column: x => x.WarehouseID1,
-                        principalTable: "Warehouses",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderDetails",
                 columns: table => new
                 {
@@ -474,9 +415,9 @@ namespace TomasGreen.Web.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SystemUser_UserTypes_UserTypeID",
+                        name: "FK_SystemUser_UserType_UserTypeID",
                         column: x => x.UserTypeID,
-                        principalTable: "UserTypes",
+                        principalTable: "UserType",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -514,6 +455,13 @@ namespace TomasGreen.Web.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ArticleCategories_Name",
+                table: "ArticleCategories",
+                column: "Name",
+                unique: true,
+                filter: "[Name] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Articles_ArticleCategoryID",
                 table: "Articles",
                 column: "ArticleCategoryID");
@@ -524,14 +472,10 @@ namespace TomasGreen.Web.Migrations
                 column: "CountryID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArticleWarehouseBalances_ArticleID",
-                table: "ArticleWarehouseBalances",
-                column: "ArticleID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ArticleWarehouseBalances_WarehouseID",
-                table: "ArticleWarehouseBalances",
-                column: "WarehouseID");
+                name: "IX_Articles_Name",
+                table: "Articles",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -576,6 +520,12 @@ namespace TomasGreen.Web.Migrations
                 name: "IX_AspNetUsers_SystemUserIdID",
                 table: "AspNetUsers",
                 column: "SystemUserIdID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Companies_Name",
+                table: "Companies",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Countries_Name",
@@ -631,21 +581,6 @@ namespace TomasGreen.Web.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReceiveArticles_ArticleID",
-                table: "ReceiveArticles",
-                column: "ArticleID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReceiveArticles_CompanyID",
-                table: "ReceiveArticles",
-                column: "CompanyID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReceiveArticles_WarehouseID1",
-                table: "ReceiveArticles",
-                column: "WarehouseID1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SystemUser_ApplicationUserId",
                 table: "SystemUser",
                 column: "ApplicationUserId");
@@ -661,14 +596,14 @@ namespace TomasGreen.Web.Migrations
                 column: "UserTypeID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTypes_DbTableName",
-                table: "UserTypes",
+                name: "IX_UserType_DbTableName",
+                table: "UserType",
                 column: "DbTableName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTypes_Name",
-                table: "UserTypes",
+                name: "IX_UserType_Name",
+                table: "UserType",
                 column: "Name",
                 unique: true);
 
@@ -726,9 +661,6 @@ namespace TomasGreen.Web.Migrations
                 table: "SystemUser");
 
             migrationBuilder.DropTable(
-                name: "ArticleWarehouseBalances");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -753,25 +685,25 @@ namespace TomasGreen.Web.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Orders");
-
-            migrationBuilder.DropTable(
                 name: "Articles");
 
             migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
                 name: "Warehouses");
-
-            migrationBuilder.DropTable(
-                name: "Employees");
-
-            migrationBuilder.DropTable(
-                name: "OrderTranports");
 
             migrationBuilder.DropTable(
                 name: "ArticleCategories");
 
             migrationBuilder.DropTable(
                 name: "Countries");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
+
+            migrationBuilder.DropTable(
+                name: "OrderTranports");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -783,7 +715,7 @@ namespace TomasGreen.Web.Migrations
                 name: "Companies");
 
             migrationBuilder.DropTable(
-                name: "UserTypes");
+                name: "UserType");
         }
     }
 }

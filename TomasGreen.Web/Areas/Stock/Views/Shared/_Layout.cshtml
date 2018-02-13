@@ -16,7 +16,7 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -36,11 +36,12 @@
                     <li><a asp-area="Stock" asp-controller="OrderTransports" asp-action="Index">Transport</a></li>
                     <li><a asp-area="Stock" asp-controller="Articles" asp-action="Index">Article</a></li>
                     <li><a asp-area="Stock" asp-controller="ReceiveArticles" asp-action="Index">Add article</a></li>
+                    <li><a asp-area="Stock" asp-controller="ReceiveArticleWarehouses" asp-action="Index">Add articles to warehouse</a></li>
                     <li><a asp-area="Stock" asp-controller="ArticleWarehouseBalances" asp-action="Index">Inventory</a></li>
 
 
                 </ul>
-                @await Html.PartialAsync("_LoginPartial")
+            
             </div>
         </div>
     </nav>

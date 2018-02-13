@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TomasGreen.Model.Models;
+using TomasGreen.Web.Areas.Stock.ViewModels;
 using TomasGreen.Web.Data;
+
 
 namespace TomasGreen.Web.Areas.Stock.Controllers
 {
@@ -21,10 +23,13 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         }
 
         // GET: Stock/ReceiveArticles
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var applicationDbContext = _context.ReceiveArticles.Include(r => r.Article).Include(r => r.Company);
-            return View(await applicationDbContext.ToListAsync());
+            var receiveArticles = GetIndexList();
+            
+
+
+            return View(receiveArticles);
         }
 
         // GET: Stock/ReceiveArticles/Details/5
@@ -60,7 +65,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Date,ArticleID,CompanyID,Description,WarehouseID,QtyBoxes,QtyKg")] ReceiveArticle receiveArticle)
+        public async Task<IActionResult> Create([Bind("Date,ArticleID,CompanyID,Description")] ReceiveArticle receiveArticle)
         {
             if (ModelState.IsValid)
             {
@@ -96,7 +101,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,AddedDate,Date,ArticleID,CompanyID,Description,WarehouseID,QtyBoxes,QtyKg")] ReceiveArticle receiveArticle)
+        public async Task<IActionResult> Edit(long id, [Bind("Date,ArticleID,CompanyID,Description")] ReceiveArticle receiveArticle)
         {
             if (id != receiveArticle.ID)
             {
@@ -163,5 +168,43 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             return _context.ReceiveArticles.Any(e => e.ID == id);
         }
+
+        #region 
+        private List<ReceiveArticleViewModel> GetIndexList()
+        {
+            var receiveArticles = _context.ReceiveArticles.Include(r => r.Article).Include(r => r.Company).Include(r => r.Warehouses).OrderBy(r => r.Date).ThenBy(r => r.Article.Name).ThenBy(r => r.Company.Name);
+            var resultList = new List<ReceiveArticleViewModel>();
+            foreach (var receiveArticle in receiveArticles)
+            {
+                var receiveArticleViewModel = new ReceiveArticleViewModel();
+                receiveArticleViewModel.ID = (int)receiveArticle.ID;
+                receiveArticleViewModel.Article = receiveArticle.Article;
+                receiveArticleViewModel.Company = receiveArticle.Company ?? new Company();
+                receiveArticleViewModel.Date = receiveArticle.Date;
+                Dictionary<string, decimal> tempList = new Dictionary<string, decimal>();
+                receiveArticleViewModel.Warehouses = new Dictionary<string, decimal>();
+                var warehouses = _context.ReceiveArticleWarehouses.Where(r => r.ReceiveArticleID == receiveArticle.ID).Include(w => w.Warehouse);
+                foreach (var warehouse in warehouses)
+                {
+                    receiveArticleViewModel.TotalWeight += (warehouse.QtyBoxes * receiveArticle.Article.BoxWeight) + warehouse.QtyExtraKg;
+
+                    if (receiveArticleViewModel.WarehouseSummary != null)
+                        receiveArticleViewModel.WarehouseSummary += "|";
+                    var tempWarehouse = _context.Warehouses.Where(w => w.ID == warehouse.WarehouseID).FirstOrDefault();
+                    if (tempWarehouse != null)
+                    {
+                        receiveArticleViewModel.Warehouses.Add(tempWarehouse.Name, (warehouse.QtyBoxes * receiveArticle.Article.BoxWeight) + warehouse.QtyExtraKg);
+                        receiveArticleViewModel.WarehouseSummary += tempWarehouse.Name + ":" + ((warehouse.QtyBoxes * receiveArticle.Article.BoxWeight) + warehouse.QtyExtraKg).ToString();
+
+                    }
+
+                }
+                resultList.Add(receiveArticleViewModel);
+            }
+            return resultList;
+        }
+
+
+        #endregion
     }
 }

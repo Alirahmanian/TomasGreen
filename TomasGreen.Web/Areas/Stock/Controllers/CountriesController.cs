@@ -59,9 +59,17 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(country);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (VerifyUniqueName(country.Name, 0))
+                {
+                    _context.Add(country);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(country.Name), "Name is already taken.");
+                }
+                 
             }
             return View(country);
         }
@@ -98,8 +106,18 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             {
                 try
                 {
-                    _context.Update(country);
-                    await _context.SaveChangesAsync();
+                    if (VerifyUniqueName(country.Name, (int)country.ID))
+                    {
+                        _context.Update(country);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(nameof(country.Name), "Name is already taken.");
+                        return View(country);
+
+                    }
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -150,5 +168,27 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             return _context.Countries.Any(e => e.ID == id);
         }
+
+        #region Validations
+        public bool VerifyUniqueName(string name, int id)
+        {
+
+            var country = _context.Countries.Where(a => a.Name == name).AsNoTracking().FirstOrDefault();
+            if (country != null)
+            {
+                if (id != 0)
+                {
+                    if (country.ID != id)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
     }
 }

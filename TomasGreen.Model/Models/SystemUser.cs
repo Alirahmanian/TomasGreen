@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class SystemUser  :BaseEntity
+    public class SystemUser : BaseEntity
     {
         public int UserId { get; set; }
         public UserType UserType { get; set; }

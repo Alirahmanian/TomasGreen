@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180213153225_TryingtoremoveID1sNo2")]
+    partial class TryingtoremoveID1sNo2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,41 +186,6 @@ namespace TomasGreen.Web.Migrations
                         .HasFilter("[Name] IS NOT NULL");
 
                     b.ToTable("ArticleCategories");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalance", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<long>("ArticleID");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<int>("QtyBoxesIn");
-
-                    b.Property<int>("QtyBoxesOut");
-
-                    b.Property<int>("QtyBoxesReserved");
-
-                    b.Property<decimal>("QtyExtraKgIn");
-
-                    b.Property<decimal>("QtyExtraKgOut");
-
-                    b.Property<string>("UserName");
-
-                    b.Property<long>("WarehouseID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("WarehouseID");
-
-                    b.HasIndex("ArticleID", "WarehouseID")
-                        .IsUnique();
-
-                    b.ToTable("ArticleWarehouseBalances");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Company", b =>
@@ -645,19 +611,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalance", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.Article", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
-                        .WithMany()
-                        .HasForeignKey("WarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

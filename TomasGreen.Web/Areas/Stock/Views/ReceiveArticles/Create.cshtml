@@ -9,44 +9,36 @@
 <h4>ReceiveArticle</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-sm-12">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group col-sm-2">
                 <label asp-for="Date" class="control-label"></label>
                 <input asp-for="Date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-sm-2">
                 <label asp-for="ArticleID" class="control-label"></label>
-                <select asp-for="ArticleID" class ="form-control" asp-items="ViewBag.ArticleID"></select>
+                <select asp-for="ArticleID" class="form-control" asp-items="ViewBag.ArticleID">
+                    <option>Select an article</option>
+                </select>
+                <span asp-validation-for="ArticleID" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-sm-2">
                 <label asp-for="CompanyID" class="control-label"></label>
-                <select asp-for="CompanyID" class ="form-control" asp-items="ViewBag.CompanyID"></select>
+                <select asp-for="CompanyID" class="form-control" asp-items="ViewBag.CompanyID">
+                    <option>Select a company</option>
+                </select>
+                <span asp-validation-for="CompanyID" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-sm-4">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea asp-for="Description" class ="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="WarehouseID" class="control-label"></label>
-                <input asp-for="WarehouseID" class="form-control" />
-                <span asp-validation-for="WarehouseID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="QtyBoxes" class="control-label"></label>
-                <input asp-for="QtyBoxes" class="form-control" />
-                <span asp-validation-for="QtyBoxes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="QtyKg" class="control-label"></label>
-                <input asp-for="QtyKg" class="form-control" />
-                <span asp-validation-for="QtyKg" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="form-group col-sm-2">
+                <br />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>

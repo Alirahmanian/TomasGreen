@@ -7,6 +7,7 @@ namespace TomasGreen.Model.Models
 {
     public class Article :BaseEntity
     {
+        
         [Required(ErrorMessage = "Name is required")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
         public string Name { get; set; }
@@ -29,6 +30,7 @@ namespace TomasGreen.Model.Models
         //nav.
         public ArticleCategory ArticleCategory { get; set; }
         public Country Country { get; set; }
+       // public ArticleWarehouseBalance ArticleWarehouseBalance { get; set; }
 
     }
 }

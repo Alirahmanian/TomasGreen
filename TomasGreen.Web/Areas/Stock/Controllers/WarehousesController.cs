@@ -59,9 +59,17 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(warehouse);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (VerifyUniqueName(warehouse.Name, 0))
+                {
+                    _context.Add(warehouse);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(warehouse.Name), "Name is already taken.");
+                }
+                   
             }
             return View(warehouse);
         }
@@ -98,8 +106,17 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             {
                 try
                 {
-                    _context.Update(warehouse);
-                    await _context.SaveChangesAsync();
+                    if (VerifyUniqueName(warehouse.Name, (int)warehouse.ID))
+                    {
+                        _context.Update(warehouse);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(nameof(warehouse.Name), "Name is already taken.");
+                        return View(warehouse);
+                    }
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -150,5 +167,27 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         {
             return _context.Warehouses.Any(e => e.ID == id);
         }
+
+        #region Validations
+        public bool VerifyUniqueName(string name, int id)
+        {
+
+            var country = _context.Warehouses.Where(a => a.Name == name).AsNoTracking().FirstOrDefault();
+            if (country != null)
+            {
+                if (id != 0)
+                {
+                    if (country.ID != id)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
     }
 }

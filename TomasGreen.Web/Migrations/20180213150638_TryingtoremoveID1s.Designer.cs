@@ -11,8 +11,8 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180209154857_initDB")]
-    partial class initDB
+    [Migration("20180213150638_TryingtoremoveID1s")]
+    partial class TryingtoremoveID1s
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -160,6 +160,9 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("CountryID");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Articles");
                 });
 
@@ -178,47 +181,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[Name] IS NOT NULL");
+
                     b.ToTable("ArticleCategories");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalance", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<long>("ArticleID");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<int>("QtyBoxesIn");
-
-                    b.Property<int>("QtyBoxesOnhand");
-
-                    b.Property<int>("QtyBoxesReserved");
-
-                    b.Property<decimal>("QtyKgIn");
-
-                    b.Property<decimal>("QtyKgOnhand");
-
-                    b.Property<decimal>("QtyTotalWeightIn");
-
-                    b.Property<decimal>("QtyTotalWeightOnhand");
-
-                    b.Property<decimal>("QtyTotalWeightReserved");
-
-                    b.Property<string>("UserName");
-
-                    b.Property<long>("WarehouseID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ArticleID");
-
-                    b.HasIndex("WarehouseID");
-
-                    b.ToTable("ArticleWarehouseBalances");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Company", b =>
@@ -261,6 +228,9 @@ namespace TomasGreen.Web.Migrations
                     b.Property<string>("UserName");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Companies");
                 });
@@ -466,87 +436,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("QtyBoxes");
-
-                    b.Property<decimal>("QtyKg");
-
                     b.Property<string>("UserName");
 
-                    b.Property<int>("WarehouseID");
-
-                    b.Property<long?>("WarehouseID1");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("ArticleID");
-
-                    b.HasIndex("CompanyID");
-
-                    b.HasIndex("WarehouseID1");
 
                     b.ToTable("ReceiveArticles");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.SystemUser", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<string>("ApplicationUserId");
-
-                    b.Property<int?>("CompanyID");
-
-                    b.Property<long?>("CompanyID1");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<int>("UserId");
-
-                    b.Property<string>("UserName");
-
-                    b.Property<long?>("UserTypeID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("CompanyID1");
-
-                    b.HasIndex("UserTypeID");
-
-                    b.ToTable("SystemUser");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.UserType", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<string>("DbTableName")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DbTableName")
-                        .IsUnique();
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("UserTypes");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Warehouse", b =>
@@ -611,8 +505,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("SecurityStamp");
 
-                    b.Property<long?>("SystemUserIdID");
-
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
@@ -627,8 +519,6 @@ namespace TomasGreen.Web.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("SystemUserIdID");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -691,19 +581,6 @@ namespace TomasGreen.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalance", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.Article", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
-                        .WithMany()
-                        .HasForeignKey("WarehouseID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("TomasGreen.Model.Models.Order", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
@@ -741,44 +618,6 @@ namespace TomasGreen.Web.Migrations
                         .WithMany()
                         .HasForeignKey("WarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.ReceiveArticle", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.Article", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID");
-
-                    b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
-                        .WithMany()
-                        .HasForeignKey("WarehouseID1");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.SystemUser", b =>
-                {
-                    b.HasOne("TomasGreen.Web.Models.ApplicationUser")
-                        .WithMany("SystemUsers")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID1");
-
-                    b.HasOne("TomasGreen.Model.Models.UserType", "UserType")
-                        .WithMany()
-                        .HasForeignKey("UserTypeID");
-                });
-
-            modelBuilder.Entity("TomasGreen.Web.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.SystemUser", "SystemUserId")
-                        .WithMany()
-                        .HasForeignKey("SystemUserIdID");
                 });
 #pragma warning restore 612, 618
         }

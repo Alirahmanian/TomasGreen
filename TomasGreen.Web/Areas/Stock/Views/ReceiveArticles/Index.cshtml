@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TomasGreen.Model.Models.ReceiveArticle>
+﻿@model IEnumerable<TomasGreen.Web.Areas.Stock.ViewModels.ReceiveArticleViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -12,53 +12,43 @@
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Date)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Description)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.WarehouseID)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.QtyBoxes)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.QtyKg)
-                </th>
             <th>
-                @Html.DisplayNameFor(model => model.Article)
+                @Html.DisplayName("Article")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Company)
+                @Html.DisplayName("Supplier")
             </th>
+            <th>
+                @Html.DisplayName("Date")
+            </th>
+            <th>
+                @Html.DisplayName("Warehouses")
+            </th>
+            <th>
+                @Html.DisplayName("Total weight")
+            </th>
+
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WarehouseID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QtyBoxes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QtyKg)
-            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Article.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Company.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WarehouseSummary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalWeight)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
