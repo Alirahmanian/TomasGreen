@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using TomasGreen.Web.Models;
 using TomasGreen.Model.Models;
 using System.Reflection;
+using TomasGreen.Web.Areas.Stock.ViewModels;
 
 namespace TomasGreen.Web.Data
 {
@@ -130,5 +131,7 @@ namespace TomasGreen.Web.Data
             base.OnModelCreating(modelBuilder);
 
         }
+
+        
     }
 }

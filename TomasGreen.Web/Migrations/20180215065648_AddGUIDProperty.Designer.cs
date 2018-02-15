@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180215065648_AddGUIDProperty")]
+    partial class AddGUIDProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -463,8 +464,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<long>("ArticleID");
 
                     b.Property<long?>("CompanyID");
-
-                    b.Property<string>("ContainerNumber");
 
                     b.Property<DateTime>("Date");
 

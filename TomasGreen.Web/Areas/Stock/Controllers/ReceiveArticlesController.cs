@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.Areas.Stock.ViewModels;
 using TomasGreen.Web.Data;
+using TomasGreen.Web.Validations;
 
 
 namespace TomasGreen.Web.Areas.Stock.Controllers
@@ -26,9 +27,6 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         public IActionResult Index()
         {
             var receiveArticles = GetIndexList();
-            
-
-
             return View(receiveArticles);
         }
 
@@ -52,11 +50,116 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             return View(receiveArticle);
         }
 
+        public IActionResult SaveReceiveArticleWarehouse(Int64? id)
+        {
+            var model = new SaveReceiveArticleWarehouseViewModel();
+            if(id > 0)
+            {
+                model.ReceiveArticle = _context.ReceiveArticles.Where(r => r.ID == id).FirstOrDefault();
+                
+            }
+            model.ReceiveArticle = new ReceiveArticle();
+            model.ReceiveArticle.Date = DateTime.Today;
+            
+            model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(id ?? 0);
+            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveReceiveArticleWarehouse(SaveReceiveArticleWarehouseViewModel model)
+        {
+            //
+            var skipped = ModelState.Keys.Where(key => key.StartsWith("ReceiveArticle.ID") || key.StartsWith("ReceiveArticle.CompanyID"));
+            foreach (var key in skipped)
+            {
+                ModelState.Remove(key);
+            }
+            if(!ModelState.IsValid)
+            {
+                var columValidatedMessage = ReceiveArticleValidation.ReceivArticleIsValid(_context, model.ReceiveArticle);
+                if (!columValidatedMessage.Value)
+                {
+                    ModelState.AddModelError(columValidatedMessage.Property, columValidatedMessage.Message);
+                    return View(model);
+                }
+            }
+
+            if (!ModelState.IsValid)
+                {
+                    model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse((long)model.ReceiveArticle?.ID);
+                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                    return View(model);
+                }
+                if(model.ReceiveArticle.ID == 0)
+                {
+                    var guid = Guid.NewGuid();
+                    model.ReceiveArticle.Guid = guid;
+                    _context.Add(model.ReceiveArticle);
+                    await _context.SaveChangesAsync();
+                    var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.Date == model.ReceiveArticle.Date && r.ArticleID == r.ArticleID && r.Guid == guid).FirstOrDefault();
+                    if(savedReceiveArticle != null)
+                    {
+                      foreach(var receiveArticleWarehouse in model.ReceiveArticleWarehouses)
+                      {
+                        if(receiveArticleWarehouse.QtyBoxes > 0 || receiveArticleWarehouse.QtyExtraKg > 0)
+                        {
+                            receiveArticleWarehouse.ReceiveArticleID = savedReceiveArticle.ID;
+                            _context.Add(receiveArticleWarehouse);
+                        }
+                      }
+                      await _context.SaveChangesAsync();
+                    }
+
+                  return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.ID == model.ReceiveArticle.ID).FirstOrDefault();
+                    if (savedReceiveArticle != null)
+                    {
+                        if (savedReceiveArticle.ArticleID != model.ReceiveArticle.ArticleID)
+                        {
+                            //rollBack ArticleWarehouseBalance
+                        }
+                        if(savedReceiveArticle.CompanyID != model.ReceiveArticle.CompanyID)
+                        {
+                          // rollBack Company balance
+                        }
+                        _context.Update(model.ReceiveArticle);
+                        foreach (var receiveArticleWarehouse in model.ReceiveArticleWarehouses)
+                        {
+                            if (receiveArticleWarehouse.ReceiveArticleID != 0)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                   
+                }
+               
+               // return RedirectToAction(nameof(Index));
+            
+            
+            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+            return View(model);
+        }
+
         // GET: Stock/ReceiveArticles/Create
         public IActionResult Create()
         {
             ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
+            ViewBag.ReceivArticleWarehouse = GetReceiveArticleWarehouse(0);
             return View();
         }
 
@@ -172,15 +275,17 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         #region 
         private List<ReceiveArticleViewModel> GetIndexList()
         {
-            var receiveArticles = _context.ReceiveArticles.Include(r => r.Article).Include(r => r.Company).Include(r => r.Warehouses).OrderBy(r => r.Date).ThenBy(r => r.Article.Name).ThenBy(r => r.Company.Name);
+            var receiveArticles = _context.ReceiveArticles.Include(r => r.Article).Include(r => r.Company).Include(r => r.Warehouses).OrderBy(r => r.Date).ThenBy(r => r.Article.Name).ThenBy(r => r.Company.Name).AsNoTracking().ToList();
             var resultList = new List<ReceiveArticleViewModel>();
             foreach (var receiveArticle in receiveArticles)
             {
-                var receiveArticleViewModel = new ReceiveArticleViewModel();
-                receiveArticleViewModel.ID = (int)receiveArticle.ID;
-                receiveArticleViewModel.Article = receiveArticle.Article;
-                receiveArticleViewModel.Company = receiveArticle.Company ?? new Company();
-                receiveArticleViewModel.Date = receiveArticle.Date;
+                var receiveArticleViewModel = new ReceiveArticleViewModel
+                {
+                    ID = (int)receiveArticle.ID,
+                    Article = receiveArticle.Article,
+                    Company = receiveArticle.Company ?? new Company(),
+                    Date = receiveArticle.Date
+                };
                 Dictionary<string, decimal> tempList = new Dictionary<string, decimal>();
                 receiveArticleViewModel.Warehouses = new Dictionary<string, decimal>();
                 var warehouses = _context.ReceiveArticleWarehouses.Where(r => r.ReceiveArticleID == receiveArticle.ID).Include(w => w.Warehouse);
@@ -204,6 +309,55 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             return resultList;
         }
 
+        private List<ReceiveArticleWarehouse> GetReceiveArticleWarehouse(Int64 id = 0)
+        {
+            var result = new List<ReceiveArticleWarehouse>();
+            
+            foreach(var warehouse in _context.Warehouses.OrderBy(w => w.Name))
+                {
+                    var tempReceiveArticleWarehouse = new ReceiveArticleWarehouse();
+                    if (id != 0)
+                    {
+                        var savedReceiveArticleWarehouse = _context.ReceiveArticleWarehouses.Where(r => r.ReceiveArticleID == id && r.WarehouseID == warehouse.ID).FirstOrDefault();
+                        if(savedReceiveArticleWarehouse != null)
+                        {
+                           // tempReceiveArticleWarehouse.ID = savedReceiveArticleWarehouse.ID;
+                            tempReceiveArticleWarehouse.ReceiveArticleID = savedReceiveArticleWarehouse.ReceiveArticleID;
+                            tempReceiveArticleWarehouse.WarehouseID = warehouse.ID;
+                            tempReceiveArticleWarehouse.Warehouse = warehouse;
+                            tempReceiveArticleWarehouse.QtyBoxes = savedReceiveArticleWarehouse.QtyBoxes;
+                            tempReceiveArticleWarehouse.QtyExtraKg = savedReceiveArticleWarehouse.QtyExtraKg;
+                        }
+                        else
+                        {
+                            //tempReceiveArticleWarehouse.ID = 0;
+                            tempReceiveArticleWarehouse.ReceiveArticleID = 0;
+                            tempReceiveArticleWarehouse.WarehouseID = warehouse.ID;
+                            tempReceiveArticleWarehouse.Warehouse = warehouse;
+                            tempReceiveArticleWarehouse.QtyBoxes = 0;
+                            tempReceiveArticleWarehouse.QtyExtraKg = 0;
+                        }
+                         
+
+                        
+                    }
+                    else
+                    {
+                        // tempReceiveArticleWarehouse.ID = 0;
+                         tempReceiveArticleWarehouse.ReceiveArticleID = 0;
+                         tempReceiveArticleWarehouse.WarehouseID = warehouse.ID;
+                         tempReceiveArticleWarehouse.Warehouse = warehouse;
+                         tempReceiveArticleWarehouse.QtyBoxes = 0;
+                         tempReceiveArticleWarehouse.QtyExtraKg = 0;
+                    }
+                 
+                
+                    
+                    result.Add(tempReceiveArticleWarehouse);
+                }
+           
+            return result;
+        }
 
         #endregion
     }

@@ -15,11 +15,13 @@ namespace TomasGreen.Model.Models
         public Int64 ArticleID { get; set; }
         [Display(Name = "Company")]
         public Int64? CompanyID { get; set; }
+        [Display(Name = "Container")]
+        public string ContainerNumber { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
-        
-       
-        
+        public Guid? Guid { get; set; }
+
+
 
         public virtual Article Article { get; set; }
         public virtual Company Company { get; set; }

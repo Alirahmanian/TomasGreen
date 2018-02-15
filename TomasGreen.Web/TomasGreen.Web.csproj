@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TomasGreen.Data\TomasGreen.Data.csproj" />
     <ProjectReference Include="..\TomasGreen.Model\TomasGreen.Model.csproj" />
   </ItemGroup>
 
@@ -41,6 +42,7 @@
     <Folder Include="Areas\Sales\Data\" />
     <Folder Include="Areas\Sales\Models\" />
     <Folder Include="Areas\Stock\Data\" />
+    <Folder Include="Areas\Stock\Services\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

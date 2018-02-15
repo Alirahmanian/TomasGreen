@@ -17,5 +17,18 @@ namespace TomasGreen.Test
             //Assert
             Assert.Equal(systemUser.UserType.DbTableName, userType.DbTableName);
         }
+
+        [Fact]
+        public void TestGUID()
+        {
+            // Arrange
+            var g = Guid.NewGuid();
+            
+            // Act
+
+            //Assert
+            Assert.NotEmpty(g.ToString());
+        }
+
     }
 }

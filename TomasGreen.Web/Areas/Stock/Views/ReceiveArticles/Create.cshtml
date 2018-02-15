@@ -42,6 +42,54 @@
             </div>
         </form>
     </div>
+    <form asp-action="Create">
+        <div class="col-sm-12">
+         @if (ViewBag.ReceivArticleWarehouse != null)
+         {
+            <table id="TimeReportTable" class="table table-striped .table-responsive table-sm ">
+                <thead class="bg-primary">
+                    <tr>
+                        <td>
+                            <label class="control-label">Warehouse</label>
+                        </td>
+                        <td>
+                            <label class="control-label Timelabel">Boxes</label>
+                        </td>
+                        <td>
+                            <label class="control-label Timelabel">Ext. kg</label>
+                        </td>
+
+                    </tr>
+                </thead>
+                @foreach (var item in ViewBag.ReceivArticleWarehouse)
+            {
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            @item.Warehouse.Name
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input value="@item.QtyBoxes" class="form-control TimeInput" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input value="@item.QtyExtraKg" class="form-control TimeInput" />
+                           
+                        </div>
+                    </td>
+                  
+                </tr>
+
+        }
+            </table>
+            <input type="submit" value="Add" class="btn btn-primary" />
+    }
+        </div>
+    </form>
+   
 </div>
 
 <div>
