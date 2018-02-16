@@ -7,7 +7,7 @@ namespace TomasGreen.Model.Models
     public class ArticleCategory :BaseEntity
     {
         public string Name { get; set; }
-
         public virtual List<Article> Articles { get; set; }
+        public bool Active { get; set; }
     }
 }

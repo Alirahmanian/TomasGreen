@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180216135520_Orderchanges")]
+    partial class Orderchanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,8 +134,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("Active");
-
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<long>("ArticleCategoryID");
@@ -171,8 +170,6 @@ namespace TomasGreen.Web.Migrations
                 {
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Active");
 
                     b.Property<DateTime>("AddedDate");
 
@@ -233,8 +230,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("Active");
-
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<decimal>("Balance");
@@ -282,8 +277,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("Active");
-
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<DateTime?>("ModifiedDate");
@@ -306,8 +299,6 @@ namespace TomasGreen.Web.Migrations
                 {
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Active");
 
                     b.Property<DateTime>("AddedDate");
 
@@ -345,8 +336,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("Active");
-
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<int>("AmountArticle");
@@ -360,8 +349,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<string>("Coments");
 
                     b.Property<long>("CompanyID");
-
-                    b.Property<bool>("Confirmed");
 
                     b.Property<long?>("EmployeeID");
 
@@ -449,8 +436,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("Active");
-
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<DateTime?>("ModifiedDate");
@@ -473,8 +458,6 @@ namespace TomasGreen.Web.Migrations
                 {
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Active");
 
                     b.Property<DateTime>("AddedDate");
 
@@ -536,8 +519,6 @@ namespace TomasGreen.Web.Migrations
                 {
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Active");
 
                     b.Property<DateTime>("AddedDate");
 

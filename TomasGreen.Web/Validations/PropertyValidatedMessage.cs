@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace TomasGreen.Web.Validations
 {
-    public class ColumValidatedMessage
+    public class PropertyValidatedMessage
     {
         public bool Value { get; set; }
         public string Property { get; set; }
         public string Message { get; set; }
-        public ColumValidatedMessage(bool value, string property, string message)
+        public PropertyValidatedMessage(bool value, string property, string message)
         {
             Value = value;
             Property = property;

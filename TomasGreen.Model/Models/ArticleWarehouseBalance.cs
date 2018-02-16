@@ -20,9 +20,9 @@ namespace TomasGreen.Model.Models
         public decimal QtyTotalWeightReserved { get { return (QtyBoxesReserved * this.Article.BoxWeight); } }
         
 
-        public int QtyBoxesOnhand { get { return (QtyBoxesIn - QtyBoxesOut); } }
+        public int QtyBoxesOnhand { get; set; }
         public decimal QtyKgOnhand { get { return (QtyExtraKgIn - QtyExtraKgOut); } }
-        public decimal QtyTotalWeightOnhand { get { return (QtyTotalWeightIn - QtyTotalWeightOut); } }
+        public decimal QtyTotalWeightOnhand { get { return ((QtyBoxesOnhand * this.Article.BoxWeight) + QtyKgOnhand); } }
 
 
 
@@ -30,6 +30,6 @@ namespace TomasGreen.Model.Models
         public virtual Article Article { get; set; }
         public virtual Warehouse Warehouse { get; set; }
 
-
+        
     }
 }

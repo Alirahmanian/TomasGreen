@@ -40,17 +40,14 @@
     <Folder Include="Areas\Purchase\Data\" />
     <Folder Include="Areas\Purchase\Models\" />
     <Folder Include="Areas\Sales\Data\" />
-    <Folder Include="Areas\Sales\Models\" />
     <Folder Include="Areas\Stock\Data\" />
     <Folder Include="Areas\Stock\Services\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Areas\Stock\Views\ReceiveArticles\Create.cshtml" />
     <None Include="Areas\Stock\Views\ReceiveArticles\Delete.cshtml" />
     <None Include="Areas\Stock\Views\ReceiveArticles\Details.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticles\Edit.cshtml" />
     <None Include="Areas\Stock\Views\ReceiveArticles\Index.cshtml" />
     <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Create.cshtml" />
     <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Delete.cshtml" />

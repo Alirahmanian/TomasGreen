@@ -14,29 +14,29 @@ namespace TomasGreen.Model.Models
         public Int64 EmpoyeeID { get; set; }
         [Display(Name = "Transport")]
         [Required(ErrorMessage = "Please choose a transport type.")]
-        public OrderTransport TransportID { get; set; }
+        public Int64 OrderTransportID { get; set; }
         public int AmountArticle { get; set; }
         public int AmountReserve { get; set; }
         [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total price")]
         public decimal TotalPrice { get; set; }
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Order date")]
         public DateTime OrderDate { get; set; }
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "payment date")]
         public DateTime PaymentDate { get; set; }
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Paid date")]
         public DateTime? PaidDate { get; set; }
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Loading date")]
         public DateTime LoadingDate { get; set; }
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Loaded date")]
         public DateTime? LoadedDate { get; set; }
@@ -52,6 +52,8 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Order is paid")]
         public bool OrderPaid { get; set; }
         public bool Cash { get; set; }
+        public bool Confirmed { get; set; }
+        public bool Active { get; set; }
 
 
         public Company Company { get; set; }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.Data;
+using TomasGreen.Web.Areas.Sales.ViewModels;
 
 namespace TomasGreen.Web.Areas.Sales.Controllers
 {
@@ -50,6 +51,9 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
         public IActionResult Create()
         {
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
+            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
             return View();
         }
 
@@ -58,16 +62,19 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CompanyID,EmpoyeeID,AmountArticle,AmountReserve,TotalPrice,OrderDate,PaymentDate,PaidDate,LoadingDate,LoadedDate,AmountPaid,Coments,OrderdBy,PaymentWarning,ForcedPaid,OrderPaid,Cash")] Order order)
+        public async Task<IActionResult> Create(SaveOrderViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(order);
+                _context.Add(model.Order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", order.CompanyID);
-            return View(order);
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
+            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+            return View(model);
         }
 
         // GET: Sales/Orders/Edit/5

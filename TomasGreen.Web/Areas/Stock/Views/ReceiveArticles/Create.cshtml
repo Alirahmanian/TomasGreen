@@ -1,98 +1,123 @@
-﻿@model TomasGreen.Model.Models.ReceiveArticle
+﻿@model TomasGreen.Web.Areas.Stock.ViewModels.SaveReceiveArticleWarehouseViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add articles to Warehouse";
 }
 
-<h2>Create</h2>
+<h2>Add articles to Warehouse</h2>
 
-<h4>ReceiveArticle</h4>
+
 <hr />
 <div class="row">
-    <div class="col-sm-12">
-        <form asp-action="Create">
+    <form asp-action="Create">
+        <input asp-for="@Model.ReceiveArticle.ID" class="form-control" style="visibility:hidden" />
+        <div class="col-sm-12">
+
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group col-sm-2">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
+                <label asp-for="@Model.ReceiveArticle.Date" class="control-label"></label>
+                <input asp-for="@Model.ReceiveArticle.Date" class="form-control" />
+                <span asp-validation-for="@Model.ReceiveArticle.Date" class="text-danger"></span>
             </div>
             <div class="form-group col-sm-2">
-                <label asp-for="ArticleID" class="control-label"></label>
-                <select asp-for="ArticleID" class="form-control" asp-items="ViewBag.ArticleID">
+                <label asp-for="@Model.ReceiveArticle.ArticleID" class="control-label"></label>
+                <select asp-for="@Model.ReceiveArticle.ArticleID" class="form-control" asp-items="ViewBag.ArticleID">
                     <option>Select an article</option>
                 </select>
-                <span asp-validation-for="ArticleID" class="text-danger"></span>
+                <span asp-validation-for="@Model.ReceiveArticle.ArticleID" class="text-danger"></span>
             </div>
             <div class="form-group col-sm-2">
-                <label asp-for="CompanyID" class="control-label"></label>
-                <select asp-for="CompanyID" class="form-control" asp-items="ViewBag.CompanyID">
+                <label asp-for="@Model.ReceiveArticle.CompanyID" class="control-label"></label>
+                <select asp-for="@Model.ReceiveArticle.CompanyID" class="form-control" asp-items="ViewBag.CompanyID">
                     <option>Select a company</option>
                 </select>
-                <span asp-validation-for="CompanyID" class="text-danger"></span>
+                <span asp-validation-for="@Model.ReceiveArticle.CompanyID" class="text-danger"></span>
             </div>
-            <div class="form-group col-sm-4">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class ="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+            <div class="form-group col-sm-2">
+                <label asp-for="@Model.ReceiveArticle.ContainerNumber" class="control-label"></label>
+                <textarea asp-for="@Model.ReceiveArticle.ContainerNumber" class="form-control"></textarea>
+                <span asp-validation-for="@Model.ReceiveArticle.ContainerNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group col-sm-2">
+                <label asp-for="@Model.ReceiveArticle.Description" class="control-label"></label>
+                <textarea asp-for="@Model.ReceiveArticle.Description" class="form-control"></textarea>
+                <span asp-validation-for="@Model.ReceiveArticle.Description" class="text-danger"></span>
             </div>
             <div class="form-group col-sm-2">
                 <br />
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        </form>
-    </div>
-    <form asp-action="Create">
-        <div class="col-sm-12">
-         @if (ViewBag.ReceivArticleWarehouse != null)
-         {
-            <table id="TimeReportTable" class="table table-striped .table-responsive table-sm ">
-                <thead class="bg-primary">
-                    <tr>
-                        <td>
-                            <label class="control-label">Warehouse</label>
-                        </td>
-                        <td>
-                            <label class="control-label Timelabel">Boxes</label>
-                        </td>
-                        <td>
-                            <label class="control-label Timelabel">Ext. kg</label>
-                        </td>
 
-                    </tr>
-                </thead>
-                @foreach (var item in ViewBag.ReceivArticleWarehouse)
-            {
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (Model.ReceiveArticleWarehouses != null)
+    {
+        <table id="TimeReportTable" class="table table-striped .table-responsive table-sm ">
+            <thead class="bg-primary">
                 <tr>
                     <td>
-                        <div class="form-group">
-                            @item.Warehouse.Name
-                        </div>
+                        <label asp-for="@Model.ReceiveArticleWarehouses[0].Warehouse.Name" class="control-label Timelabel"></label>
                     </td>
                     <td>
-                        <div class="form-group">
-                            <input value="@item.QtyBoxes" class="form-control TimeInput" />
-                        </div>
+                        <label asp-for="@Model.ReceiveArticleWarehouses[0].QtyBoxes" class="control-label Timelabel"></label>
                     </td>
                     <td>
-                        <div class="form-group">
-                            <input value="@item.QtyExtraKg" class="form-control TimeInput" />
-                           
-                        </div>
+                        <label asp-for="@Model.ReceiveArticleWarehouses[0].QtyExtraKg" class="control-label Timelabel"></label>
                     </td>
-                  
-                </tr>
 
-        }
-            </table>
-            <input type="submit" value="Add" class="btn btn-primary" />
+
+                </tr>
+            </thead>
+            @for (var i = 0; i < Model.ReceiveArticleWarehouses.Count; i++)
+        {
+
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <p>@Model.ReceiveArticleWarehouses[i].Warehouse.Name</p>
+                        <input asp-for="@Model.ReceiveArticleWarehouses[i].WarehouseID" class="form-control" type="hidden" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input asp-for="@Model.ReceiveArticleWarehouses[i].QtyBoxes" class="form-control TimeInput" />
+                        <span asp-validation-for="@Model.ReceiveArticleWarehouses[i].QtyBoxes" class="text-danger"></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input asp-for="@Model.ReceiveArticleWarehouses[i].QtyExtraKg" class="form-control TimeInput" />
+                        <span asp-validation-for="@Model.ReceiveArticleWarehouses[i].QtyExtraKg" class="text-danger"></span>
+                    </div>
+                </td>
+
+            </tr>
+
     }
-        </div>
+        </table>
+
+
+}
     </form>
    
+
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
+<table class="model-state">
+    @foreach (var item in ViewContext.ViewData.ModelState)
+    {
+        if (item.Value.Errors.Any())
+        {
+            <tr>
+                <td><b>@item.Key</b></td>
+                <td>@((item.Value == null || item.Value.Errors.Count == 0) ? "<null>" : item.Value.RawValue)</td>
+                <td>@(string.Join("; ", item.Value.Errors.Select(x => x.ErrorMessage)))</td>
+            </tr>
+        }
+    }
+</table>

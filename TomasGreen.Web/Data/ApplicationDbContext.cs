@@ -47,7 +47,7 @@ namespace TomasGreen.Web.Data
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Property("AddedDate").CurrentValue = DateTime.Now;
+                    entry.Property("AddedDate").CurrentValue = entry.Property("AddedDate").CurrentValue?? DateTime.Now;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
@@ -60,7 +60,7 @@ namespace TomasGreen.Web.Data
                     e.Entity.GetType().GetProperty("ModifiedDate") != null &&
                     e.State == EntityState.Modified))
             {
-                entry.Property("ModifiedDate").CurrentValue = DateTime.Now;
+                entry.Property("ModifiedDate").CurrentValue = entry.Property("ModifiedDate").CurrentValue??DateTime.Now;
             }
 
             foreach (var entry in ChangeTracker.Entries().Where(x => x.Entity.GetType().GetProperty("UserName") != null))
@@ -98,6 +98,12 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<OrderTransport>()
             .HasIndex(p => p.Name)
             .IsUnique(true);
+
+            
+            modelBuilder.Entity<OrderDetail>()
+            .HasIndex(p => new { p.OrderID, p.ArticleID})
+            .IsUnique(true);
+
             modelBuilder.Entity<Warehouse>()
             .HasIndex(p => p.Name)
             .IsUnique(true);
@@ -117,7 +123,6 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<ArticleWarehouseBalance>()
                .HasIndex(p => new { p.ArticleID, p.WarehouseID })
                .IsUnique(true);
-
 
             // modelBuilder.Entity<UserType>()
             // .HasIndex(p => p.Name)

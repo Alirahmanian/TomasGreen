@@ -20,6 +20,7 @@ namespace TomasGreen.Model.Models
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
         public Guid? Guid { get; set; }
+        public bool Active { get; set; }
 
 
 

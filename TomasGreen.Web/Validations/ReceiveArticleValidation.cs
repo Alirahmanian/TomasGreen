@@ -9,18 +9,18 @@ namespace TomasGreen.Web.Validations
 {
     public static class ReceiveArticleValidation 
     {
-        public static ColumValidatedMessage ReceivArticleIsValid(ApplicationDbContext _context, ReceiveArticle model)
+        public static PropertyValidatedMessage ReceivArticleIsValid(ApplicationDbContext _context, ReceiveArticle model)
         {
             if (model.Date == null)
             {
-                return (new ColumValidatedMessage(false, "Date", "Please choose a date."));
+                return (new PropertyValidatedMessage(false, "Date", "Please choose a date."));
             }
             if (model.ArticleID == 0)
             {
-                return (new ColumValidatedMessage(false, "Article", "Please choose an article."));
+                return (new PropertyValidatedMessage(false, "Article", "Please choose an article."));
             }
             
-            return (new ColumValidatedMessage(true, "", ""));
+            return (new PropertyValidatedMessage(true, "", ""));
         }
 
     }

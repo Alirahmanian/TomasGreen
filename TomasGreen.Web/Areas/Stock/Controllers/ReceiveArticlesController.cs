@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.Areas.Stock.ViewModels;
+using TomasGreen.Web.Balances;
 using TomasGreen.Web.Data;
 using TomasGreen.Web.Validations;
 
@@ -50,7 +51,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             return View(receiveArticle);
         }
 
-        public IActionResult SaveReceiveArticleWarehouse(Int64? id)
+        public IActionResult Create(Int64? id)
         {
             var model = new SaveReceiveArticleWarehouseViewModel();
             if(id > 0)
@@ -58,8 +59,12 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                 model.ReceiveArticle = _context.ReceiveArticles.Where(r => r.ID == id).FirstOrDefault();
                 
             }
-            model.ReceiveArticle = new ReceiveArticle();
-            model.ReceiveArticle.Date = DateTime.Today;
+            else
+            {
+                model.ReceiveArticle = new ReceiveArticle();
+                model.ReceiveArticle.Date = DateTime.Today;
+            }
+            
             
             model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(id ?? 0);
             ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
@@ -69,7 +74,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveReceiveArticleWarehouse(SaveReceiveArticleWarehouseViewModel model)
+        public async Task<IActionResult> Create(SaveReceiveArticleWarehouseViewModel model)
         {
             //
             var skipped = ModelState.Keys.Where(key => key.StartsWith("ReceiveArticle.ID") || key.StartsWith("ReceiveArticle.CompanyID"));
@@ -79,72 +84,104 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             }
             if(!ModelState.IsValid)
             {
-                var columValidatedMessage = ReceiveArticleValidation.ReceivArticleIsValid(_context, model.ReceiveArticle);
-                if (!columValidatedMessage.Value)
+                var propertyValidatedMessage = ReceiveArticleValidation.ReceivArticleIsValid(_context, model.ReceiveArticle);
+                if (propertyValidatedMessage.Value == false)
                 {
-                    ModelState.AddModelError(columValidatedMessage.Property, columValidatedMessage.Message);
+                    ModelState.AddModelError(propertyValidatedMessage.Property, propertyValidatedMessage.Message);
                     return View(model);
                 }
             }
 
             if (!ModelState.IsValid)
+            {
+                model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse((long)model.ReceiveArticle?.ID);
+                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                return View(model);
+            }
+            if(model.ReceiveArticle.ID == 0)
+            {
+                var guid = Guid.NewGuid();
+                model.ReceiveArticle.Guid = guid;
+                _context.Add(model.ReceiveArticle);
+                await _context.SaveChangesAsync();
+                var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.Date == model.ReceiveArticle.Date && r.ArticleID == r.ArticleID && r.Guid == guid).FirstOrDefault();
+                if(savedReceiveArticle != null)
                 {
-                    model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse((long)model.ReceiveArticle?.ID);
-                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
-                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
-                    return View(model);
-                }
-                if(model.ReceiveArticle.ID == 0)
-                {
-                    var guid = Guid.NewGuid();
-                    model.ReceiveArticle.Guid = guid;
-                    _context.Add(model.ReceiveArticle);
-                    await _context.SaveChangesAsync();
-                    var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.Date == model.ReceiveArticle.Date && r.ArticleID == r.ArticleID && r.Guid == guid).FirstOrDefault();
-                    if(savedReceiveArticle != null)
+                    var articleBalance = new ArticleBalance(_context);
+                    foreach (var receiveArticleWarehouse in model.ReceiveArticleWarehouses)
                     {
-                      foreach(var receiveArticleWarehouse in model.ReceiveArticleWarehouses)
-                      {
                         if(receiveArticleWarehouse.QtyBoxes > 0 || receiveArticleWarehouse.QtyExtraKg > 0)
                         {
                             receiveArticleWarehouse.ReceiveArticleID = savedReceiveArticle.ID;
                             _context.Add(receiveArticleWarehouse);
+                            articleBalance.AddReceiveArticleToBalance(receiveArticleWarehouse);
                         }
-                      }
-                      await _context.SaveChangesAsync();
                     }
+                    await _context.SaveChangesAsync();
 
-                  return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.ID == model.ReceiveArticle.ID).FirstOrDefault();
-                    if (savedReceiveArticle != null)
-                    {
-                        if (savedReceiveArticle.ArticleID != model.ReceiveArticle.ArticleID)
-                        {
-                            //rollBack ArticleWarehouseBalance
-                        }
-                        if(savedReceiveArticle.CompanyID != model.ReceiveArticle.CompanyID)
-                        {
-                          // rollBack Company balance
-                        }
-                        _context.Update(model.ReceiveArticle);
-                        foreach (var receiveArticleWarehouse in model.ReceiveArticleWarehouses)
-                        {
-                            if (receiveArticleWarehouse.ReceiveArticleID != 0)
-                            {
-
-                            }
-                            else
-                            {
-
-                            }
-                        }
-                        await _context.SaveChangesAsync();
-                    }
-                   
+                    ModelState.AddModelError("", "Couldn't saved.");
+                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                    return View(model);
                 }
+
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.ID == model.ReceiveArticle.ID).Include(w => w.Warehouses).FirstOrDefault();
+                if (savedReceiveArticle != null)
+                {
+                    //rollback old values from article balance
+                    var articleBalance = new ArticleBalance(_context);
+                    foreach (var receiveArticleWarehouse in savedReceiveArticle.Warehouses)
+                    {
+                        if (receiveArticleWarehouse.QtyBoxes > 0 || receiveArticleWarehouse.QtyExtraKg > 0)
+                        {
+                            articleBalance.RemoveReceiveArticleFromBalance(receiveArticleWarehouse);
+                            _context.Remove(receiveArticleWarehouse);
+                        }
+                    }
+                    
+                    if(savedReceiveArticle.CompanyID != model.ReceiveArticle.CompanyID)
+                    {
+                        // rollBack Company balance
+                    }
+                    foreach (var receiveArticleWarehouse in model.ReceiveArticleWarehouses)
+                    {
+                        if (receiveArticleWarehouse.QtyBoxes > 0 || receiveArticleWarehouse.QtyExtraKg > 0)
+                        {
+                            receiveArticleWarehouse.ReceiveArticleID = savedReceiveArticle.ID;
+                            receiveArticleWarehouse.AddedDate = savedReceiveArticle.AddedDate;
+                            receiveArticleWarehouse.ModifiedDate = DateTime.Now;
+                            _context.Add(receiveArticleWarehouse);
+                            articleBalance.AddReceiveArticleToBalance(receiveArticleWarehouse);
+                        }
+                    }
+                    savedReceiveArticle.ArticleID = model.ReceiveArticle.ArticleID;
+                    savedReceiveArticle.Date = model.ReceiveArticle.Date;
+                    savedReceiveArticle.CompanyID = model.ReceiveArticle.CompanyID;
+                    savedReceiveArticle.ContainerNumber = model.ReceiveArticle.ContainerNumber;
+                    savedReceiveArticle.Description = model.ReceiveArticle.Description;
+                    _context.Update(savedReceiveArticle);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Couldn't saved.");
+                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                    return View(model);
+                }
+
+                   
+            }
                
                // return RedirectToAction(nameof(Index));
             
@@ -154,88 +191,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             return View(model);
         }
 
-        // GET: Stock/ReceiveArticles/Create
-        public IActionResult Create()
-        {
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
-            ViewBag.ReceivArticleWarehouse = GetReceiveArticleWarehouse(0);
-            return View();
-        }
-
-        // POST: Stock/ReceiveArticles/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Date,ArticleID,CompanyID,Description")] ReceiveArticle receiveArticle)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(receiveArticle);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", receiveArticle.ArticleID);
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", receiveArticle.CompanyID);
-            return View(receiveArticle);
-        }
-
-        // GET: Stock/ReceiveArticles/Edit/5
-        public async Task<IActionResult> Edit(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var receiveArticle = await _context.ReceiveArticles.SingleOrDefaultAsync(m => m.ID == id);
-            if (receiveArticle == null)
-            {
-                return NotFound();
-            }
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", receiveArticle.ArticleID);
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", receiveArticle.CompanyID);
-            return View(receiveArticle);
-        }
-
-        // POST: Stock/ReceiveArticles/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Date,ArticleID,CompanyID,Description")] ReceiveArticle receiveArticle)
-        {
-            if (id != receiveArticle.ID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(receiveArticle);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ReceiveArticleExists(receiveArticle.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", receiveArticle.ArticleID);
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", receiveArticle.CompanyID);
-            return View(receiveArticle);
-        }
-
+     
         // GET: Stock/ReceiveArticles/Delete/5
         public async Task<IActionResult> Delete(long? id)
         {
@@ -261,7 +217,18 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var receiveArticle = await _context.ReceiveArticles.SingleOrDefaultAsync(m => m.ID == id);
+            var receiveArticle = await _context.ReceiveArticles.Include(w => w.Warehouses).SingleOrDefaultAsync(m => m.ID == id);
+            //rollback old values from article balance
+            var articleBalance = new ArticleBalance(_context);
+            foreach (var receiveArticleWarehouse in receiveArticle.Warehouses)
+            {
+                if (receiveArticleWarehouse.QtyBoxes > 0 || receiveArticleWarehouse.QtyExtraKg > 0)
+                {
+                    articleBalance.RemoveReceiveArticleFromBalance(receiveArticleWarehouse);
+                    _context.Remove(receiveArticleWarehouse);
+                }
+            }
+
             _context.ReceiveArticles.Remove(receiveArticle);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
