@@ -22,7 +22,7 @@ namespace TomasGreen.Model.Models
         public Int64 ArticleCategoryID { get; set; }
         [Display(Name = "Country")]
         public Int64 CountryID { get; set; }
-        public bool Active { get; set; }
+        public bool Archive { get; set; }
 
 
 

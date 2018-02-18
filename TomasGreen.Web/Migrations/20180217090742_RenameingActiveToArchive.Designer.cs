@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180217090742_RenameingActiveToArchive")]
+    partial class RenameingActiveToArchive
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,8 +212,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<int>("QtyBoxesReserved");
 
                     b.Property<decimal>("QtyExtraKgIn");
-
-                    b.Property<decimal>("QtyExtraKgOnhand");
 
                     b.Property<decimal>("QtyExtraKgOut");
 

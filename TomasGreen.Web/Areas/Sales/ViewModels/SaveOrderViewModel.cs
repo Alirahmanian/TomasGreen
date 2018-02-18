@@ -9,6 +9,7 @@ namespace TomasGreen.Web.Areas.Sales.ViewModels
     public class SaveOrderViewModel
     {
         public Order Order { get; set; }
+        public ArticleCategory ArticleCategory { get; set; }
         public OrderDetail OrderDetail { get; set; }
     }
 }

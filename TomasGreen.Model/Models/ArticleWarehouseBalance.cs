@@ -21,8 +21,8 @@ namespace TomasGreen.Model.Models
         
 
         public int QtyBoxesOnhand { get; set; }
-        public decimal QtyKgOnhand { get { return (QtyExtraKgIn - QtyExtraKgOut); } }
-        public decimal QtyTotalWeightOnhand { get { return ((QtyBoxesOnhand * this.Article.BoxWeight) + QtyKgOnhand); } }
+        public decimal QtyExtraKgOnhand { get; set; }
+        public decimal QtyTotalWeightOnhand { get { return ((QtyBoxesOnhand * this.Article.BoxWeight) + QtyExtraKgOnhand); } }
 
 
 

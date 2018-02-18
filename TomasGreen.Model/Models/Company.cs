@@ -30,7 +30,7 @@ namespace TomasGreen.Model.Models
         public decimal CreditReceived { get; set; }
         [Display(Name = "Credit limit")]
         public decimal CreditLimit { get; set; }
-        public bool Active { get; set; }
+        public bool Archive { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }
     }

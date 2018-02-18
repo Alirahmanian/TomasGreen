@@ -15,10 +15,10 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Boxes")]
         [Required(ErrorMessage = "Please put boxes.")]
         [Range(0, Int32.MaxValue)]
-        public int QtyBoxes { get; set; }
+        public int QtyBoxes { get; set; } = 0;
         [Display(Name = "Extra kg")]
         [Range(0, Int32.MaxValue)]
-        public decimal QtyExtraKg { get; set; }
+        public decimal QtyExtraKg { get; set; } = 0;
 
         //nav
         public virtual ReceiveArticle ReceiveArticle { get; set; }

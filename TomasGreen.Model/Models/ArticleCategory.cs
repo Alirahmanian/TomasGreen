@@ -8,6 +8,6 @@ namespace TomasGreen.Model.Models
     {
         public string Name { get; set; }
         public virtual List<Article> Articles { get; set; }
-        public bool Active { get; set; }
+        public bool Archive { get; set; }
     }
 }

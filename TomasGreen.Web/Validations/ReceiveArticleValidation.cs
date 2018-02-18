@@ -13,14 +13,14 @@ namespace TomasGreen.Web.Validations
         {
             if (model.Date == null)
             {
-                return (new PropertyValidatedMessage(false, "Date", "Please choose a date."));
+                return (new PropertyValidatedMessage(false, "ReceivArticleIsValid", "ReceiveArticle", "Date", "Please choose a date."));
             }
             if (model.ArticleID == 0)
             {
-                return (new PropertyValidatedMessage(false, "Article", "Please choose an article."));
+                return (new PropertyValidatedMessage(false, "ReceivArticleIsValid", "ReceiveArticle", "ArticleID", "Please choose an article."));
             }
             
-            return (new PropertyValidatedMessage(true, "", ""));
+            return (new PropertyValidatedMessage(true, "", "", "", ""));
         }
 
     }

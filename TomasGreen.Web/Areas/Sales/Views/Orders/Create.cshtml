@@ -9,275 +9,285 @@
 <h4> Create Order </h4>
 <hr />
 
-    <div class="row">
-        <form asp-action="Create">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="col-md-12">
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label asp-for="@Model.Order.CompanyID" class="control-label">Customer</label>
-                        <select asp-for="@Model.Order.CompanyID" class="form-control" asp-items="ViewBag.CompanyID"></select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label asp-for="@Model.Order.OrderDate" class="control-label">Date</label>
-                        <input asp-for="@Model.Order.OrderDate" class="form-control" />
-                        <span asp-validation-for="@Model.Order.OrderDate" class="text-danger"></span>
-                    </div>
-                </div>
-                
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <br />
-                        <input type="submit" value="Create" class="btn btn-primary" />
-                    </div>
-                </div>
+<div class="row">
 
-
-
+    <form asp-action="Create">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.Order.CompanyID" class="control-label">Customer</label>
+                    <select asp-for="@Model.Order.CompanyID" class="form-control" asp-items="ViewBag.CompanyID"></select>
+                </div>
             </div>
-           <div>
-               <br />&nbsp;
-           </div>
-            <!--Tab go -->
-            <div class="tab" role="tabpanel">
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="active" role="presentation"><a role="tab" aria-controls="home" href="#Section1" data-toggle="tab"> Articles &nbsp;<img style="width:25px; height:25px;" src="~/images/inviceRows.png" /></a></li>
-                    <li role="presentation"><a role="tab" aria-controls="Parment" href="#Section2" data-toggle="tab"> Payment </a></li>
-                    <li role="presentation"><a role="tab" aria-controls="Loading" href="#Section3" data-toggle="tab"> Loading </a></li>
-                    <li role="presentation"><a role="tab" aria-controls="More info." href="#Section4" data-toggle="tab"> More inf. </a></li>
-                    <li role="presentation"><a role="tab" aria-controls="Customer info." href="#Section5" data-toggle="tab"> Customer info. </a></li>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.Order.OrderDate" class="control-label">Date</label>
+                    <input asp-for="@Model.Order.OrderDate" class="form-control" />
+                    <span asp-validation-for="@Model.Order.OrderDate" class="text-danger"></span>
+                </div>
+            </div>
 
-                </ul>
-                <!-- Tab panes -->
-                <div class="tab-content tabs">
-                    <div class="tab-pane fade in active" id="Section1" role="tabpanel">
-                        <div><br /></div>
-                        <div class="col-md-12">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label asp-for="@Model.OrderDetail.ArticleID" class="control-label"></label>
-                                    <select asp-for="@Model.OrderDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID"></select>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label asp-for="@Model.OrderDetail.WarehouseID" class="control-label"></label>
-                                    <select asp-for="@Model.OrderDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID"></select>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="form-group">
-                                    <label asp-for="@Model.OrderDetail.QtyBoxes" class="control-label">Box</label>
-                                    <input asp-for="@Model.OrderDetail.QtyBoxes" class="form-control" />
-                                    <span asp-validation-for="@Model.OrderDetail.QtyBoxes" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="form-group">
-                                    <label asp-for="@Model.OrderDetail.QtyReservBoxes" class="control-label">Reserve</label>
-                                    <input asp-for="@Model.OrderDetail.QtyReservBoxes" class="form-control" />
-                                    <span asp-validation-for="@Model.OrderDetail.QtyReservBoxes" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="form-group">
-                                    <label asp-for="@Model.OrderDetail.QtyKg" class="control-label">Extra kg</label>
-                                    <input asp-for="@Model.OrderDetail.QtyKg" class="form-control" />
-                                    <span asp-validation-for="@Model.OrderDetail.QtyKg" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="form-group">
-                                    <label asp-for="@Model.OrderDetail.Price" class="control-label">Extra kg</label>
-                                    <input asp-for="@Model.OrderDetail.Price" class="form-control" />
-                                    <span asp-validation-for="@Model.OrderDetail.Price" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="form-group">
-                                    <label asp-for="@Model.OrderDetail.Extended_Price" class="control-label">Ext.price</label>
-                                    <input asp-for="@Model.OrderDetail.Extended_Price" class="form-control" />
-                                    <span asp-validation-for="@Model.OrderDetail.Extended_Price" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="form-group">
-                                    <br />
-                                    <input type="submit" value="Add" class="btn btn-primary" />
-                                </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <br />
+                    <input type="submit" name="CreateOrder" id="CreateOrder" value="Create" class="btn btn-primary" />
+                </div>
+            </div>
+
+
+
+        </div>
+        <div>
+            <br />&nbsp;
+        </div>
+        <!--Tab go -->
+        <div class="tab" role="tabpanel">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active" role="presentation"><a role="tab" aria-controls="home" href="#Section1" data-toggle="tab"> Articles &nbsp;<img style="width:25px; height:25px;" src="~/images/inviceRows.png" /></a></li>
+                <li role="presentation"><a role="tab" aria-controls="Parment" href="#Section2" data-toggle="tab"> Payment </a></li>
+                <li role="presentation"><a role="tab" aria-controls="Loading" href="#Section3" data-toggle="tab"> Loading </a></li>
+                <li role="presentation"><a role="tab" aria-controls="More info." href="#Section4" data-toggle="tab"> More inf. </a></li>
+                <li role="presentation"><a role="tab" aria-controls="Customer info." href="#Section5" data-toggle="tab"> Customer info. </a></li>
+
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content tabs">
+                <div class="tab-pane fade in active" id="Section1" role="tabpanel">
+                    <div><br /></div>
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="@Model.ArticleCategory.ID" class="control-label"></label>
+                                <select asp-for="@Model.ArticleCategory.ID" class="form-control" asp-items="ViewBag.ArticleCategoryID" onchange="LoadArticles(this)">
+                                    <option>Select</option>
+                                </select>
                             </div>
                         </div>
-                        </div>
-                    <div class="tab-pane fade in " id="Section2" role="tabpanel">
-                        <div><br /></div>
-                        <div class="col-md-12">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.PaymentDate" class="control-label"></label>
-                                    <input asp-for="@Model.Order.PaymentDate" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.PaymentDate" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.PaidDate" class="control-label"></label>
-                                    <input asp-for="@Model.Order.PaidDate" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.PaidDate" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.AmountPaid" class="control-label"></label>
-                                    <input asp-for="@Model.Order.AmountPaid" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.AmountPaid" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.PaymentWarning" class="control-label"></label>
-                                    <input asp-for="@Model.Order.PaymentWarning" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.PaymentWarning" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input asp-for="@Model.Order.OrderPaid" /> @Html.DisplayNameFor(model => model.Order.OrderPaid)
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input asp-for="@Model.Order.ForcedPaid" /> @Html.DisplayNameFor(model => model.Order.ForcedPaid)
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input asp-for="@Model.Order.Cash" /> @Html.DisplayNameFor(model => model.Order.Cash)
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="@Model.OrderDetail.ArticleID" class="control-label"></label>
+                                <select asp-for="@Model.OrderDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID"></select>
                             </div>
                         </div>
-
-
-                    </div>
-                    <div class="tab-pane fade in " id="Section3" role="tabpanel">
-                        <div><br /></div>
-                        <div class="col-md-12">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.OrderTransportID" class="control-label"></label>
-                                    <select asp-for="@Model.Order.OrderTransportID" class="form-control" asp-items="ViewBag.OrderTransportID"></select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.LoadingDate" class="control-label"></label>
-                                    <input asp-for="@Model.Order.LoadingDate" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.LoadingDate" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.LoadedDate" class="control-label"></label>
-                                    <input asp-for="@Model.Order.LoadedDate" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.LoadedDate" class="text-danger"></span>
-                                </div>
-                            </div>
-
-
-                        </div>
-
-
-                    </div>
-                    <div class="tab-pane fade in " id="Section4" role="tabpanel">
-                        <div><br /></div>
-                        <div class="col-md-12">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.OrderdBy" class="control-label"></label>
-                                    <input asp-for="@Model.Order.OrderdBy" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.OrderdBy" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.EmpoyeeID" class="control-label"></label>
-                                    <input asp-for="@Model.Order.EmpoyeeID" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.EmpoyeeID" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.Coments" class="control-label"></label>
-                                    <input asp-for="@Model.Order.Coments" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.Coments" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.AmountArticle" class="control-label"></label>
-                                    <input asp-for="@Model.Order.AmountArticle" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.AmountArticle" class="text-danger"></span>
-                                </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="@Model.OrderDetail.WarehouseID" class="control-label"></label>
+                                <select asp-for="@Model.OrderDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID"></select>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.AmountReserve" class="control-label"></label>
-                                    <input asp-for="@Model.Order.AmountReserve" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.AmountReserve" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Order.TotalPrice" class="control-label"></label>
-                                    <input asp-for="@Model.Order.TotalPrice" class="form-control" />
-                                    <span asp-validation-for="@Model.Order.TotalPrice" class="text-danger"></span>
-                                </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label asp-for="@Model.OrderDetail.QtyBoxes" class="control-label">Box</label>
+                                <input asp-for="@Model.OrderDetail.QtyBoxes" class="form-control" />
+                                <span asp-validation-for="@Model.OrderDetail.QtyBoxes" class="text-danger"></span>
                             </div>
                         </div>
-                    </div>
-                    <div class="tab-pane fade in " id="Section5" role="tabpanel">
-
-                    </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label asp-for="@Model.OrderDetail.QtyReservBoxes" class="control-label">Reserve</label>
+                                <input asp-for="@Model.OrderDetail.QtyReservBoxes" class="form-control" />
+                                <span asp-validation-for="@Model.OrderDetail.QtyReservBoxes" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label asp-for="@Model.OrderDetail.QtyKg" class="control-label">Extra kg</label>
+                                <input asp-for="@Model.OrderDetail.QtyKg" class="form-control" />
+                                <span asp-validation-for="@Model.OrderDetail.QtyKg" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label asp-for="@Model.OrderDetail.Price" class="control-label">Price</label>
+                                <input asp-for="@Model.OrderDetail.Price" class="form-control" />
+                                <span asp-validation-for="@Model.OrderDetail.Price" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label asp-for="@Model.OrderDetail.Extended_Price" class="control-label">Ext.price</label>
+                                <input asp-for="@Model.OrderDetail.Extended_Price" class="form-control" />
+                                <span asp-validation-for="@Model.OrderDetail.Extended_Price" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <br />
+                                <input type="submit" name="AddOrderDetail" id="AddOrderDetail" value="Add" class="btn btn-primary" />
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <div class="tab-pane fade in " id="Section2" role="tabpanel">
+                    <div><br /></div>
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.PaymentDate" class="control-label"></label>
+                                <input asp-for="@Model.Order.PaymentDate" class="form-control" />
+                                <span asp-validation-for="@Model.Order.PaymentDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.PaidDate" class="control-label"></label>
+                                <input asp-for="@Model.Order.PaidDate" class="form-control" />
+                                <span asp-validation-for="@Model.Order.PaidDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.AmountPaid" class="control-label"></label>
+                                <input asp-for="@Model.Order.AmountPaid" class="form-control" />
+                                <span asp-validation-for="@Model.Order.AmountPaid" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.PaymentWarning" class="control-label"></label>
+                                <input asp-for="@Model.Order.PaymentWarning" class="form-control" />
+                                <span asp-validation-for="@Model.Order.PaymentWarning" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="@Model.Order.OrderPaid" /> @Html.DisplayNameFor(model => model.Order.OrderPaid)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="@Model.Order.ForcedPaid" /> @Html.DisplayNameFor(model => model.Order.ForcedPaid)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="@Model.Order.Cash" /> @Html.DisplayNameFor(model => model.Order.Cash)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                    </div>
 
 
-            <!-- Tab stop -->
-           
-           
+                </div>
+                <div class="tab-pane fade in " id="Section3" role="tabpanel">
+                    <div><br /></div>
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.OrderTransportID" class="control-label"></label>
+                                <select asp-for="@Model.Order.OrderTransportID" class="form-control" asp-items="ViewBag.OrderTransportID"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.LoadingDate" class="control-label"></label>
+                                <input asp-for="@Model.Order.LoadingDate" class="form-control" />
+                                <span asp-validation-for="@Model.Order.LoadingDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.LoadedDate" class="control-label"></label>
+                                <input asp-for="@Model.Order.LoadedDate" class="form-control" />
+                                <span asp-validation-for="@Model.Order.LoadedDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+                <div class="tab-pane fade in " id="Section4" role="tabpanel">
+                    <div><br /></div>
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.OrderdBy" class="control-label"></label>
+                                <input asp-for="@Model.Order.OrderdBy" class="form-control" />
+                                <span asp-validation-for="@Model.Order.OrderdBy" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.EmpoyeeID" class="control-label"></label>
+                                <input asp-for="@Model.Order.EmpoyeeID" class="form-control" />
+                                <span asp-validation-for="@Model.Order.EmpoyeeID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.Coments" class="control-label"></label>
+                                <input asp-for="@Model.Order.Coments" class="form-control" />
+                                <span asp-validation-for="@Model.Order.Coments" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.AmountArticle" class="control-label"></label>
+                                <input asp-for="@Model.Order.AmountArticle" class="form-control" />
+                                <span asp-validation-for="@Model.Order.AmountArticle" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.AmountReserve" class="control-label"></label>
+                                <input asp-for="@Model.Order.AmountReserve" class="form-control" />
+                                <span asp-validation-for="@Model.Order.AmountReserve" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.TotalPrice" class="control-label"></label>
+                                <input asp-for="@Model.Order.TotalPrice" class="form-control" />
+                                <span asp-validation-for="@Model.Order.TotalPrice" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade in " id="Section5" role="tabpanel">
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Tab stop -->
 
 
 
 
 
-        </form>
-        
-    </div>
 
-    <div>
-        <br /><br />
-        <a asp-action="Index">Back to List</a>
-    </div>
 
+    </form>
+
+</div>
+
+<div>
+    <br /><br />
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script src="~/js/Order.js"></script>

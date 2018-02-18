@@ -5,6 +5,7 @@ using TomasGreen.Model.Models;
 using TomasGreen.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using TomasGreen.Web.Validations;
 
 
 
@@ -19,7 +20,7 @@ namespace TomasGreen.Web.Balances
         {
             _context = context;
         }
-        public void AddReceiveArticleToBalance(ReceiveArticleWarehouse model)
+        public PropertyValidatedMessage AddReceiveArticleToBalance(ReceiveArticleWarehouse model)
         {
             try
             {
@@ -39,15 +40,18 @@ namespace TomasGreen.Web.Balances
                     newArticleWarehouseBalance.QtyExtraKgOut = 0;
                     newArticleWarehouseBalance.QtyBoxesReserved = 0;
                     newArticleWarehouseBalance.QtyBoxesOnhand = model.QtyBoxes;
+                    newArticleWarehouseBalance.QtyExtraKgOnhand = model.QtyExtraKg;
                     _context.Add(newArticleWarehouseBalance);
                     //await _context.SaveChangesAsync();
+                    return (new PropertyValidatedMessage(true, "", "", "", ""));
 
                 }
                 else
                 {
                     articleWarehouseBalance.QtyBoxesIn += model.QtyBoxes;
                     articleWarehouseBalance.QtyExtraKgIn += model.QtyExtraKg;
-                    if(articleWarehouseBalance.QtyBoxesReserved > 0)
+                    articleWarehouseBalance.QtyExtraKgOnhand += model.QtyExtraKg;
+                    if (articleWarehouseBalance.QtyBoxesReserved > 0)
                     {
                         if (model.QtyBoxes >= articleWarehouseBalance.QtyBoxesReserved)
                         {
@@ -68,27 +72,58 @@ namespace TomasGreen.Web.Balances
                     
                     _context.Update(articleWarehouseBalance);
                     //  await _context.SaveChangesAsync();
+                    return (new PropertyValidatedMessage(true, "", "", "", ""));
                 }
             }
             catch (Exception exception)
             {
-
+                return (new PropertyValidatedMessage(false, "AddReceiveArticleToBalance", "ArticleWarehouseBalance", "Exception", exception.Message.ToString()));
             }
+            return (new PropertyValidatedMessage(true, "", "", "", ""));
         }
-        public  void RemoveReceiveArticleFromBalance(ReceiveArticleWarehouse model)
-        {
-            var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ReceiveArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
-            articleWarehouseBalance.QtyBoxesIn -= model.QtyBoxes;
-            articleWarehouseBalance.QtyExtraKgIn -= model.QtyExtraKg;
 
-            articleWarehouseBalance.QtyBoxesOnhand -= model.QtyBoxes;
-            if (articleWarehouseBalance.QtyBoxesOnhand < 0)
+        public PropertyValidatedMessage RemoveReceiveArticleFromBalance(ReceiveArticleWarehouse model)
+        {
+            try
             {
-                articleWarehouseBalance.QtyBoxesReserved += (articleWarehouseBalance.QtyBoxesOnhand * -1);
-                articleWarehouseBalance.QtyBoxesOnhand = 0;
+                var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ReceiveArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
+                articleWarehouseBalance.QtyBoxesIn -= model.QtyBoxes;
+                if (articleWarehouseBalance.QtyBoxesIn < 0)
+                {
+                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyBoxesIn), "Value can not be less then zero."));
+                }
+                articleWarehouseBalance.QtyExtraKgIn -= model.QtyExtraKg;
+                if (articleWarehouseBalance.QtyExtraKgIn < 0)
+                {
+                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyExtraKgIn), "Value can not be less then zero."));
+                }
+                
+                articleWarehouseBalance.QtyBoxesOnhand -= model.QtyBoxes;
+                if (articleWarehouseBalance.QtyBoxesOnhand < 0)
+                {
+                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyBoxesOnhand), "Value can not be less then zero."));
+                }
+                articleWarehouseBalance.QtyExtraKgOnhand -= model.QtyExtraKg;
+                if (articleWarehouseBalance.QtyExtraKgOnhand < 0)
+                {
+                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyExtraKgOnhand), "Value can not be less then zero."));
+                }
+
+                
+                //if (articleWarehouseBalance.QtyBoxesOnhand < 0)
+                //{
+                //    articleWarehouseBalance.QtyBoxesReserved += (articleWarehouseBalance.QtyBoxesOnhand * -1);
+                //    articleWarehouseBalance.QtyBoxesOnhand = 0;
+                //}
+                _context.Update(articleWarehouseBalance);
             }
-            _context.Update(articleWarehouseBalance);
-          //  await _context.SaveChangesAsync();
+            catch (Exception exception)
+            {
+                return (new PropertyValidatedMessage(false, "", "", "Exception", exception.Message.ToString()));
+            }
+
+            
+            return(new PropertyValidatedMessage(true, "", "", "", ""));
         }
 
     }

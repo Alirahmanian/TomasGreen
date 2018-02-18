@@ -48,13 +48,30 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
         }
 
         // GET: Sales/Orders/Create
-        public IActionResult Create()
+        public IActionResult Create(Int64? id)
         {
+            var model = new SaveOrderViewModel();
+            model.OrderDetail = new OrderDetail();
+            if (id > 0)
+            {
+                model.Order = _context.Orders.Where(o => o.ID == id).Include(d => d.OrderDetails).FirstOrDefault();
+                if(model.Order != null)
+                {
+                    model.OrderDetail.OrderID = model.Order.ID;
+                }
+            }
+            else
+            {
+                model.Order = new Order();
+                model.Order.OrderDate = DateTime.Today;
+            }
+           
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
             ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
-            return View();
+            ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
+           // ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+           // ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+            return View(model);
         }
 
         // POST: Sales/Orders/Create
@@ -62,16 +79,37 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SaveOrderViewModel model)
+        public async Task<IActionResult> Create(SaveOrderViewModel model, string CreateOrder, string AddOrderDetail)
         {
+            if (!string.IsNullOrWhiteSpace(CreateOrder))
+            {
+                ModelState.AddModelError("", "Create clicked");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Add clicked");
+            }
+                if (!ModelState.IsValid)
+            {
+                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
+                ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+                ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+                return View(model);
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(model.Order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            else
+            {
+
+            }
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
             ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+            ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
             ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
             ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
             return View(model);
@@ -164,5 +202,23 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
         {
             return _context.Orders.Any(e => e.ID == id);
         }
+
+        #region Ajax Calls
+        public JsonResult GetArticleCategories()
+        {
+          
+            var articleCategories = _context.ArticleCategories.Where(c => c.Archive != true).OrderBy(c => c.Name);
+           
+         
+            return new JsonResult(articleCategories);
+        }
+
+        public JsonResult GetArticlesByCategoryId (Int64 categoryId)
+        {
+
+            var articles = _context.Articles.Where(a => a.ArticleCategoryID == categoryId).OrderBy(c => c.Name).ToList();
+            return new JsonResult(articles);
+        }
+        #endregion
     }
 }

@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180218120051_ChangesOnArticleBalance")]
+    partial class ChangesOnArticleBalance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,9 +213,9 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("QtyExtraKgIn");
 
-                    b.Property<decimal>("QtyExtraKgOnhand");
-
                     b.Property<decimal>("QtyExtraKgOut");
+
+                    b.Property<decimal>("QtyKgOnhand");
 
                     b.Property<string>("UserName");
 

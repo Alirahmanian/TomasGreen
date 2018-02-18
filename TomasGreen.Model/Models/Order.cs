@@ -6,6 +6,10 @@ namespace TomasGreen.Model.Models
 {
     public class Order : BaseEntity
     {
+        public Order()
+        {
+            OrderDetails = new HashSet<OrderDetail>();
+        }
         [Display(Name = "Company")]
         [Required(ErrorMessage = "Please choose a company.")]
         public Int64 CompanyID { get; set; }
@@ -15,11 +19,11 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Transport")]
         [Required(ErrorMessage = "Please choose a transport type.")]
         public Int64 OrderTransportID { get; set; }
-        public int AmountArticle { get; set; }
-        public int AmountReserve { get; set; }
+        public int AmountArticle { get; set; } = 0;
+        public int AmountReserve { get; set; } = 0;
         [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total price")]
-        public decimal TotalPrice { get; set; }
+        public decimal TotalPrice { get { return GetTotalPrice(); } } 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Order date")]
@@ -42,7 +46,7 @@ namespace TomasGreen.Model.Models
         public DateTime? LoadedDate { get; set; }
         [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Display(Name = "Paid amount")]
-        public decimal AmountPaid { get; set; }
+        public decimal AmountPaid { get; set; } = 0;
         public string Coments { get; set; }
         public string OrderdBy { get; set; }
         [Display(Name = "payment notes")]
@@ -53,7 +57,7 @@ namespace TomasGreen.Model.Models
         public bool OrderPaid { get; set; }
         public bool Cash { get; set; }
         public bool Confirmed { get; set; }
-        public bool Active { get; set; }
+        public bool Archive { get; set; } 
 
 
         public Company Company { get; set; }
@@ -63,6 +67,14 @@ namespace TomasGreen.Model.Models
 
         
 
-
+        private decimal GetTotalPrice()
+        {
+            decimal result = 0;
+            foreach(var orderdetail in OrderDetails)
+            {
+                result += orderdetail.Extended_Price;
+            }
+            return result;
+        }
     }
 }

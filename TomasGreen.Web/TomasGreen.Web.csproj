@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,16 +34,19 @@
   <ItemGroup>
     <Folder Include="Areas\Accountment\Data\" />
     <Folder Include="Areas\Accountment\Models\" />
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Management\Admin\Data\" />
+    <Folder Include="Areas\Management\Admin\Models\" />
     <Folder Include="Areas\Management\Data\" />
     <Folder Include="Areas\Management\Models\" />
     <Folder Include="Areas\Purchase\Data\" />
     <Folder Include="Areas\Purchase\Models\" />
     <Folder Include="Areas\Sales\Data\" />
     <Folder Include="Areas\Stock\Data\" />
+    <Folder Include="Areas\Stock\Css\" />
     <Folder Include="Areas\Stock\Services\" />
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\NewFolder\" />
+    <Folder Include="wwwroot\Scripts\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,6 +58,7 @@
     <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Details.cshtml" />
     <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Edit.cshtml" />
     <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Index.cshtml" />
+    <None Include="wwwroot\js\Order.js" />
   </ItemGroup>
 
 </Project>

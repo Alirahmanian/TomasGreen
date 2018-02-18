@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using TomasGreen.Web.Areas.Stock.ViewModels;
 using TomasGreen.Web.Balances;
 using TomasGreen.Web.Data;
 using TomasGreen.Web.Validations;
+using TomasGreen.Web.Extensions;
 
 
 namespace TomasGreen.Web.Areas.Stock.Controllers
@@ -18,10 +20,12 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
     public class ReceiveArticlesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public ReceiveArticlesController(ApplicationDbContext context)
+        public ReceiveArticlesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: Stock/ReceiveArticles
@@ -77,8 +81,8 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         public async Task<IActionResult> Create(SaveReceiveArticleWarehouseViewModel model)
         {
             //
-            var skipped = ModelState.Keys.Where(key => key.StartsWith("ReceiveArticle.ID") || key.StartsWith("ReceiveArticle.CompanyID"));
-            foreach (var key in skipped)
+            var skippedErrors = ModelState.Keys.Where(key => key.StartsWith("ReceiveArticle.ID") || key.StartsWith("ReceiveArticle.CompanyID"));
+            foreach (var key in skippedErrors)
             {
                 ModelState.Remove(key);
             }
@@ -105,6 +109,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                 model.ReceiveArticle.Guid = guid;
                 _context.Add(model.ReceiveArticle);
                 await _context.SaveChangesAsync();
+                var errors = new List<PropertyValidatedMessage>();
                 var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.Date == model.ReceiveArticle.Date && r.ArticleID == r.ArticleID && r.Guid == guid).FirstOrDefault();
                 if(savedReceiveArticle != null)
                 {
@@ -115,15 +120,32 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                         {
                             receiveArticleWarehouse.ReceiveArticleID = savedReceiveArticle.ID;
                             _context.Add(receiveArticleWarehouse);
-                            articleBalance.AddReceiveArticleToBalance(receiveArticleWarehouse);
+                            var result = articleBalance.AddReceiveArticleToBalance(receiveArticleWarehouse);
+                            if(result.Value == false)
+                            {
+                                ModelState.AddModelError("", "Couldn't saved.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                                }
+                                 _context.Remove(savedReceiveArticle);
+                                await _context.SaveChangesAsync();
+                                model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(0);
+                                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+                                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                                return View(model);
+                                
+                            }
                         }
                     }
+
                     await _context.SaveChangesAsync();
 
                 }
                 else
                 {
                     ModelState.AddModelError("", "Couldn't saved.");
+                    model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(0);
                     ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
                     ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
                     return View(model);
@@ -137,13 +159,28 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                 if (savedReceiveArticle != null)
                 {
                     //rollback old values from article balance
+                    var errors = new List<PropertyValidatedMessage>();
                     var articleBalance = new ArticleBalance(_context);
                     foreach (var receiveArticleWarehouse in savedReceiveArticle.Warehouses)
                     {
                         if (receiveArticleWarehouse.QtyBoxes > 0 || receiveArticleWarehouse.QtyExtraKg > 0)
                         {
-                            articleBalance.RemoveReceiveArticleFromBalance(receiveArticleWarehouse);
+                            var result = articleBalance.RemoveReceiveArticleFromBalance(receiveArticleWarehouse);
+                            if (result.Value == false)
+                            {
+                                ModelState.AddModelError("", "Couldn't saved.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                                }
+                                model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(savedReceiveArticle?.ArticleID ?? 0);
+                                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+                                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                                return View(model);
+
+                            }
                             _context.Remove(receiveArticleWarehouse);
+                            
                         }
                     }
                     
@@ -159,7 +196,20 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                             receiveArticleWarehouse.AddedDate = savedReceiveArticle.AddedDate;
                             receiveArticleWarehouse.ModifiedDate = DateTime.Now;
                             _context.Add(receiveArticleWarehouse);
-                            articleBalance.AddReceiveArticleToBalance(receiveArticleWarehouse);
+                            var result = articleBalance.AddReceiveArticleToBalance(receiveArticleWarehouse);
+                            if (result.Value == false)
+                            {
+                                ModelState.AddModelError("", "Couldn't saved.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                                }
+                                model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(savedReceiveArticle?.ArticleID ?? 0);
+                                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+                                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                                return View(model);
+
+                            }
                         }
                     }
                     savedReceiveArticle.ArticleID = model.ReceiveArticle.ArticleID;
@@ -168,6 +218,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                     savedReceiveArticle.ContainerNumber = model.ReceiveArticle.ContainerNumber;
                     savedReceiveArticle.Description = model.ReceiveArticle.Description;
                     _context.Update(savedReceiveArticle);
+
                     await _context.SaveChangesAsync();
 
                     return RedirectToAction(nameof(Index));
@@ -175,6 +226,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                 else
                 {
                     ModelState.AddModelError("", "Couldn't saved.");
+                    model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(0);
                     ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
                     ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
                     return View(model);
@@ -182,9 +234,9 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
 
                    
             }
-               
-               // return RedirectToAction(nameof(Index));
-            
+
+            // return RedirectToAction(nameof(Index));
+
             
             ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
@@ -224,7 +276,17 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             {
                 if (receiveArticleWarehouse.QtyBoxes > 0 || receiveArticleWarehouse.QtyExtraKg > 0)
                 {
-                    articleBalance.RemoveReceiveArticleFromBalance(receiveArticleWarehouse);
+                   var result = articleBalance.RemoveReceiveArticleFromBalance(receiveArticleWarehouse);
+                   if (result.Value == false)
+                    {
+                        ModelState.AddModelError("", "Couldn't saved.");
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                        }
+                        return View(receiveArticle);
+
+                    }
                     _context.Remove(receiveArticleWarehouse);
                 }
             }
