@@ -54,10 +54,12 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             model.OrderDetail = new OrderDetail();
             if (id > 0)
             {
-                model.Order = _context.Orders.Where(o => o.ID == id).Include(d => d.OrderDetails).FirstOrDefault();
+                model.Order = _context.Orders.Where(o => o.ID == id).FirstOrDefault();
+                model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
                 if(model.Order != null)
                 {
                     model.OrderDetail.OrderID = model.Order.ID;
+                    
                 }
             }
             else
@@ -68,6 +70,7 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             }
            
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
+            ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
             ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
             ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
            // ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
@@ -80,19 +83,27 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SaveOrderViewModel model, string CreateOrder, string AddOrderDetail)
+        public async Task<IActionResult> Create(SaveOrderViewModel model, string SaveOrder, string AddOrderDetail)
         {
-            if (!string.IsNullOrWhiteSpace(CreateOrder))
+            if (!string.IsNullOrWhiteSpace(AddOrderDetail))
             {
-                ModelState.AddModelError("", "Create clicked");
+                if (model.Order.ID == 0)
+                {
+                    ModelState.AddModelError("", "Please save the order header before adding articles to it.");
+                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
+                    ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
+                    ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+                    ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+                    return View(model);
+
+                }
+                
             }
-            else
-            {
-                ModelState.AddModelError("", "Add clicked");
-            }
-                if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
+                ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
                 ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
                 ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
                 ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
@@ -100,9 +111,51 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             }
             if (ModelState.IsValid)
             {
-                _context.Add(model.Order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if(model.Order.ID == 0)
+                {
+                    //new order
+
+                    _context.Add(model.Order);
+                    await _context.SaveChangesAsync();
+
+                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
+                    ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
+                    ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+                    ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+                    return View(model);
+                }
+                else
+                {
+                    //update
+                    _context.Update(model.Order);
+                    if (!string.IsNullOrWhiteSpace(AddOrderDetail))
+                    {
+                        if(model.Order.ID != 0)
+                        {
+                            var articleBoxWeight = _context.Articles.Where(a => a.ID == model.OrderDetail.ArticleID).FirstOrDefault()?.BoxWeight ?? 0;
+                            var totalWeight = (model.OrderDetail.QtyBoxes * articleBoxWeight) + (model.OrderDetail.QtyReserveBoxes * articleBoxWeight) + model.OrderDetail.QtyKg;
+                            model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeight;
+                            if(model.OrderDetail.OrderID == 0)
+                            {
+                                model.OrderDetail.OrderID = model.Order.ID;
+                            }
+                            _context.OrderDetails.Add(model.OrderDetail);
+                            await _context.SaveChangesAsync();
+
+
+                            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
+                            ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
+                            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+                            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+                            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+                            return View(model);
+                        }
+                    }
+                     
+                   
+                }
+               
             }
             else
             {

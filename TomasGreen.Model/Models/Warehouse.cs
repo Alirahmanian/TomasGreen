@@ -15,7 +15,8 @@ namespace TomasGreen.Model.Models
 
         //nav
         public virtual IEnumerable<ReceiveArticleWarehouse> ReceivedArticles { get; set; }
-      //  public virtual ArticleWarehouseBalance ArticleWarehouseBalance { get; set; }
+        //  public virtual ArticleWarehouseBalance ArticleWarehouseBalance { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; }
 
     }
 }

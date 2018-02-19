@@ -2,13 +2,13 @@
 //=======================================
 //=======================================
 function LoadArticleCategories(element) {
-    if (ItemGroups.length === 0) {
+    if (ArticleCategories.length === 0) {
         $.ajax
             ({
                 type: "GET",
                 url: 'Sales/Orders/GetArticleCategories',
                 success: function (data) {
-                    ItemGroups = data;
+                    ArticleCategories = data;
                     renderArticleCategories(element);
                 },
                 error: function (xhr, status, error) {
@@ -36,19 +36,26 @@ function renderArticleCategories(element) {
 //=======================================
 //=======================================
 function LoadArticles(ArticleCategory) {
-    $.ajax({
-        type: "GET",
-        url: "GetArticlesByCategoryId",
-        data: { 'categoryId': $(ArticleCategory).val() },
-        dataType: "json",
-        success: function (data) {
-            renderArticles($("#OrderDetail_ArticleID"), data);
-           // renderArticles($('#OrderDetail.ArticleID'), data);
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    })
+    if ($(ArticleCategory).val() !== "0" && $(ArticleCategory).val() !== "Select") {
+        $.ajax({
+            type: "GET",
+            url: "GetArticlesByCategoryId",
+            data: { 'categoryId': $(ArticleCategory).val() },
+            dataType: "json",
+            success: function (data) {
+                renderArticles($("#OrderDetail_ArticleID"), data);
+                // renderArticles($('#OrderDetail.ArticleID'), data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        })
+    }
+    else {
+        $('#OrderDetail_ArticleID').find('option:not(:first)').remove();
+        $('#OrderDetail_WarehouseID').find('option:not(:first)').remove();
+    }
+    
 }
 //=======================================
 //=======================================
@@ -65,17 +72,24 @@ function renderArticles(element, data) {
 //=======================================
 //=======================================
 function LoadWarehouses(Article) {
-    $.ajax({
-        type: "GET",
-        url: "GetWarehousesByArticleID",
-        data: { 'articleId': $("#OrderDetail_ArticleID").val() },
-        success: function (data) {
-            renderWarehouses($("#OrderDetail_WarehouseID"), data);
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    })
+    if ($(Article).val() !== "0" && $(Article).val() !== "Select") {
+        $.ajax({
+            type: "GET",
+            url: "GetWarehousesByArticleID",
+            data: { 'articleId': $("#OrderDetail_ArticleID").val() },
+            success: function (data) {
+                renderWarehouses($("#OrderDetail_WarehouseID"), data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        })
+    }
+    else {
+
+        $('#OrderDetail_WarehouseID').find('option:not(:first)').remove();
+    }
+   
 }
 //=======================================
 //=======================================
@@ -92,6 +106,13 @@ function renderWarehouses(element, data) {
 //=======================================
 //=======================================
 function LoadCustomerInfo(customer) {
+    if ($(customer).val() !== "0" && $(customer).val() !== "Select") {
+        $("#CustomerInfoPlaceHolder").load("GetCompanyInfoForOrder",
+            { customerId: $(customer).val() });
+    }
+    else {
+        $("#CustomerInfoPlaceHolder").text('');
+    }
     //$.ajax({
     //    type: "GET",
     //    url: "GetCompanyInfoForOrder",
@@ -105,15 +126,20 @@ function LoadCustomerInfo(customer) {
     //        console.log(error);
     //    }
     //})
-    $("#CustomerInfoPlaceHolder").load("GetCompanyInfoForOrder",
-        { customerId: $(customer).val() });
+    
 }
 
 //=======================================
 //=======================================
 function LoadArticleWarehoseBalance(warehouse) {
-    $("#ArticleWarehouseBalance").load("GetArticleWarehoseBalance",
-        { articleId: $("#OrderDetail_ArticleID").val(), warehouseId: $(warehouse).val()});
+    if ($(warehouse).val() !== "0" && $(warehouse).val() !== "Select") {
+        $("#ArticleWarehouseBalance").load("GetArticleWarehoseBalance",
+            { articleId: $("#OrderDetail_ArticleID").val(), warehouseId: $(warehouse).val() });
+    }
+    else {
+        $("#ArticleWarehouseBalance").text('');
+    }
+    
 }
 //=======================================
 //=======================================

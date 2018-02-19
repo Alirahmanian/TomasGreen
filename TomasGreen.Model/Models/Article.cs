@@ -29,6 +29,7 @@ namespace TomasGreen.Model.Models
         //nav.
         public ArticleCategory ArticleCategory { get; set; }
         public Country Country { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; }
        // public ArticleWarehouseBalance ArticleWarehouseBalance { get; set; }
 
     }

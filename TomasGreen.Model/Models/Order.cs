@@ -15,7 +15,7 @@ namespace TomasGreen.Model.Models
         public Int64 CompanyID { get; set; }
         [Display(Name = "Employee")]
         [Required(ErrorMessage = "Please choose an employee.")]
-        public Int64 EmpoyeeID { get; set; }
+        public Int64 EmployeeID { get; set; }
         [Display(Name = "Transport")]
         [Required(ErrorMessage = "Please choose a transport type.")]
         public Int64 OrderTransportID { get; set; }

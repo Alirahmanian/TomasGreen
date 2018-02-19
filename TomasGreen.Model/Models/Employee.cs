@@ -11,6 +11,7 @@ namespace TomasGreen.Model.Models
         [Required(ErrorMessage = "Last name is required")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
         public string LastName { get; set; }
+        public string FullName { get { return ($"{ FirstName} { LastName}"); } }
         [Required(ErrorMessage = "The email address is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }

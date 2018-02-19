@@ -126,5 +126,26 @@ namespace TomasGreen.Web.Balances
             return(new PropertyValidatedMessage(true, "", "", "", ""));
         }
 
+        public PropertyValidatedMessage AddOrderDetailToBalance(OrderDetail model)
+        {
+            try
+            {
+                var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
+               // if(articleWarehouseBalance)
+
+            }
+            catch (Exception exception)
+            {
+                return (new PropertyValidatedMessage(false, "", "", "Exception", exception.Message.ToString()));
+            }
+
+            return (new PropertyValidatedMessage(true, "", "", "", ""));
+        }
+
+        public PropertyValidatedMessage RemoveOrderDetailFromBalance(OrderDetail model)
+        {
+            return (new PropertyValidatedMessage(true, "", "", "", ""));
+        }
+
     }
 }

@@ -1,0 +1,68 @@
+﻿@model IEnumerable<TomasGreen.Model.Models.OrderDetail>
+
+
+<table class="table table-responsive table-striped, table-condensed">
+    <thead>     
+    <tr>
+           <td></td>
+            <td>
+                <label>Article</label>
+            </td>
+            <td>
+                <label>Warehouse</label>
+            </td>
+            <td align="right" >
+                <label>Boxes</label>
+            </td>
+            <td align="right" >
+                <label>Reserve</label>
+            </td>
+            <td align="right" >
+                <label>Extra. kg</label>
+            </td>
+            <td align="right" >
+                <label>Price</label>
+            </td>
+            <td align="right" >
+                <label>Ext. Price</label>
+            </td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Order.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Article.Name)
+            </td>
+            <td >
+                @Html.DisplayFor(modelItem => item.Warehouse.Name)
+            </td>
+            <td align="right" >
+                @Html.DisplayFor(modelItem => item.QtyBoxes)
+            </td>
+            <td align="right" >
+                @Html.DisplayFor(modelItem => item.QtyReserveBoxes)
+            </td>
+            <td align="right" >
+                @Html.DisplayFor(modelItem => item.QtyKg)
+            </td>
+            <td align="right" >
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td align="right" >
+                @Html.DisplayFor(modelItem => item.Extended_Price)
+            </td>
+
+
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure uou want to delete this post?',)">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
