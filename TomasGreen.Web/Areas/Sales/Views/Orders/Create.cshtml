@@ -12,12 +12,15 @@
 <div class="row">
 
     <form asp-action="Create">
+        <input asp-for="@Model.Order.ID" class="form-control"  />
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="col-md-12">
             <div class="col-md-3">
                 <div class="form-group">
                     <label asp-for="@Model.Order.CompanyID" class="control-label">Customer</label>
-                    <select asp-for="@Model.Order.CompanyID" class="form-control" asp-items="ViewBag.CompanyID"></select>
+                    <select asp-for="@Model.Order.CompanyID" class="form-control" asp-items="ViewBag.CompanyID" onchange=" LoadCustomerInfo(this)">
+                        <option>Select</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-3">
@@ -31,7 +34,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <br />
-                    <input type="submit" name="CreateOrder" id="CreateOrder" value="Create" class="btn btn-primary" />
+                    <input type="submit" name="CreateOrder" id="CreateOrder" value="Create" class="btn btn-primary" onclick="return ValidateOrder()" />
                 </div>
             </div>
 
@@ -45,21 +48,23 @@
         <div class="tab" role="tabpanel">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-                <li class="active" role="presentation"><a role="tab" aria-controls="home" href="#Section1" data-toggle="tab"> Articles &nbsp;<img style="width:25px; height:25px;" src="~/images/inviceRows.png" /></a></li>
-                <li role="presentation"><a role="tab" aria-controls="Parment" href="#Section2" data-toggle="tab"> Payment </a></li>
-                <li role="presentation"><a role="tab" aria-controls="Loading" href="#Section3" data-toggle="tab"> Loading </a></li>
-                <li role="presentation"><a role="tab" aria-controls="More info." href="#Section4" data-toggle="tab"> More inf. </a></li>
-                <li role="presentation"><a role="tab" aria-controls="Customer info." href="#Section5" data-toggle="tab"> Customer info. </a></li>
+                <li id="OrderDetail_Tab" class="active" role="presentation"><a role="tab" aria-controls="home" href="#Section1" data-toggle="tab"> Articles &nbsp;<img style="width:25px; height:25px;" src="~/images/inviceRows.png" /></a></li>
+                <li id="OrderDetail_Tab" role="presentation"><a role="tab" aria-controls="Parment" href="#Section2" data-toggle="tab"> Payment </a></li>
+                <li id="Loading_Tab" role="presentation"><a role="tab" aria-controls="Loading" href="#Section3" data-toggle="tab"> Loading </a></li>
+                <li id="MoreInfo_Tab" role="presentation"><a role="tab" aria-controls="More info." href="#Section4" data-toggle="tab"> More inf. </a></li>
+                <li id="Customer_Tab" role="presentation"><a role="tab" aria-controls="Customer info." href="#Section5" data-toggle="tab"> Customer info. </a></li>
 
             </ul>
             <!-- Tab panes -->
             <div class="tab-content tabs">
                 <div class="tab-pane fade in active" id="Section1" role="tabpanel">
                     <div><br /></div>
+                    <div id="OrdedDetail_Mess">Mess</div>
+                    <div id="ArticleWarehouseBalance"></div>
                     <div class="col-md-12">
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label asp-for="@Model.ArticleCategory.ID" class="control-label"></label>
+                                <label asp-for="@Model.ArticleCategory.Name" class="control-label"></label>
                                 <select asp-for="@Model.ArticleCategory.ID" class="form-control" asp-items="ViewBag.ArticleCategoryID" onchange="LoadArticles(this)">
                                     <option>Select</option>
                                 </select>
@@ -68,13 +73,13 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label asp-for="@Model.OrderDetail.ArticleID" class="control-label"></label>
-                                <select asp-for="@Model.OrderDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID"></select>
+                                <select asp-for="@Model.OrderDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID" onchange="LoadWarehouses(this)"></select>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.OrderDetail.WarehouseID" class="control-label"></label>
-                                <select asp-for="@Model.OrderDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID"></select>
+                                <select asp-for="@Model.OrderDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onchange=" LoadArticleWarehoseBalance(this)"></select>
                             </div>
                         </div>
                         <div class="col-md-1">
@@ -105,13 +110,7 @@
                                 <span asp-validation-for="@Model.OrderDetail.Price" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="col-md-1">
-                            <div class="form-group">
-                                <label asp-for="@Model.OrderDetail.Extended_Price" class="control-label">Ext.price</label>
-                                <input asp-for="@Model.OrderDetail.Extended_Price" class="form-control" />
-                                <span asp-validation-for="@Model.OrderDetail.Extended_Price" class="text-danger"></span>
-                            </div>
-                        </div>
+                       
                         <div class="col-md-1">
                             <div class="form-group">
                                 <br />
@@ -267,7 +266,7 @@
                     </div>
                 </div>
                 <div class="tab-pane fade in " id="Section5" role="tabpanel">
-
+                    <div id="CustomerInfoPlaceHolder">some customer info here...</div>
                 </div>
             </div>
         </div>

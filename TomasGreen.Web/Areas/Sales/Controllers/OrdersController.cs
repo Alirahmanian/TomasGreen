@@ -64,6 +64,7 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             {
                 model.Order = new Order();
                 model.Order.OrderDate = DateTime.Today;
+                
             }
            
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
@@ -215,9 +216,36 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
 
         public JsonResult GetArticlesByCategoryId (Int64 categoryId)
         {
+            var articles = from a in _context.Articles where a.ArticleCategoryID == categoryId orderby a.Name select new { ID = a.ID, Name = a.Name };
 
-            var articles = _context.Articles.Where(a => a.ArticleCategoryID == categoryId).OrderBy(c => c.Name).ToList();
-            return new JsonResult(articles);
+           // var articles = _context.Articles.Where(a => a.ArticleCategoryID == categoryId).OrderBy(c => c.Name).ToList();
+            return new JsonResult(articles.ToList());
+        }
+        public JsonResult GetWarehousesByArticleID(Int64 articleId)
+        {
+            var warehouses= (from aw in _context.ArticleWarehouseBalances where aw.ArticleID == articleId
+                                 join a in _context.Articles on aw.ArticleID equals a.ID
+                                 join w in _context.Warehouses on aw.WarehouseID equals w.ID
+                                 orderby w.Name
+                                 select new
+                                 {
+                                     Id = w.ID, Name = w.Name, 
+                                     Articlesonhand = " [Box: " + aw.QtyBoxesOnhand.ToString() + ", Extra: " + aw.QtyExtraKgOnhand.ToString() + ", Res. " + aw.QtyBoxesReserved.ToString() + "]"
+                                 }
+                                );
+            return new JsonResult(warehouses.ToList());
+        }
+
+        public ActionResult GetCompanyInfoForOrder(Int64 customerId)
+        {
+            var customer = _context.Companies.Where(c => c.ID == customerId).FirstOrDefault();
+            return PartialView("_CustomerDetailsForOrderPartialView", customer);
+        }
+
+        public ActionResult GetArticleWarehoseBalance(Int64 articleId, Int64 warehouseId)
+        {
+            var balance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == articleId && b.WarehouseID == warehouseId).Include(a => a.Article).Include(w => w.Warehouse).FirstOrDefault();
+            return PartialView("_ArticleWarehouseBalancePartialView", balance);
         }
         #endregion
     }

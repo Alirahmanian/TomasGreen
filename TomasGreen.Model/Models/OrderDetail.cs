@@ -13,11 +13,11 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Warehouse")]
         [Required(ErrorMessage = "Please choose a warehouse.")]
         public Int64 WarehouseID { get; set; }
-        [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
+        //[DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Please put price")]
         [Range(0, double.MaxValue)]
         public decimal Price { get; set; } = 0;
-        [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
+        //[DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         public decimal Extended_Price { get; set; } = 0;
         [Range(0, Int32.MaxValue)]
         public int QtyBoxes { get; set; } = 0;

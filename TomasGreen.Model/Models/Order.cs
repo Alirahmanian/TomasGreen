@@ -21,9 +21,9 @@ namespace TomasGreen.Model.Models
         public Int64 OrderTransportID { get; set; }
         public int AmountArticle { get; set; } = 0;
         public int AmountReserve { get; set; } = 0;
-        [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
+       // [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total price")]
-        public decimal TotalPrice { get { return GetTotalPrice(); } } 
+        public decimal? TotalPrice { get { return GetTotalPrice(); } } 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Order date")]
@@ -31,7 +31,7 @@ namespace TomasGreen.Model.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "payment date")]
-        public DateTime PaymentDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Paid date")]
@@ -39,14 +39,14 @@ namespace TomasGreen.Model.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Loading date")]
-        public DateTime LoadingDate { get; set; }
+        public DateTime? LoadingDate { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Loaded date")]
         public DateTime? LoadedDate { get; set; }
-        [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
+       // [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Display(Name = "Paid amount")]
-        public decimal AmountPaid { get; set; } = 0;
+        public decimal? AmountPaid { get; set; } = 0;
         public string Coments { get; set; }
         public string OrderdBy { get; set; }
         [Display(Name = "payment notes")]
