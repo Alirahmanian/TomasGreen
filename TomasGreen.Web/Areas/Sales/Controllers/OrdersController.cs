@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.Data;
 using TomasGreen.Web.Areas.Sales.ViewModels;
+using TomasGreen.Web.Balances;
+using TomasGreen.Web.Validations;
+using TomasGreen.Web.Extensions;
+
 
 namespace TomasGreen.Web.Areas.Sales.Controllers
 {
@@ -15,10 +20,12 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public OrdersController(ApplicationDbContext context)
+        public OrdersController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: Sales/Orders
@@ -85,16 +92,12 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SaveOrderViewModel model, string SaveOrder, string AddOrderDetail)
         {
+            var articleBalance = new ArticleBalance(_context);
             if (!string.IsNullOrWhiteSpace(AddOrderDetail))
             {
                 if (model.Order.ID == 0)
                 {
                     ModelState.AddModelError("", "Please save the order header before adding articles to it.");
-                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
-                    ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-                    ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
-                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-                    ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
                     return View(model);
 
                 }
@@ -102,13 +105,17 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             }
             if (!ModelState.IsValid)
             {
-                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
-                ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-                ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
-                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-                ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+                AddOrderLists(model);
                 return View(model);
             }
+            var customModelValidator = OrderValidation.OrderIsValid(_context, model.Order);
+            if (customModelValidator.Value == false)
+            {
+                ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                AddOrderLists(model);
+                return View(model);
+            }
+
             if (ModelState.IsValid)
             {
                 if(model.Order.ID == 0)
@@ -118,11 +125,7 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
                     _context.Add(model.Order);
                     await _context.SaveChangesAsync();
 
-                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
-                    ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-                    ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
-                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-                    ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+                    AddOrderLists(model);
                     return View(model);
                 }
                 else
@@ -133,22 +136,49 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
                     {
                         if(model.Order.ID != 0)
                         {
-                            var articleBoxWeight = _context.Articles.Where(a => a.ID == model.OrderDetail.ArticleID).FirstOrDefault()?.BoxWeight ?? 0;
-                            var totalWeight = (model.OrderDetail.QtyBoxes * articleBoxWeight) + (model.OrderDetail.QtyReserveBoxes * articleBoxWeight) + model.OrderDetail.QtyKg;
+                            //var articleBoxWeight = _context.Articles.Where(a => a.ID == model.OrderDetail.ArticleID).FirstOrDefault()?.BoxWeight ?? 0;
+                            //var totalWeight = (model.OrderDetail.QtyBoxes * articleBoxWeight) + (model.OrderDetail.QtyReserveBoxes * articleBoxWeight) + model.OrderDetail.QtyKg;
+                            
+                            var totalWeight = OrderValidation.OrderDetailITotalWeight(_context, model.OrderDetail);
                             model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeight;
                             if(model.OrderDetail.OrderID == 0)
                             {
                                 model.OrderDetail.OrderID = model.Order.ID;
                             }
+                            var customValidator = OrderValidation.OrderDetailIsValid(_context, model.OrderDetail);
+                            if(!customValidator.Value)
+                            {
+                                ModelState.AddModelError("", "Couldn't saved.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(customValidator));
+                                }
+                                AddOrderLists(model);
+                                return View(model);
+                            }
+                            
+                            var result = articleBalance.AddOrderDetailToBalance(model.OrderDetail);
+                            if(result.Value == false)
+                            {
+                                ModelState.AddModelError("", "Couldn't saved.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                                }
+                                AddOrderLists(model);
+                                return View(model);
+                            }
                             _context.OrderDetails.Add(model.OrderDetail);
                             await _context.SaveChangesAsync();
 
-
-                            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
-                            ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-                            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
-                            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-                            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+                            AddOrderLists(model);
+                            return View(model);
+                        }
+                        else
+                        {
+                            //
+                            ModelState.AddModelError("", "Please save order before trying to add details.");
+                            AddOrderLists(model);
                             return View(model);
                         }
                     }
@@ -159,13 +189,12 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             }
             else
             {
+                ModelState.AddModelError("", "Couldn't save.");
+                AddOrderLists(model);
+                return View(model);
 
             }
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
-            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
-            ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+            AddOrderLists(model);
             return View(model);
         }
 
@@ -257,6 +286,34 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             return _context.Orders.Any(e => e.ID == id);
         }
 
+        private void AddOrderLists(SaveOrderViewModel model)
+        {
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
+            ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
+            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
+            if (model.ArticleCategory != null)
+            {
+                ViewData["ArticleID"] = new SelectList(_context.Articles.Where(a => a.ArticleCategoryID == model.ArticleCategory.ID), "ID", "Name");
+            }
+            if(model.OrderDetail.ArticleID != 0)
+            {
+                ViewData["WarehouseID"] = new SelectList((from aw in _context.ArticleWarehouseBalances
+                                                                           where aw.ArticleID == model.OrderDetail.ArticleID
+                                                                           join a in _context.Articles on aw.ArticleID equals a.ID
+                                                                           join w in _context.Warehouses on aw.WarehouseID equals w.ID
+                                                                           orderby w.Name
+                                                                           select new
+                                                                           {
+                                                                               Id = w.ID,
+                                                                               Name = w.Name,
+                                                                               Articlesonhand = " [Box: " + aw.QtyBoxesOnhand.ToString() + ", Extra: " + aw.QtyExtraKgOnhand.ToString() + ", Res. " + aw.QtyBoxesReserved.ToString() + "]"
+                                                                           }
+                                ), "ID", "Name");
+            }
+           
+        }
+       
+
         #region Ajax Calls
         public JsonResult GetArticleCategories()
         {
@@ -295,7 +352,7 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             return PartialView("_CustomerDetailsForOrderPartialView", customer);
         }
 
-        public ActionResult GetArticleWarehoseBalance(Int64 articleId, Int64 warehouseId)
+        public ActionResult GetArticleWarehouseBalance(Int64 articleId, Int64 warehouseId)
         {
             var balance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == articleId && b.WarehouseID == warehouseId).Include(a => a.Article).Include(w => w.Warehouse).FirstOrDefault();
             return PartialView("_ArticleWarehouseBalancePartialView", balance);

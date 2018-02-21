@@ -88,10 +88,12 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             }
             if(!ModelState.IsValid)
             {
-                var propertyValidatedMessage = ReceiveArticleValidation.ReceivArticleIsValid(_context, model.ReceiveArticle);
-                if (propertyValidatedMessage.Value == false)
+                var customModelValidator = ReceiveArticleValidation.ReceivArticleIsValid(_context, model.ReceiveArticle);
+                if (customModelValidator.Value == false)
                 {
-                    ModelState.AddModelError(propertyValidatedMessage.Property, propertyValidatedMessage.Message);
+                    ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                    model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse((long)model.ReceiveArticle?.ID);
+                    AddReceiveArticleLists(model);
                     return View(model);
                 }
             }
@@ -99,8 +101,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
             if (!ModelState.IsValid)
             {
                 model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse((long)model.ReceiveArticle?.ID);
-                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
-                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                AddReceiveArticleLists(model);
                 return View(model);
             }
             if(model.ReceiveArticle.ID == 0)
@@ -109,7 +110,6 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                 model.ReceiveArticle.Guid = guid;
                 _context.Add(model.ReceiveArticle);
                 await _context.SaveChangesAsync();
-                var errors = new List<PropertyValidatedMessage>();
                 var savedReceiveArticle = _context.ReceiveArticles.Where(r => r.Date == model.ReceiveArticle.Date && r.ArticleID == r.ArticleID && r.Guid == guid).FirstOrDefault();
                 if(savedReceiveArticle != null)
                 {
@@ -131,8 +131,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                                  _context.Remove(savedReceiveArticle);
                                 await _context.SaveChangesAsync();
                                 model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(0);
-                                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
-                                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                                AddReceiveArticleLists(model);
                                 return View(model);
                                 
                             }
@@ -146,8 +145,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                 {
                     ModelState.AddModelError("", "Couldn't saved.");
                     model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(0);
-                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
-                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                    AddReceiveArticleLists(model);
                     return View(model);
                 }
 
@@ -174,8 +172,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                                     ModelState.AddModelError("", JSonHelper.ToJSon(result));
                                 }
                                 model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(savedReceiveArticle?.ArticleID ?? 0);
-                                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
-                                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                                AddReceiveArticleLists(model);
                                 return View(model);
 
                             }
@@ -205,8 +202,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                                     ModelState.AddModelError("", JSonHelper.ToJSon(result));
                                 }
                                 model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(savedReceiveArticle?.ArticleID ?? 0);
-                                ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
-                                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                                AddReceiveArticleLists(model);
                                 return View(model);
 
                             }
@@ -227,8 +223,7 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
                 {
                     ModelState.AddModelError("", "Couldn't saved.");
                     model.ReceiveArticleWarehouses = GetReceiveArticleWarehouse(0);
-                    ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
-                    ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
+                    AddReceiveArticleLists(model);
                     return View(model);
                 }
 
@@ -299,6 +294,12 @@ namespace TomasGreen.Web.Areas.Stock.Controllers
         private bool ReceiveArticleExists(long id)
         {
             return _context.ReceiveArticles.Any(e => e.ID == id);
+        }
+
+        private void AddReceiveArticleLists(SaveReceiveArticleWarehouseViewModel model)
+        {
+            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.ReceiveArticle.ArticleID);
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.ReceiveArticle.CompanyID);
         }
 
         #region 

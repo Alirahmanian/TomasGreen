@@ -101,7 +101,7 @@ namespace TomasGreen.Web.Data
 
             
             modelBuilder.Entity<OrderDetail>()
-            .HasIndex(p => new { p.OrderID, p.ArticleID})
+            .HasIndex(p => new { p.OrderID, p.ArticleID, p.WarehouseID, p.Price})
             .IsUnique(true);
 
             modelBuilder.Entity<Warehouse>()

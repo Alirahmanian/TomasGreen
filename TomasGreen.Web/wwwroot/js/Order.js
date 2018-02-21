@@ -132,9 +132,12 @@ function LoadCustomerInfo(customer) {
 //=======================================
 //=======================================
 function LoadArticleWarehoseBalance(warehouse) {
-    if ($(warehouse).val() !== "0" && $(warehouse).val() !== "Select") {
-        $("#ArticleWarehouseBalance").load("GetArticleWarehoseBalance",
-            { articleId: $("#OrderDetail_ArticleID").val(), warehouseId: $(warehouse).val() });
+    if ($(warehouse).val() !== "" && $(warehouse).val() !== "0" && $(warehouse).val() !== "Select") {
+        if ($("#OrderDetail_ArticleID").val() != "" && $("#OrderDetail_ArticleID").val() !== "0" && $("#OrderDetail_ArticleID").val() !== "Select") {
+            $("#ArticleWarehouseBalance").load("GetArticleWarehouseBalance",
+                { articleId: $("#OrderDetail_ArticleID").val(), warehouseId: $(warehouse).val() });
+        }
+      
     }
     else {
         $("#ArticleWarehouseBalance").text('');
@@ -235,6 +238,7 @@ function ValidateOrderDetails() {
 //=======================================
 $(document).ready(
     EnableDisableOrderDetails(),
+    LoadArticleWarehoseBalance($("#ArticleWarehouseBalance"))
    // LoadOrderDetails(),
    // LoadItemGroups($('#ArticleCategories'))
  
