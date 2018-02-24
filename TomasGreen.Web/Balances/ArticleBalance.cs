@@ -22,6 +22,7 @@ namespace TomasGreen.Web.Balances
         }
         public PropertyValidatedMessage AddReceiveArticleToBalance(ReceiveArticleWarehouse model)
         {
+            var result = new PropertyValidatedMessage(true, "AddReceiveArticleToBalance", "ArticleWarehouseBalance", "", "");
             try
             {
                 var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ReceiveArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
@@ -43,7 +44,8 @@ namespace TomasGreen.Web.Balances
                     newArticleWarehouseBalance.QtyExtraKgOnhand = model.QtyExtraKg;
                     _context.Add(newArticleWarehouseBalance);
                     //await _context.SaveChangesAsync();
-                    return (new PropertyValidatedMessage(true, "AddReceiveArticleToBalance", "ArticleWarehouseBalance", "", ""));
+                    result.Value = true;
+                    return result;
 
                 }
                 else
@@ -76,36 +78,43 @@ namespace TomasGreen.Web.Balances
             }
             catch (Exception exception)
             {
-                return (new PropertyValidatedMessage(false, "AddReceiveArticleToBalance", "ArticleWarehouseBalance", "Exception", exception.Message.ToString()));
+                result.Value = false; result.Property = "Exception"; result.Message = exception.Message.ToString();
+                return result;
             }
-            return (new PropertyValidatedMessage(true, "AddReceiveArticleToBalance", "ArticleWarehouseBalance", "", ""));
+            result.Value = true;
+            return result;
         }
 
         public PropertyValidatedMessage RemoveReceiveArticleFromBalance(ReceiveArticleWarehouse model)
         {
+            var result = new PropertyValidatedMessage(true, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", "", "");
             try
             {
                 var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ReceiveArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
                 articleWarehouseBalance.QtyBoxesIn -= model.QtyBoxes;
                 if (articleWarehouseBalance.QtyBoxesIn < 0)
                 {
-                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyBoxesIn), "Value can not be less then zero."));
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesIn); result.Message = "Value can not be less then zero.";
+                    return result;
                 }
                 articleWarehouseBalance.QtyExtraKgIn -= model.QtyExtraKg;
                 if (articleWarehouseBalance.QtyExtraKgIn < 0)
                 {
-                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyExtraKgIn), "Value can not be less then zero."));
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraKgIn); result.Message = "Value can not be less then zero.";
+                    return result;
                 }
                 
                 articleWarehouseBalance.QtyBoxesOnhand -= model.QtyBoxes;
                 if (articleWarehouseBalance.QtyBoxesOnhand < 0)
                 {
-                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyBoxesOnhand), "Value can not be less then zero."));
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesOnhand); result.Message = "Value can not be less then zero.";
+                    return result;
                 }
                 articleWarehouseBalance.QtyExtraKgOnhand -= model.QtyExtraKg;
                 if (articleWarehouseBalance.QtyExtraKgOnhand < 0)
                 {
-                    return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyExtraKgOnhand), "Value can not be less then zero."));
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraKgOnhand); result.Message = "Value can not be less then zero.";
+                    return result;
                 }
 
                 
@@ -118,21 +127,24 @@ namespace TomasGreen.Web.Balances
             }
             catch (Exception exception)
             {
-                return (new PropertyValidatedMessage(false, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", "Exception", exception.Message.ToString()));
+                result.Value = false; result.Property = "Exception"; result.Message = exception.Message.ToString();
+                return result;
             }
 
-            
-            return(new PropertyValidatedMessage(true, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", "", ""));
+            result.Value = true;
+            return result;
         }
 
         public PropertyValidatedMessage AddOrderDetailToBalance(OrderDetail model)
         {
+            var result = new PropertyValidatedMessage(true, "AddOrderDetailToBalance", "ArticleWarehouseBalance", "", "");
             try
             {
                 var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
                 if(articleWarehouseBalance == null)
                 {
-                    return (new PropertyValidatedMessage(false, "AddOrderDetailToBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.ID), "There is no such article in this warehouse."));
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.ID); result.Message = "There is no such article in this warehouse.";
+                    return result;
                 }
                 articleWarehouseBalance.QtyBoxesOut += model.QtyBoxes;
                 articleWarehouseBalance.QtyExtraKgOut += model.QtyKg;
@@ -140,22 +152,25 @@ namespace TomasGreen.Web.Balances
                 articleWarehouseBalance.QtyBoxesOnhand -= model.QtyBoxes;
                 if(articleWarehouseBalance.QtyBoxesOnhand < 0)
                 {
-                    return (new PropertyValidatedMessage(false, "AddOrderDetailToBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyBoxesOnhand), "Value can not be less then zero."));
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesOnhand); result.Message = "Value can not be less then zero.";
+                    return result;
                 }
                 articleWarehouseBalance.QtyExtraKgOnhand -= model.QtyKg;
                 if(articleWarehouseBalance.QtyExtraKgOnhand < 0)
                 {
-                    return (new PropertyValidatedMessage(false, "AddOrderDetailToBalance", "ArticleWarehouseBalance", nameof(articleWarehouseBalance.QtyExtraKgOnhand), "Value can not be less then zero."));
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraKgOnhand); result.Message = "Value can not be less then zero.";
+                    return result;
                 }
                 _context.Update(articleWarehouseBalance);
                
             }
             catch (Exception exception)
             {
-                return (new PropertyValidatedMessage(false, "AddOrderDetailToBalance", "ArticleWarehouseBalance", "Exception", exception.Message.ToString()));
+                result.Value = false; result.Property = "Exception"; result.Message = exception.Message.ToString();
+                return result;
             }
-
-            return (new PropertyValidatedMessage(true, "AddOrderDetailToBalance", "ArticleWarehouseBalance", "", ""));
+            result.Value = true;
+            return result;
         }
 
         public PropertyValidatedMessage RemoveOrderDetailFromBalance(OrderDetail model)
@@ -164,6 +179,11 @@ namespace TomasGreen.Web.Balances
             try
             {
                 var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
+                if (articleWarehouseBalance == null)
+                {
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.ID); result.Message = "There is no such article in this warehouse.";
+                    return result;
+                }
                 // What to do in case model has reserve?
                 articleWarehouseBalance.QtyBoxesReserved -= model.QtyReserveBoxes;
                 if (articleWarehouseBalance.QtyBoxesReserved < 0)

@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TomasGreen.Web.Models;
 
 namespace TomasGreen.Web.Controllers
 {
-    public class HomeController : Controller
+    [Authorize]
+    public class HomeController : BaseController
     {
         public IActionResult Index()
         {
+            ViewData["Message"] = "Your application description page.";
             return View();
         }
 

@@ -72,6 +72,9 @@
                 <div class="tab-pane fade in active" id="Section1" role="tabpanel">
                     <div><br /></div>
                     <div id="OrdedDetail_Mess">Mess</div>
+                    <div>
+                        @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Sales.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail.ArticleID, warehousId = Model.OrderDetail.WarehouseID })
+                    </div>
                     <div id="ArticleWarehouseBalance"></div>
                     <div class="col-md-12">
                         <div class="col-md-2">

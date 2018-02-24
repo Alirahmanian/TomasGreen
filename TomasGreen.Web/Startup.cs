@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using TomasGreen.Web.Data;
 using TomasGreen.Web.Models;
 using TomasGreen.Web.Services;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace TomasGreen.Web
 {
@@ -35,7 +38,7 @@ namespace TomasGreen.Web
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-
+            //services.AddTransient<ISmsSender, SmsSender>();
             services.AddMvc();
         }
 
@@ -61,11 +64,11 @@ namespace TomasGreen.Web
                 routes.MapRoute(
                     name: "areas",
                     template: "{area:exists}/{controller=Home}/{action=Index}");
-                
 
+                
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                   name: "default",
+                   template: "{controller=Home}/{action=Index}/{id?}");
                 
             });
         }

@@ -34,8 +34,9 @@
   <ItemGroup>
     <Folder Include="Areas\Accountment\Data\" />
     <Folder Include="Areas\Accountment\Models\" />
-    <Folder Include="Areas\Management\Admin\Data\" />
-    <Folder Include="Areas\Management\Admin\Models\" />
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\Role\" />
     <Folder Include="Areas\Management\Data\" />
     <Folder Include="Areas\Management\Models\" />
     <Folder Include="Areas\Purchase\Data\" />
@@ -45,8 +46,6 @@
     <Folder Include="Areas\Stock\Css\" />
     <Folder Include="Areas\Stock\Services\" />
     <Folder Include="Migrations\" />
-    <Folder Include="wwwroot\NewFolder\" />
-    <Folder Include="wwwroot\Scripts\" />
   </ItemGroup>
 
   <ItemGroup>
