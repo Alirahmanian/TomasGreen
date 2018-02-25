@@ -1,7 +1,16 @@
-﻿@{
+﻿@inject CustomLocalizer localizer
+
+@{
     ViewData["Title"] = "Home Page";
 }
-
+<div class="row">
+    <div class="col-md-12">
+        <h2>View:@localizer["Hello"]</h2>
+        <h2>View:@localizer["HelloWorld"]</h2>
+    </div>
+</div>
+<p>From Controller but view localizer: @localizer[ViewData["Message"].ToString()]</p>
+<p>from controller: @ViewData["Message"]</p>
 
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">

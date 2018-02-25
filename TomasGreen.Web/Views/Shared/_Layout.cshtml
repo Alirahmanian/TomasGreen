@@ -1,6 +1,4 @@
-﻿
-@inject CustomLocalizer localizer
-
+﻿@inject CustomLocalizer localizer
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,22 +32,9 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    @{
-                        if (User.Identity.IsAuthenticated)
-                        {
-                            <li><a asp-area="" asp-controller="Home" asp-action="Index">@localizer["Home"]</a></li>
-                            <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">@localizer["Admin"]</a></li>
-                            <li><a asp-area="Accountment" asp-controller="Home" asp-action="Index">@localizer["Accountment"]</a></li>
-                            <li><a asp-area="Management" asp-controller="Home" asp-action="Index">@localizer["Management"]</a></li>
-                            <li><a asp-area="Purchase" asp-controller="Home" asp-action="Index">@localizer["Purchase"]</a></li>
-                            <li><a asp-area="Sales" asp-controller="Home" asp-action="Index">@localizer["Sales"]</a></li>
-                            <li><a asp-area="Stock" asp-controller="Home" asp-action="Index">@localizer["Stock"]</a></li>
-                        }
-                        else
-                        {
-                            @await Html.PartialAsync("_LoginPartial")
-                        }
-                    }
+                    <li><a asp-area="" asp-controller="Home" asp-action=@localizer["Index"]>Home</a></li>
+
+                   
 
                 </ul>
 
@@ -60,8 +45,18 @@
         @RenderBody()
         <hr />
 
-        <footer>
-            <p>&copy; 2018 - TomasGreen.Web</p>
+        @{
+        string currentController = ViewContext.RouteData.Values["Controller"].ToString();
+        string currentAction = ViewContext.RouteData.Values["Action"].ToString();
+        }
+
+        <footer class="navbar-inverse navbar-fixed-bottom">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li is-active-language asp-route-lang="en"><a asp-controller=@currentController asp-action=@currentAction asp-route-lang="en">English</a></li>
+                    <li is-active-language asp-route-lang="ru"><a asp-controller=@currentController asp-action=@currentAction asp-route-lang="ru">Русский</a></li>
+                </ul>
+            </div>
         </footer>
     </div>
 

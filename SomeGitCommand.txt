@@ -1,0 +1,2 @@
+ cd /c/users/frunut/Source/repos/TomasGreen
+ git push origin master

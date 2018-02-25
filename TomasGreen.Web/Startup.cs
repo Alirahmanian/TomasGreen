@@ -39,7 +39,23 @@ namespace TomasGreen.Web
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             //services.AddTransient<ISmsSender, SmsSender>();
-            services.AddMvc();
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddMvc()
+                    .AddDataAnnotationsLocalization(options =>
+                    {
+                        options.DataAnnotationLocalizerProvider = (type, factory) =>
+                            factory.Create(typeof(Common));
+                    })
+                    .AddViewLocalization(LanguageViewLocationExpanderFormat.SubFolder)
+                    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+
+            services.Configure<RouteOptions>(options =>
+            {
+                options.ConstraintMap.Add("lang", typeof(LanguageRouteConstraint));
+            });
+
+            services.AddTransient<CustomLocalizer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,17 +75,26 @@ namespace TomasGreen.Web
             app.UseStaticFiles();
             app.UseAuthentication();
 
+            var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            LocalizationPipeline.ConfigureOptions(options.Value);
+            app.UseRequestLocalization(options.Value);
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "areas",
-                    template: "{area:exists}/{controller=Home}/{action=Index}");
 
-                
                 routes.MapRoute(
-                   name: "default",
-                   template: "{controller=Home}/{action=Index}/{id?}");
-                
+                   name: "areas",
+                  template: "{lang:lang}/{area:exists}/{controller=Home}/{action=RedirectToDefaultLanguage}/{id?}"
+                );
+
+                routes.MapRoute(
+                   name: "LocalizedDefault",
+                   template: "{lang:lang}/{controller=Home}/{action=RedirectToDefaultLanguage}/{id?}"
+               );
+
+                routes.MapRoute(
+                     name: "default",
+                     template: "{*catchall}",
+                     defaults: new { controller = "Home", action = "RedirectToDefaultLanguage", lang = "en" });
             });
         }
     }

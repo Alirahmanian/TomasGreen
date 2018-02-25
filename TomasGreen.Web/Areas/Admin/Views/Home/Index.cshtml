@@ -1,7 +1,15 @@
-﻿
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
 @{
     ViewData["Title"] = "Index";
 }
-
+<div class="row">
+    <div class="col-md-12">
+        <h2>View:@localizer["Hello"]</h2>
+        <h2>View:@localizer["HelloWorld"]</h2>
+    </div>
+</div>
 <h2>Admin home page</h2>
 
+
+<p>From Controller but view localizer: @localizer[ViewData["Message"].ToString()]</p>
+<p>from controller: @ViewData["Message"]</p>

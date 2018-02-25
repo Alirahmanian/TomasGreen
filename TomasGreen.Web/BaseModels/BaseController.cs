@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TomasGreen.Web.Controllers
+namespace TomasGreen.Web.BaseModels
 {
-    public abstract class BaseController : Controller
+    public class BaseController :Controller
     {
         private string _currentLanguage;
-
         public ActionResult RedirectToDefaultLanguage()
         {
             var lang = CurrentLanguage;
