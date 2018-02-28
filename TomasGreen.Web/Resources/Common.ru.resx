@@ -120,17 +120,53 @@
   <data name="About" xml:space="preserve">
     <value>Около</value>
   </data>
+  <data name="Accounting" xml:space="preserve">
+    <value>учет</value>
+  </data>
+  <data name="Add article" xml:space="preserve">
+    <value>Добавить статью</value>
+  </data>
+  <data name="Add articles to warehouse" xml:space="preserve">
+    <value>Добавить статьи на склад</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Админ</value>
+  </data>
+  <data name="Article" xml:space="preserve">
+    <value>статья</value>
+  </data>
+  <data name="Article category" xml:space="preserve">
+    <value>категория статья</value>
+  </data>
+  <data name="Chocolate" xml:space="preserve">
+    <value>шоколад</value>
+  </data>
+  <data name="Commision" xml:space="preserve">
+    <value>комиссионной</value>
+  </data>
   <data name="Contacts" xml:space="preserve">
     <value>Контакты</value>
   </data>
+  <data name="Country" xml:space="preserve">
+    <value>Страна</value>
+  </data>
   <data name="DataAnnotations" xml:space="preserve">
     <value>Локализованные аннотации данных</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Dicing" xml:space="preserve">
+    <value>кузнечная</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>Электронная почта</value>
   </data>
   <data name="EmailRequired" xml:space="preserve">
     <value>Поле электронной почты требуется</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>экспорт</value>
   </data>
   <data name="Hello" xml:space="preserve">
     <value>Здравствуйте</value>
@@ -141,8 +177,32 @@
   <data name="Home" xml:space="preserve">
     <value>Главная</value>
   </data>
+  <data name="Import" xml:space="preserve">
+    <value>Импортировать</value>
+  </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>инвентарь</value>
+  </data>
+  <data name="Management" xml:space="preserve">
+    <value>управление</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>имя</value>
+  </data>
+  <data name="Name is already taken." xml:space="preserve">
+    <value>Имя уже принято.</value>
+  </data>
+  <data name="Name is required" xml:space="preserve">
+    <value>Требуется имя</value>
+  </data>
   <data name="NameRequired" xml:space="preserve">
     <value>требуется имя</value>
+  </data>
+  <data name="Office" xml:space="preserve">
+    <value>офис</value>
+  </data>
+  <data name="Packing" xml:space="preserve">
+    <value>упаковка</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Парол</value>
@@ -150,7 +210,28 @@
   <data name="PasswordRequired" xml:space="preserve">
     <value>Поле пароля обязательное</value>
   </data>
+  <data name="Purchase" xml:space="preserve">
+    <value>покупка</value>
+  </data>
+  <data name="Roasting" xml:space="preserve">
+    <value>жарка</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>Продажи</value>
+  </data>
   <data name="SignIn" xml:space="preserve">
     <value>Войти</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>Склад</value>
+  </data>
+  <data name="There is already a reserve warehouse." xml:space="preserve">
+    <value>Уже есть резервный склад.</value>
+  </data>
+  <data name="Transport" xml:space="preserve">
+    <value>Транспорт</value>
+  </data>
+  <data name="Warehouse" xml:space="preserve">
+    <value>Склад</value>
   </data>
 </root>

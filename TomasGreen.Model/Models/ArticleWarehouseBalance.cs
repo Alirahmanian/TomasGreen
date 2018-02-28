@@ -8,21 +8,18 @@ namespace TomasGreen.Model.Models
     {
         public Int64 ArticleID { get; set; }
         public Int64 WarehouseID { get; set; }
-        public int QtyBoxesIn { get; set; }
-        public decimal QtyExtraKgIn { get; set; }
-        public decimal QtyTotalWeightIn { get { return ((QtyBoxesIn * this.Article.BoxWeight) + QtyExtraKgIn); } }
+        public int QtyPackagesIn { get; set; }
+        public decimal QtyExtraIn { get; set; }
+        public decimal QtyTotalIn { get; set; }
 
-        public int QtyBoxesOut { get; set; }
-        public decimal QtyExtraKgOut { get; set; }
-        public decimal QtyTotalWeightOut { get { return ((QtyBoxesOut * this.Article.BoxWeight) + QtyExtraKgOut); } }
+        public int QtyPackagesOut { get; set; }
+        public decimal QtyExtraOut { get; set; }
+        public decimal QtyTotalOut { get; set; }
 
-        public int QtyBoxesReserved { get; set; }
-        public decimal QtyTotalWeightReserved { get { return (QtyBoxesReserved * this.Article.BoxWeight); } }
-        
-
-        public int QtyBoxesOnhand { get; set; }
-        public decimal QtyExtraKgOnhand { get; set; }
-        public decimal QtyTotalWeightOnhand { get { return ((QtyBoxesOnhand * this.Article.BoxWeight) + QtyExtraKgOnhand); } }
+        public int QtyPackagesOnhand { get; set; }
+        public decimal QtyExtraOnhand { get; set; }
+        public decimal QtyTotalOnhand { get; set; }
+        //public decimal QtyTotalOnhand { get { return ((QtyPackagesOnhand * this.Article.WeightPerPackage) + QtyExtraOnhand); } }
 
 
 

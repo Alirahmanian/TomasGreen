@@ -204,7 +204,7 @@ namespace TomasGreen.Web.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AddedDate = table.Column<DateTime>(nullable: false),
                     ArticleCategoryID = table.Column<long>(nullable: false),
-                    BoxWeight = table.Column<decimal>(nullable: false),
+                    PackageWeight = table.Column<decimal>(nullable: false),
                     CountryID = table.Column<long>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     MinimumPrice = table.Column<decimal>(nullable: false),

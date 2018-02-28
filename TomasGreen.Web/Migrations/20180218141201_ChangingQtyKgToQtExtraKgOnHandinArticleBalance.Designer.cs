@@ -140,7 +140,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<long>("ArticleCategoryID");
 
-                    b.Property<decimal>("BoxWeight");
+                    b.Property<decimal>("PackageWeight");
 
                     b.Property<long>("CountryID");
 

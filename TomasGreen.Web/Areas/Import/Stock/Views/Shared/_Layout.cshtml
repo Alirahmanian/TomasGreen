@@ -1,0 +1,54 @@
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">TomasGreen.Web</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a asp-area="Stock" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Stock"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="Countries" asp-action="Index">@localizer["Country"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="Warehouses" asp-action="Index">@localizer["Warehouse"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="ArticleCategories" asp-action="Index">@localizer["Article category"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="OrderTransports" asp-action="Index">@localizer["Transport"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="Articles" asp-action="Index">@localizer["Article"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="ReceiveArticles" asp-action="Index">@localizer["Add article"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="ReceiveArticleWarehouses" asp-action="Index">@localizer["Add articles to warehouse"]</a></li>
+                    <li><a asp-area="Stock" asp-controller="ArticleWarehouseBalances" asp-action="Index">@localizer["Inventory"]</a></li>
+
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+</body>
+</html>

@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Areas\Stock\Views\ReceiveArticleWarehouses\**" />
-    <Content Remove="Areas\Stock\Views\ReceiveArticleWarehouses\**" />
-    <EmbeddedResource Remove="Areas\Stock\Views\ReceiveArticleWarehouses\**" />
-    <None Remove="Areas\Stock\Views\ReceiveArticleWarehouses\**" />
+    <Compile Remove="Areas\Import\Stock\Views\ReceiveArticleWarehouses\**" />
+    <Content Remove="Areas\Import\Stock\Views\ReceiveArticleWarehouses\**" />
+    <EmbeddedResource Remove="Areas\Import\Stock\Views\ReceiveArticleWarehouses\**" />
+    <None Remove="Areas\Import\Stock\Views\ReceiveArticleWarehouses\**" />
   </ItemGroup>
 
 
@@ -32,31 +32,63 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Accountment\Data\" />
-    <Folder Include="Areas\Accountment\Models\" />
+    <Folder Include="Areas\Import\Accounting\Data\" />
+    <Folder Include="Areas\Import\Accounting\Models\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Role\" />
-    <Folder Include="Areas\Management\Data\" />
-    <Folder Include="Areas\Management\Models\" />
-    <Folder Include="Areas\Purchase\Data\" />
-    <Folder Include="Areas\Purchase\Models\" />
-    <Folder Include="Areas\Sales\Data\" />
-    <Folder Include="Areas\Stock\Data\" />
-    <Folder Include="Areas\Stock\Css\" />
-    <Folder Include="Areas\Stock\Services\" />
+    <Folder Include="Areas\Chocolate\Controllers\" />
+    <Folder Include="Areas\Chocolate\Data\" />
+    <Folder Include="Areas\Chocolate\Models\" />
+    <Folder Include="Areas\Chocolate\Views\" />
+    <Folder Include="Areas\Commision\Controllers\" />
+    <Folder Include="Areas\Commision\Data\" />
+    <Folder Include="Areas\Commision\Models\" />
+    <Folder Include="Areas\Commision\Views\" />
+    <Folder Include="Areas\Dicing\Controllers\" />
+    <Folder Include="Areas\Dicing\Data\" />
+    <Folder Include="Areas\Dicing\Models\" />
+    <Folder Include="Areas\Dicing\Views\" />
+    <Folder Include="Areas\Export\Controllers\" />
+    <Folder Include="Areas\Export\Data\" />
+    <Folder Include="Areas\Export\Models\" />
+    <Folder Include="Areas\Export\Views\" />
+    <Folder Include="Areas\FoodCity\Controllers\" />
+    <Folder Include="Areas\FoodCity\Data\" />
+    <Folder Include="Areas\FoodCity\Models\" />
+    <Folder Include="Areas\FoodCity\Views\" />
+    <Folder Include="Areas\Import\Management\Data\" />
+    <Folder Include="Areas\Import\Management\Models\" />
+    <Folder Include="Areas\Office\Controllers\" />
+    <Folder Include="Areas\Office\Data\" />
+    <Folder Include="Areas\Office\Models\" />
+    <Folder Include="Areas\Office\Views\" />
+    <Folder Include="Areas\Packing\Controllers\" />
+    <Folder Include="Areas\Packing\Data\" />
+    <Folder Include="Areas\Packing\Models\" />
+    <Folder Include="Areas\Packing\Views\" />
+    <Folder Include="Areas\Import\Purchase\Data\" />
+    <Folder Include="Areas\Import\Purchase\Models\" />
+    <Folder Include="Areas\Roasting\Controllers\" />
+    <Folder Include="Areas\Roasting\Data\" />
+    <Folder Include="Areas\Roasting\Models\" />
+    <Folder Include="Areas\Roasting\Views\" />
+    <Folder Include="Areas\Import\Sales\Data\" />
+    <Folder Include="Areas\Import\Stock\Data\" />
+    <Folder Include="Areas\Import\Stock\Css\" />
+    <Folder Include="Areas\Import\Stock\Services\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Areas\Stock\Views\ReceiveArticles\Delete.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticles\Details.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticles\Index.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Create.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Delete.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Details.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Edit.cshtml" />
-    <None Include="Areas\Stock\Views\ReceiveArticleWarehouses\Index.cshtml" />
+    <None Include="Areas\Import\Views\PurchasedArticles\Delete.cshtml" />
+    <None Include="Areas\Import\Views\PurchasedArticles\Details.cshtml" />
+    <None Include="Areas\Import\Views\PurchasedArticles\Index.cshtml" />
+    <None Include="Areas\Import\Stock\Views\ReceiveArticleWarehouses\Create.cshtml" />
+    <None Include="Areas\Import\Stock\Views\ReceiveArticleWarehouses\Delete.cshtml" />
+    <None Include="Areas\Import\Stock\Views\ReceiveArticleWarehouses\Details.cshtml" />
+    <None Include="Areas\Import\Stock\Views\ReceiveArticleWarehouses\Edit.cshtml" />
+    <None Include="Areas\Import\Stock\Views\ReceiveArticleWarehouses\Index.cshtml" />
     <None Include="wwwroot\js\Order.js" />
   </ItemGroup>
 
@@ -72,12 +104,18 @@
     <EmbeddedResource Update="Resources\Areas\Admin\Controllers\HomeController.ru.resx">
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Common.resx">
+    <EmbeddedResource Update="Resources\Areas\Stock\Controllers\HomeController.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Areas\Stock\Controllers\WarehousesController.ru.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Common.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Common.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Common.ru.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Controllers.HomeController.en.resx">
       <Generator>ResXFileCodeGenerator</Generator>

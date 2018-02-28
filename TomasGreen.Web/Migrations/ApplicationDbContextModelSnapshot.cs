@@ -139,13 +139,15 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<long>("ArticleCategoryID");
 
-                    b.Property<decimal>("BoxWeight");
+                    b.Property<long>("ArticlePackageFormID");
+
+                    b.Property<long>("ArticleUnitID");
 
                     b.Property<long>("CountryID");
 
                     b.Property<string>("Description");
 
-                    b.Property<decimal>("MinimumPrice");
+                    b.Property<decimal>("MinimumPricePerUSD");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -155,13 +157,19 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("UserName");
 
+                    b.Property<decimal>("WeightPerPackage");
+
                     b.HasKey("ID");
 
                     b.HasIndex("ArticleCategoryID");
 
+                    b.HasIndex("ArticlePackageFormID");
+
+                    b.HasIndex("ArticleUnitID");
+
                     b.HasIndex("CountryID");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Name", "ArticleUnitID")
                         .IsUnique();
 
                     b.ToTable("Articles");
@@ -191,6 +199,48 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("ArticleCategories");
                 });
 
+            modelBuilder.Entity("TomasGreen.Model.Models.ArticlePackageForm", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddedDate");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("UserName");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ArticlePakageForms");
+                });
+
+            modelBuilder.Entity("TomasGreen.Model.Models.ArticleUnit", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddedDate");
+
+                    b.Property<bool>("MeasuresByKg");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("UserName");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ArticleUnits");
+                });
+
             modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalance", b =>
                 {
                     b.Property<long>("ID")
@@ -202,19 +252,23 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("QtyBoxesIn");
+                    b.Property<decimal>("QtyExtraIn");
 
-                    b.Property<int>("QtyBoxesOnhand");
+                    b.Property<decimal>("QtyExtraOnhand");
 
-                    b.Property<int>("QtyBoxesOut");
+                    b.Property<decimal>("QtyExtraOut");
 
-                    b.Property<int>("QtyBoxesReserved");
+                    b.Property<int>("QtyPackagesIn");
 
-                    b.Property<decimal>("QtyExtraKgIn");
+                    b.Property<int>("QtyPackagesOnhand");
 
-                    b.Property<decimal>("QtyExtraKgOnhand");
+                    b.Property<int>("QtyPackagesOut");
 
-                    b.Property<decimal>("QtyExtraKgOut");
+                    b.Property<decimal>("QtyTotalIn");
+
+                    b.Property<decimal>("QtyTotalOnhand");
+
+                    b.Property<decimal>("QtyTotalOut");
 
                     b.Property<string>("UserName");
 
@@ -420,11 +474,9 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("Price");
 
-                    b.Property<int>("QtyBoxes");
+                    b.Property<decimal>("QtyExtra");
 
-                    b.Property<decimal>("QtyKg");
-
-                    b.Property<int>("QtyReserveBoxes");
+                    b.Property<int>("QtyPackages");
 
                     b.Property<string>("UserName");
 
@@ -467,7 +519,7 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("OrderTranports");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.ReceiveArticle", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
                 {
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
@@ -486,9 +538,25 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<decimal>("Discount");
+
+                    b.Property<DateTime?>("ExpectedToArrive");
+
                     b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<decimal>("PenaltyFee");
+
+                    b.Property<bool>("Received");
+
+                    b.Property<decimal>("TollFee");
+
+                    b.Property<decimal>("TotalPrice");
+
+                    b.Property<decimal>("TransportCost");
+
+                    b.Property<decimal>("UnitPrice");
 
                     b.Property<string>("UserName");
 
@@ -498,10 +566,10 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("CompanyID");
 
-                    b.ToTable("ReceiveArticles");
+                    b.ToTable("PurchasedArticles");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.ReceiveArticleWarehouse", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleWarehouse", b =>
                 {
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
@@ -510,11 +578,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("QtyBoxes");
+                    b.Property<long>("PurchasedArticleID");
 
-                    b.Property<decimal>("QtyExtraKg");
+                    b.Property<decimal>("QtyExtra");
 
-                    b.Property<long>("ReceiveArticleID");
+                    b.Property<int>("QtyPackages");
 
                     b.Property<string>("UserName");
 
@@ -524,10 +592,10 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("WarehouseID");
 
-                    b.HasIndex("ReceiveArticleID", "WarehouseID")
+                    b.HasIndex("PurchasedArticleID", "WarehouseID")
                         .IsUnique();
 
-                    b.ToTable("ReceiveArticleWarehouses");
+                    b.ToTable("PurchasedArticleWarehouses");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Warehouse", b =>
@@ -542,6 +610,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<bool>("Archive");
 
                     b.Property<string>("Description");
+
+                    b.Property<bool>("IsReserve");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -664,6 +734,16 @@ namespace TomasGreen.Web.Migrations
                         .HasForeignKey("ArticleCategoryID")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("TomasGreen.Model.Models.ArticlePackageForm", "ArticlePackageForm")
+                        .WithMany()
+                        .HasForeignKey("ArticlePackageFormID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TomasGreen.Model.Models.ArticleUnit", "ArticleUnit")
+                        .WithMany()
+                        .HasForeignKey("ArticleUnitID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("TomasGreen.Model.Models.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryID")
@@ -719,7 +799,7 @@ namespace TomasGreen.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.ReceiveArticle", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Article", "Article")
                         .WithMany()
@@ -731,15 +811,15 @@ namespace TomasGreen.Web.Migrations
                         .HasForeignKey("CompanyID");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.ReceiveArticleWarehouse", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleWarehouse", b =>
                 {
-                    b.HasOne("TomasGreen.Model.Models.ReceiveArticle", "ReceiveArticle")
+                    b.HasOne("TomasGreen.Model.Models.PurchasedArticle", "PurchasedArticle")
                         .WithMany("Warehouses")
-                        .HasForeignKey("ReceiveArticleID")
+                        .HasForeignKey("PurchasedArticleID")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
-                        .WithMany("ReceivedArticles")
+                        .WithMany("PurchasedArticles")
                         .HasForeignKey("WarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

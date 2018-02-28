@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using TomasGreen.Web.Models;
 using TomasGreen.Model.Models;
 using System.Reflection;
-using TomasGreen.Web.Areas.Stock.ViewModels;
+using TomasGreen.Web.Areas.Import.ViewModels;
 
 namespace TomasGreen.Web.Data
 {
@@ -31,9 +31,11 @@ namespace TomasGreen.Web.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<OrderTransport> OrderTranports { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
-        public DbSet<ReceiveArticle> ReceiveArticles { get; set; }
-        public DbSet<ReceiveArticleWarehouse> ReceiveArticleWarehouses { get; set; }
+        public DbSet<PurchasedArticle> PurchasedArticles { get; set; }
+        public DbSet<PurchasedArticleWarehouse> PurchasedArticleWarehouses { get; set; }
         public DbSet<ArticleWarehouseBalance> ArticleWarehouseBalances { get; set; }
+        public DbSet<ArticleUnit> ArticleUnits { get; set; }
+        public DbSet<ArticlePackageForm> ArticlePakageForms { get; set; }
 
         public virtual async Task<int> SaveChangesAsync()
         {
@@ -81,7 +83,7 @@ namespace TomasGreen.Web.Data
              .HasIndex(p => p.Name)
              .IsUnique(true);
             modelBuilder.Entity<Article>()
-             .HasIndex(p => p.Name)
+             .HasIndex(p => new { p.Name, p.ArticleUnitID })
              .IsUnique(true);
             modelBuilder.Entity<Employee>()
             .HasIndex(p => p.Email)
@@ -107,17 +109,17 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Warehouse>()
             .HasIndex(p => p.Name)
             .IsUnique(true);
-            modelBuilder.Entity<ReceiveArticleWarehouse>()
-                .HasIndex(p => new { p.ReceiveArticleID, p.WarehouseID })
+            modelBuilder.Entity<PurchasedArticleWarehouse>()
+                .HasIndex(p => new { p.PurchasedArticleID, p.WarehouseID })
                 .IsUnique(true);
-            modelBuilder.Entity<ReceiveArticleWarehouse>()
-                .HasOne(p => p.ReceiveArticle)
+            modelBuilder.Entity<PurchasedArticleWarehouse>()
+                .HasOne(p => p.PurchasedArticle)
                 .WithMany(p => p.Warehouses)
-                .HasForeignKey(p => p.ReceiveArticleID);
+                .HasForeignKey(p => p.PurchasedArticleID);
 
-            modelBuilder.Entity<ReceiveArticleWarehouse>()
+            modelBuilder.Entity<PurchasedArticleWarehouse>()
                 .HasOne(p => p.Warehouse)
-                .WithMany(p => p.ReceivedArticles)
+                .WithMany(p => p.PurchasedArticles)
                 .HasForeignKey(p => p.WarehouseID);
 
             modelBuilder.Entity<ArticleWarehouseBalance>()

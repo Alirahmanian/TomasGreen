@@ -36,17 +36,13 @@ namespace TomasGreen.Web.Validations
             {
                 return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.WarehouseID), "Please choose a warehouse."));
             }
-            if(model.QtyBoxes < 0 )
+            if(model.QtyPackages < 0 )
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.QtyBoxes), "Please put a positive value."));
+                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.QtyPackages), "Please put a positive value."));
             }
-            if (model.QtyReserveBoxes < 0)
+            if (model.QtyExtra < 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.QtyReserveBoxes), "Please put a positive value."));
-            }
-            if (model.QtyKg < 0)
-            {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.QtyKg), "Please put a positive value."));
+                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.QtyExtra), "Please put a positive value."));
             }
             if (model.Price <= 0)
             {
@@ -86,8 +82,8 @@ namespace TomasGreen.Web.Validations
 
         public static decimal OrderDetailITotalWeight(ApplicationDbContext _context, OrderDetail model)
         {
-            var articleBoxWeight = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault()?.BoxWeight ?? 0;
-            var totalWeight = (model.QtyBoxes * articleBoxWeight) + (model.QtyReserveBoxes * articleBoxWeight) + model.QtyKg;
+            var articlePackageWeight = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault()?.WeightPerPackage ?? 0;
+            var totalWeight = (model.QtyPackages * articlePackageWeight) + model.QtyExtra;
             return totalWeight;
         }
 

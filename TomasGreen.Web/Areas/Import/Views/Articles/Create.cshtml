@@ -1,0 +1,70 @@
+﻿@model TomasGreen.Model.Models.Article
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Article</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinimumPricePerUSD" class="control-label"></label>
+                <input asp-for="MinimumPricePerUSD" class="form-control" />
+                <span asp-validation-for="MinimumPricePerUSD" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WeightPerPackage" class="control-label"></label>
+                <input asp-for="WeightPerPackage" class="form-control" />
+                <span asp-validation-for="WeightPerPackage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArticleCategoryID" class="control-label"></label>
+                <select asp-for="ArticleCategoryID" class="form-control" asp-items="ViewBag.ArticleCategoryID">
+                    <option>Select</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArticleUnitID" class="control-label"></label>
+                <select asp-for="ArticleUnitID" class="form-control" asp-items="ViewBag.ArticleUnitID">
+                    <option>Select</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArticlePackageFormID" class="control-label"></label>
+                <select asp-for="ArticlePackageFormID" class="form-control" asp-items="ViewBag.ArticlePackageFormID">
+                    <option>Select</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CountryID" class="control-label"></label>
+                <select asp-for="CountryID" class="form-control" asp-items="ViewBag.CountryID">
+                    <option>Select</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

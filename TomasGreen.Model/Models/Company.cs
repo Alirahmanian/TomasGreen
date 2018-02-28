@@ -11,14 +11,14 @@ namespace TomasGreen.Model.Models
         [Required(ErrorMessage = "Name is required")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
         public string Name { get; set; }
-        public decimal Balance { get; set; }
+        public decimal Balance { get; set; } = 0;
         public bool Ruble { get; set; }
-        public decimal Discount { get; set; }
-        public decimal Purchases { get; set; }
-        [Display(Name="Sold to us")]
-        public decimal SouldToUs { get; set; }
-        public decimal Paid { get; set; }
-        public decimal Received { get; set; }
+        public decimal Discount { get; set; } = 0;
+        public decimal Purchases { get; set; } = 0;
+        [Display(Name = "Sold to us")]
+        public decimal SouldToUs { get; set; } = 0;
+        public decimal Paid { get; set; } = 0;
+        public decimal Received { get; set; } = 0;
         [Display(Name = "Last balance")]
         public decimal LastBalance { get; set; }
         [DataType(DataType.Date)]
@@ -27,9 +27,9 @@ namespace TomasGreen.Model.Models
         public DateTime LastBalanceDate { get; set; }
         public bool Locked { get; set; }
         [Display(Name = "Received credit")]
-        public decimal CreditReceived { get; set; }
+        public decimal CreditReceived { get; set; } = 0;
         [Display(Name = "Credit limit")]
-        public decimal CreditLimit { get; set; }
+        public decimal CreditLimit { get; set; } = 0;
         public bool Archive { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }

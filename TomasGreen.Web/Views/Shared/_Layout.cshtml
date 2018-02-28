@@ -1,4 +1,4 @@
-﻿@inject CustomLocalizer localizer
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +18,7 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar nav-divider navbar-brand navbar-fixed-top">
 
         <div class="container">
             <div class="navbar-header">
@@ -32,9 +32,33 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action=@localizer["Index"]>Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action=Index>@localizer["Home"]</a></li>
+                    <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">@localizer["Admin"]</a></li>
+                    <li><a asp-area="Import" asp-controller="Home" asp-action="Index">@localizer["Import"]</a></li>
+                    <li><a asp-area="Export" asp-controller="Home" asp-action="Index">@localizer["Export"]</a></li>
+                    <li><a asp-area="FoodCity" asp-controller="Home" asp-action="Index">@localizer["Foodcity"]</a></li>
+                    <li><a asp-area="Roasting" asp-controller="Home" asp-action="Index">@localizer["Roasting"]</a></li>
+                    <li><a asp-area="Packing" asp-controller="Home" asp-action="Index">@localizer["Packing"]</a></li>
+                    <li><a asp-area="Dicing" asp-controller="Home" asp-action="Index">@localizer["Dicing"]</a></li>
+                    <li><a asp-area="Commision" asp-controller="Home" asp-action="Index">@localizer["Commision"]</a></li>
+                    <li><a asp-area="Office" asp-controller="Home" asp-action="Index">@localizer["Office"]</a></li>
 
-                   
+                    @*@{
+                if (User.Identity.IsAuthenticated)
+                {
+                        <li><a asp-area="" asp-controller="Home" asp-action=@localizer["Index"]>Home</a></li>
+                        <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a></li>
+                        <li><a asp-area="Accounting" asp-controller="Home" asp-action="Index">Accounting</a></li>
+                        <li><a asp-area="Management" asp-controller="Home" asp-action="Index">Management</a></li>
+                        <li><a asp-area="Purchase" asp-controller="Home" asp-action="Index">Purchase</a></li>
+                        <li><a asp-area="Sales" asp-controller="Home" asp-action="Index">Sales</a></li>
+                        <li><a asp-area="Stock" asp-controller="Home" asp-action="Index">Stock</a></li>
+        }
+        else
+        {
+                        @await Html.PartialAsync("_LoginPartial")
+        }
+                            }*@
 
                 </ul>
 

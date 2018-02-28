@@ -20,11 +20,11 @@ namespace TomasGreen.Model.Models
         //[DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         public decimal Extended_Price { get; set; } = 0;
         [Range(0, Int32.MaxValue)]
-        public int QtyBoxes { get; set; } = 0;
+        public int QtyPackages { get; set; } = 0;
+        //[Range(0, Int32.MaxValue)]
+       // public int QtyReserveBoxes { get; set; } = 0;
         [Range(0, Int32.MaxValue)]
-        public int QtyReserveBoxes { get; set; } = 0;
-        [Range(0, Int32.MaxValue)]
-        public decimal QtyKg { get; set; } = 0;
+        public decimal QtyExtra { get; set; } = 0;
 
         //nav.
         public Order Order { get; set; }

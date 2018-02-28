@@ -20,29 +20,47 @@ namespace TomasGreen.Web.Balances
         {
             _context = context;
         }
-        public PropertyValidatedMessage AddReceiveArticleToBalance(ReceiveArticleWarehouse model)
+        public PropertyValidatedMessage AddPurchasedArticleToBalance(PurchasedArticleWarehouse model, Warehouse onTheWayWarehouse)
         {
-            var result = new PropertyValidatedMessage(true, "AddReceiveArticleToBalance", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidatedMessage(true, "AddPurchasedArticleToBalance", "ArticleWarehouseBalance", "", "");
             try
             {
-                var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ReceiveArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
+                var articleWarehouseBalance = new ArticleWarehouseBalance();
+                if (onTheWayWarehouse != null)
+                {
+                    articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.WarehouseID == onTheWayWarehouse.ID).FirstOrDefault();
+                }
+                else
+                {
+                    articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
+                }
                 if (articleWarehouseBalance == null)
                 {
-                    var article = _context.Articles.Where(a => a.ID == model.ReceiveArticle.ArticleID).FirstOrDefault();
+                    var article = _context.Articles.Where(a => a.ID == model.PurchasedArticle.ArticleID).FirstOrDefault();
 
                     var newArticleWarehouseBalance = new ArticleWarehouseBalance();
                     newArticleWarehouseBalance.Article = article;
-                    newArticleWarehouseBalance.Warehouse = _context.Warehouses.Where(w => w.ID == model.WarehouseID).FirstOrDefault();
-                    newArticleWarehouseBalance.ArticleID = model.ReceiveArticle.ArticleID;
-                    newArticleWarehouseBalance.WarehouseID = model.WarehouseID;
-                    newArticleWarehouseBalance.QtyBoxesIn = model.QtyBoxes;
-                    newArticleWarehouseBalance.QtyExtraKgIn = model.QtyExtraKg;
-                    newArticleWarehouseBalance.QtyBoxesOut = 0;
-                    newArticleWarehouseBalance.QtyExtraKgOut = 0;
-                    newArticleWarehouseBalance.QtyBoxesReserved = 0;
-                    newArticleWarehouseBalance.QtyBoxesOnhand = model.QtyBoxes;
-                    newArticleWarehouseBalance.QtyExtraKgOnhand = model.QtyExtraKg;
-                    _context.Add(newArticleWarehouseBalance);
+                    if(onTheWayWarehouse != null)
+                    {
+                        newArticleWarehouseBalance.Warehouse = _context.Warehouses.Where(w => w.ID == onTheWayWarehouse.ID).FirstOrDefault();
+                        newArticleWarehouseBalance.WarehouseID = onTheWayWarehouse.ID;
+                    }
+                    else
+                    {
+                        newArticleWarehouseBalance.Warehouse = _context.Warehouses.Where(w => w.ID == model.WarehouseID).FirstOrDefault();
+                        newArticleWarehouseBalance.WarehouseID = model.WarehouseID;
+                    }
+                    newArticleWarehouseBalance.ArticleID = model.PurchasedArticle.ArticleID;
+                    newArticleWarehouseBalance.QtyPackagesIn = model.QtyPackages;
+                    newArticleWarehouseBalance.QtyExtraIn = model.QtyExtra;
+                   // newArticleWarehouseBalance.QtyTotalIn = CalculateTotalPerArticleUnit(model.PurchasedArticle.)
+                    newArticleWarehouseBalance.QtyPackagesOut = 0;
+                    newArticleWarehouseBalance.QtyExtraOut = 0;
+                    newArticleWarehouseBalance.QtyTotalOut = 
+                    newArticleWarehouseBalance.QtyPackagesOnhand = model.QtyPackages;
+                    newArticleWarehouseBalance.QtyExtraOnhand = model.QtyExtra;
+                    //newArticleWarehouseBalance.QtyTotalOnhand = 
+                    //_context.Add(newArticleWarehouseBalance);
                     //await _context.SaveChangesAsync();
                     result.Value = true;
                     return result;
@@ -50,27 +68,11 @@ namespace TomasGreen.Web.Balances
                 }
                 else
                 {
-                    articleWarehouseBalance.QtyBoxesIn += model.QtyBoxes;
-                    articleWarehouseBalance.QtyExtraKgIn += model.QtyExtraKg;
-                    articleWarehouseBalance.QtyExtraKgOnhand += model.QtyExtraKg;
-                    if (articleWarehouseBalance.QtyBoxesReserved > 0)
-                    {
-                        if (model.QtyBoxes >= articleWarehouseBalance.QtyBoxesReserved)
-                        {
-                            var QtyBoxesRest = model.QtyBoxes - articleWarehouseBalance.QtyBoxesReserved;
-
-                            articleWarehouseBalance.QtyBoxesReserved = 0;
-                            articleWarehouseBalance.QtyBoxesOnhand += QtyBoxesRest;
-                        }
-                        else
-                        {
-                            articleWarehouseBalance.QtyBoxesReserved -= model.QtyBoxes;
-                        }
-                    }
-                    else
-                    {
-                        articleWarehouseBalance.QtyBoxesOnhand += model.QtyBoxes;
-                    }
+                    articleWarehouseBalance.QtyPackagesIn += model.QtyPackages;
+                    articleWarehouseBalance.QtyExtraIn += model.QtyExtra;
+                    articleWarehouseBalance.QtyExtraOnhand += model.QtyExtra;
+                    articleWarehouseBalance.QtyPackagesOnhand += model.QtyPackages;
+                   
                     
                     _context.Update(articleWarehouseBalance);
                     //  await _context.SaveChangesAsync();
@@ -85,43 +87,43 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        public PropertyValidatedMessage RemoveReceiveArticleFromBalance(ReceiveArticleWarehouse model)
+        public PropertyValidatedMessage RemovePurchasedArticleFromBalance(PurchasedArticleWarehouse model)
         {
-            var result = new PropertyValidatedMessage(true, "RemoveReceiveArticleFromBalance", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidatedMessage(true, "RemovePurchasedArticleFromBalance", "ArticleWarehouseBalance", "", "");
             try
             {
-                var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ReceiveArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
-                articleWarehouseBalance.QtyBoxesIn -= model.QtyBoxes;
-                if (articleWarehouseBalance.QtyBoxesIn < 0)
+                var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
+                articleWarehouseBalance.QtyPackagesIn -= model.QtyPackages;
+                if (articleWarehouseBalance.QtyPackagesIn < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesIn); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyPackagesIn); result.Message = "Value can not be less then zero.";
                     return result;
                 }
-                articleWarehouseBalance.QtyExtraKgIn -= model.QtyExtraKg;
-                if (articleWarehouseBalance.QtyExtraKgIn < 0)
+                articleWarehouseBalance.QtyExtraIn -= model.QtyExtra;
+                if (articleWarehouseBalance.QtyExtraIn < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraKgIn); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraIn); result.Message = "Value can not be less then zero.";
                     return result;
                 }
                 
-                articleWarehouseBalance.QtyBoxesOnhand -= model.QtyBoxes;
-                if (articleWarehouseBalance.QtyBoxesOnhand < 0)
+                articleWarehouseBalance.QtyPackagesOnhand -= model.QtyPackages;
+                if (articleWarehouseBalance.QtyPackagesOnhand < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesOnhand); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyPackagesOnhand); result.Message = "Value can not be less then zero.";
                     return result;
                 }
-                articleWarehouseBalance.QtyExtraKgOnhand -= model.QtyExtraKg;
-                if (articleWarehouseBalance.QtyExtraKgOnhand < 0)
+                articleWarehouseBalance.QtyExtraOnhand -= model.QtyExtra;
+                if (articleWarehouseBalance.QtyExtraOnhand < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraKgOnhand); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraOnhand); result.Message = "Value can not be less then zero.";
                     return result;
                 }
 
                 
-                //if (articleWarehouseBalance.QtyBoxesOnhand < 0)
+                //if (articleWarehouseBalance.QtyPackagesOnhand < 0)
                 //{
-                //    articleWarehouseBalance.QtyBoxesReserved += (articleWarehouseBalance.QtyBoxesOnhand * -1);
-                //    articleWarehouseBalance.QtyBoxesOnhand = 0;
+                //    articleWarehouseBalance.QtyPackagesReserved += (articleWarehouseBalance.QtyPackagesOnhand * -1);
+                //    articleWarehouseBalance.QtyPackagesOnhand = 0;
                 //}
                 _context.Update(articleWarehouseBalance);
             }
@@ -146,19 +148,18 @@ namespace TomasGreen.Web.Balances
                     result.Value = false; result.Property = nameof(articleWarehouseBalance.ID); result.Message = "There is no such article in this warehouse.";
                     return result;
                 }
-                articleWarehouseBalance.QtyBoxesOut += model.QtyBoxes;
-                articleWarehouseBalance.QtyExtraKgOut += model.QtyKg;
-                articleWarehouseBalance.QtyBoxesReserved += model.QtyReserveBoxes;
-                articleWarehouseBalance.QtyBoxesOnhand -= model.QtyBoxes;
-                if(articleWarehouseBalance.QtyBoxesOnhand < 0)
+                articleWarehouseBalance.QtyPackagesOut += model.QtyPackages;
+                articleWarehouseBalance.QtyExtraOut += model.QtyExtra;
+                articleWarehouseBalance.QtyPackagesOnhand -= model.QtyPackages;
+                if(articleWarehouseBalance.QtyPackagesOnhand < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesOnhand); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyPackagesOnhand); result.Message = "Value can not be less then zero.";
                     return result;
                 }
-                articleWarehouseBalance.QtyExtraKgOnhand -= model.QtyKg;
-                if(articleWarehouseBalance.QtyExtraKgOnhand < 0)
+                articleWarehouseBalance.QtyExtraOnhand -= model.QtyExtra;
+                if(articleWarehouseBalance.QtyExtraOnhand < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraKgOnhand); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraOnhand); result.Message = "Value can not be less then zero.";
                     return result;
                 }
                 _context.Update(articleWarehouseBalance);
@@ -184,28 +185,22 @@ namespace TomasGreen.Web.Balances
                     result.Value = false; result.Property = nameof(articleWarehouseBalance.ID); result.Message = "There is no such article in this warehouse.";
                     return result;
                 }
-                // What to do in case model has reserve?
-                articleWarehouseBalance.QtyBoxesReserved -= model.QtyReserveBoxes;
-                if (articleWarehouseBalance.QtyBoxesReserved < 0)
+                               
+                articleWarehouseBalance.QtyPackagesOut -= model.QtyPackages;
+                if(articleWarehouseBalance.QtyPackagesOut < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesReserved); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyPackagesOut); result.Message = "Value can not be less then zero.";
                     return result;
                 }
-                articleWarehouseBalance.QtyBoxesOut -= model.QtyBoxes;
-                if(articleWarehouseBalance.QtyBoxesOut < 0)
+                articleWarehouseBalance.QtyExtraOut -= model.QtyExtra;
+                if(articleWarehouseBalance.QtyExtraOut < 0)
                 {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyBoxesOut); result.Message = "Value can not be less then zero.";
-                    return result;
-                }
-                articleWarehouseBalance.QtyExtraKgOut -= model.QtyKg;
-                if(articleWarehouseBalance.QtyExtraKgOut < 0)
-                {
-                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraKgOut); result.Message = "Value can not be less then zero.";
+                    result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraOut); result.Message = "Value can not be less then zero.";
                     return result;
                 }
 
-                articleWarehouseBalance.QtyBoxesOnhand += model.QtyBoxes;
-                articleWarehouseBalance.QtyExtraKgOnhand += model.QtyKg;
+                articleWarehouseBalance.QtyPackagesOnhand += model.QtyPackages;
+                articleWarehouseBalance.QtyExtraOnhand += model.QtyExtra;
 
                 _context.Update(articleWarehouseBalance);
 

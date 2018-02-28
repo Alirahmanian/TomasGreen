@@ -12,9 +12,10 @@ namespace TomasGreen.Model.Models
         public string Address { get; set; }
         public string Phone { get; set; }
         public bool Archive { get; set; }
+        public bool IsReserve { get; set; }
 
         //nav
-        public virtual IEnumerable<ReceiveArticleWarehouse> ReceivedArticles { get; set; }
+        public  ICollection<PurchasedArticleWarehouse> PurchasedArticles { get; set; }
         //  public virtual ArticleWarehouseBalance ArticleWarehouseBalance { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
 

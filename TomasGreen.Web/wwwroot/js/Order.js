@@ -133,7 +133,7 @@ function LoadCustomerInfo(customer) {
 //=======================================
 function LoadArticleWarehoseBalance(warehouse) {
     if ($(warehouse).val() !== "" && $(warehouse).val() !== "0" && $(warehouse).val() !== "Select") {
-        if ($("#OrderDetail_ArticleID").val() != "" && $("#OrderDetail_ArticleID").val() !== "0" && $("#OrderDetail_ArticleID").val() !== "Select") {
+        if ($("#OrderDetail_ArticleID").val() !== "" && $("#OrderDetail_ArticleID").val() !== "0" && $("#OrderDetail_ArticleID").val() !== "Select") {
             $("#ArticleWarehouseBalance").load("GetArticleWarehouseBalance",
                 { articleId: $("#OrderDetail_ArticleID").val(), warehouseId: $(warehouse).val() });
         }

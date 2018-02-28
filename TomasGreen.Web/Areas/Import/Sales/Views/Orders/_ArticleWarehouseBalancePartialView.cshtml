@@ -1,0 +1,60 @@
+﻿@model TomasGreen.Model.Models.ArticleWarehouseBalance
+
+<div>
+    <h4>ArticleWarehouseBalance</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.QtyBoxesIn)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.QtyBoxesIn)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.QtyExtraKgIn)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.QtyExtraKgIn)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.QtyBoxesOut)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.QtyBoxesOut)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.QtyExtraKgOut)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.QtyExtraKgOut)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.QtyBoxesOnhand)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.QtyBoxesOnhand)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.QtyExtraKgOnhand)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.QtyExtraKgOnhand)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Article)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Article.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Warehouse)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Warehouse.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

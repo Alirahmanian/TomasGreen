@@ -47,4 +47,8 @@ namespace TomasGreen.Web
 
         public string CurrentLanguage { get; set; }
     }
+
+    public class Common
+    {
+    }
 }
