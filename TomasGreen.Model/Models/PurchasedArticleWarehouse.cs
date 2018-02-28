@@ -12,8 +12,8 @@ namespace TomasGreen.Model.Models
         public Int64 PurchasedArticleID { get; set; }
         [Required(ErrorMessage = "Please choose a warehouse.")]
         public Int64 WarehouseID { get; set; }
-        [Display(Name = "Boxes")]
-        [Required(ErrorMessage = "Please put boxes.")]
+        [Display(Name = "Packages")]
+        [Required(ErrorMessage = "Please put packages.")]
         [Range(0, Int32.MaxValue)]
         public int QtyPackages { get; set; } = 0;
         [Display(Name = "Extra")]

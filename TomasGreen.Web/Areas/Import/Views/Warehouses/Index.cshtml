@@ -28,7 +28,7 @@
                 @Html.DisplayNameFor(model => model.Phone)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsReserve)
+                @Html.DisplayNameFor(model => model.IsOnTheWay)
             </th>
             <th></th>
         </tr>
@@ -50,7 +50,7 @@
                     @Html.DisplayFor(modelItem => item.Phone)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IsReserve)
+                    @Html.DisplayFor(modelItem => item.IsOnTheWay)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

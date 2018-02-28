@@ -20,48 +20,29 @@ namespace TomasGreen.Web.Balances
         {
             _context = context;
         }
-        public PropertyValidatedMessage AddPurchasedArticleToBalance(PurchasedArticleWarehouse model, Warehouse onTheWayWarehouse)
+        public PropertyValidatedMessage AddPurchasedArticleToBalance(PurchasedArticleWarehouse model)
         {
             var result = new PropertyValidatedMessage(true, "AddPurchasedArticleToBalance", "ArticleWarehouseBalance", "", "");
             try
             {
                 var articleWarehouseBalance = new ArticleWarehouseBalance();
-                if (onTheWayWarehouse != null)
-                {
-                    articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.WarehouseID == onTheWayWarehouse.ID).FirstOrDefault();
-                }
-                else
-                {
-                    articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
-                }
+                var article = _context.Articles.Where(a => a.ID == model.PurchasedArticle.ArticleID).FirstOrDefault();
+                articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.Article.ArticleUnitID == article.ArticleUnitID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
                 if (articleWarehouseBalance == null)
                 {
-                    var article = _context.Articles.Where(a => a.ID == model.PurchasedArticle.ArticleID).FirstOrDefault();
-
                     var newArticleWarehouseBalance = new ArticleWarehouseBalance();
+                    newArticleWarehouseBalance.Warehouse = _context.Warehouses.Where(w => w.ID == model.WarehouseID).FirstOrDefault();
+                    newArticleWarehouseBalance.WarehouseID = model.WarehouseID;
+                   
                     newArticleWarehouseBalance.Article = article;
-                    if(onTheWayWarehouse != null)
-                    {
-                        newArticleWarehouseBalance.Warehouse = _context.Warehouses.Where(w => w.ID == onTheWayWarehouse.ID).FirstOrDefault();
-                        newArticleWarehouseBalance.WarehouseID = onTheWayWarehouse.ID;
-                    }
-                    else
-                    {
-                        newArticleWarehouseBalance.Warehouse = _context.Warehouses.Where(w => w.ID == model.WarehouseID).FirstOrDefault();
-                        newArticleWarehouseBalance.WarehouseID = model.WarehouseID;
-                    }
-                    newArticleWarehouseBalance.ArticleID = model.PurchasedArticle.ArticleID;
+                    newArticleWarehouseBalance.ArticleID = article.ID;
                     newArticleWarehouseBalance.QtyPackagesIn = model.QtyPackages;
                     newArticleWarehouseBalance.QtyExtraIn = model.QtyExtra;
-                   // newArticleWarehouseBalance.QtyTotalIn = CalculateTotalPerArticleUnit(model.PurchasedArticle.)
                     newArticleWarehouseBalance.QtyPackagesOut = 0;
                     newArticleWarehouseBalance.QtyExtraOut = 0;
-                    newArticleWarehouseBalance.QtyTotalOut = 
                     newArticleWarehouseBalance.QtyPackagesOnhand = model.QtyPackages;
                     newArticleWarehouseBalance.QtyExtraOnhand = model.QtyExtra;
-                    //newArticleWarehouseBalance.QtyTotalOnhand = 
-                    //_context.Add(newArticleWarehouseBalance);
-                    //await _context.SaveChangesAsync();
+                    _context.Add(newArticleWarehouseBalance);
                     result.Value = true;
                     return result;
 
@@ -72,8 +53,6 @@ namespace TomasGreen.Web.Balances
                     articleWarehouseBalance.QtyExtraIn += model.QtyExtra;
                     articleWarehouseBalance.QtyExtraOnhand += model.QtyExtra;
                     articleWarehouseBalance.QtyPackagesOnhand += model.QtyPackages;
-                   
-                    
                     _context.Update(articleWarehouseBalance);
                     //  await _context.SaveChangesAsync();
                 }
@@ -87,12 +66,14 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        public PropertyValidatedMessage RemovePurchasedArticleFromBalance(PurchasedArticleWarehouse model)
+        public  PropertyValidatedMessage RemovePurchasedArticleFromBalance(PurchasedArticleWarehouse model)
         {
             var result = new PropertyValidatedMessage(true, "RemovePurchasedArticleFromBalance", "ArticleWarehouseBalance", "", "");
             try
             {
-                var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
+                var articleWarehouseBalance = new ArticleWarehouseBalance();
+                var article = _context.Articles.Where(a => a.ID == model.PurchasedArticle.ArticleID).FirstOrDefault();
+                articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.PurchasedArticle.ArticleID && b.Article.ArticleUnitID == article.ArticleUnitID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
                 articleWarehouseBalance.QtyPackagesIn -= model.QtyPackages;
                 if (articleWarehouseBalance.QtyPackagesIn < 0)
                 {
@@ -118,13 +99,7 @@ namespace TomasGreen.Web.Balances
                     result.Value = false; result.Property = nameof(articleWarehouseBalance.QtyExtraOnhand); result.Message = "Value can not be less then zero.";
                     return result;
                 }
-
-                
-                //if (articleWarehouseBalance.QtyPackagesOnhand < 0)
-                //{
-                //    articleWarehouseBalance.QtyPackagesReserved += (articleWarehouseBalance.QtyPackagesOnhand * -1);
-                //    articleWarehouseBalance.QtyPackagesOnhand = 0;
-                //}
+               
                 _context.Update(articleWarehouseBalance);
             }
             catch (Exception exception)
@@ -210,6 +185,26 @@ namespace TomasGreen.Web.Balances
                 result.Value = false; result.Property = "Exception"; result.Message = exception.Message.ToString();
                 return result;
             }
+            return result;
+        }
+
+        private decimal CalculateTotalPerArticleUnit(PurchasedArticleWarehouse model)
+        {
+            decimal result = 0;
+            var article = _context.Articles.Where(a => a.ID == model.PurchasedArticle.ArticleID).FirstOrDefault();
+            var unit = _context.ArticleUnits.Where(u => u.ID == article.ArticleUnitID).FirstOrDefault();
+            if (unit != null)
+            {
+                if(unit.MeasuresByKg)
+                {
+                    result = (model.QtyPackages * article.WeightPerPackage) + model.QtyExtra;
+                }
+                else
+                {
+                    result = model.QtyPackages;
+                }
+            }
+
             return result;
         }
 

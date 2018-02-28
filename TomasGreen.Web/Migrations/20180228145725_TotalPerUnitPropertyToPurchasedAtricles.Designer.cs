@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180228145725_TotalPerUnitPropertyToPurchasedAtricles")]
+    partial class TotalPerUnitPropertyToPurchasedAtricles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,6 +264,12 @@ namespace TomasGreen.Web.Migrations
                     b.Property<int>("QtyPackagesOnhand");
 
                     b.Property<int>("QtyPackagesOut");
+
+                    b.Property<decimal>("QtyTotalIn");
+
+                    b.Property<decimal>("QtyTotalOnhand");
+
+                    b.Property<decimal>("QtyTotalOut");
 
                     b.Property<string>("UserName");
 
@@ -607,7 +614,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<bool>("IsOnTheWay");
+                    b.Property<bool>("IsReserve");
 
                     b.Property<DateTime?>("ModifiedDate");
 

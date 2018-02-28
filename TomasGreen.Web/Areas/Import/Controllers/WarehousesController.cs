@@ -58,7 +58,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Address,Phone, IsReserve")] Warehouse warehouse)
+        public async Task<IActionResult> Create([Bind("Name,Description,Address,Phone, IsOnTheWay")] Warehouse warehouse)
         {
             if (ModelState.IsValid)
             {
@@ -67,9 +67,9 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     ModelState.AddModelError(nameof(warehouse.Name), _localizer["Name is already taken."]);
                     return View(warehouse);
                 }
-                if (!VerifyUniqueIsReserveWarehouse(warehouse))
+                if (!VerifyUniqueIsOnTheWayWarehouse(warehouse))
                 {
-                    ModelState.AddModelError(nameof(warehouse.IsReserve), _localizer["There is already a reserve warehouse."]);
+                    ModelState.AddModelError(nameof(warehouse.IsOnTheWay), _localizer["There is already a reserve warehouse."]);
                     return View(warehouse);
                 }
                 _context.Add(warehouse);
@@ -100,7 +100,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,Name,Description,Address,Phone,AddedDate, IsReserve")] Warehouse warehouse)
+        public async Task<IActionResult> Edit(long id, [Bind("ID,Name,Description,Address,Phone,AddedDate, IsOnTheWay")] Warehouse warehouse)
         {
             if (id != warehouse.ID)
             {
@@ -116,9 +116,9 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         ModelState.AddModelError(nameof(warehouse.Name), _localizer["Name is already taken."]);
                         return View(warehouse);
                     }
-                    if (!VerifyUniqueIsReserveWarehouse(warehouse))
+                    if (!VerifyUniqueIsOnTheWayWarehouse(warehouse))
                     {
-                        ModelState.AddModelError(nameof(warehouse.IsReserve), _localizer["There is already a reserve warehouse."]);
+                        ModelState.AddModelError(nameof(warehouse.IsOnTheWay), _localizer["There is already a reserve warehouse."]);
                         return View(warehouse);
                     }
                     _context.Update(warehouse);
@@ -210,11 +210,11 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             return true;
         }
 
-        public bool VerifyUniqueIsReserveWarehouse(Warehouse model)
+        public bool VerifyUniqueIsOnTheWayWarehouse(Warehouse model)
         {
-            if (model.IsReserve)
+            if (model.IsOnTheWay)
             {
-                var warehouse = _context.Warehouses.Where(a => a.IsReserve == true).AsNoTracking().FirstOrDefault();
+                var warehouse = _context.Warehouses.Where(a => a.IsOnTheWay == true).AsNoTracking().FirstOrDefault();
                 if (warehouse != null)
                 {
                     if (model.ID > 0)
