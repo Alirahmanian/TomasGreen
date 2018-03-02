@@ -8,16 +8,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.Data;
-using TomasGreen.Web.Areas.Sales.ViewModels;
+using TomasGreen.Web.Areas.Import.ViewModels;
 using TomasGreen.Web.Balances;
 using TomasGreen.Web.Validations;
 using TomasGreen.Web.Extensions;
+using TomasGreen.Web.BaseModels;
 
-
-namespace TomasGreen.Web.Areas.Sales.Controllers
+namespace TomasGreen.Web.Areas.Import.Controllers
 {
-    [Area("Sales")]
-    public class OrdersController : Controller
+    [Area("Import")]
+    public class OrdersController : BaseController
     {
         private readonly ApplicationDbContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -121,12 +121,24 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
                 if(model.Order.ID == 0)
                 {
                     //new order
-
+                    var guid = Guid.NewGuid();
+                    model.Order.Guid = guid;
                     _context.Add(model.Order);
                     await _context.SaveChangesAsync();
-
-                    AddOrderLists(model);
-                    return View(model);
+                    var savedOrder = _context.Orders.Where(o => o.OrderDate == model.Order.OrderDate && o.CompanyID == model.Order.CompanyID && o.Guid == guid).FirstOrDefault();
+                    if (savedOrder != null)
+                    {
+                        model.Order = savedOrder;
+                        AddOrderLists(model);
+                        return View(model);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Could't save Order.");
+                        AddOrderLists(model);
+                        return View(model);
+                    }
+                   
                 }
                 else
                 {
@@ -139,8 +151,8 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
                             //var articlePackageWeight = _context.Articles.Where(a => a.ID == model.OrderDetail.ArticleID).FirstOrDefault()?.PackageWeight ?? 0;
                             //var totalWeight = (model.OrderDetail.QtyBoxes * articlePackageWeight) + (model.OrderDetail.QtyReserveBoxes * articlePackageWeight) + model.OrderDetail.QtyKg;
                             
-                            var totalWeight = OrderValidation.OrderDetailITotalWeight(_context, model.OrderDetail);
-                            model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeight;
+                            var totalWeightOrPackage = OrderValidation.OrderDetailTotalWeightOrPackage(_context, model.OrderDetail);
+                            model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeightOrPackage;
                             if(model.OrderDetail.OrderID == 0)
                             {
                                 model.OrderDetail.OrderID = model.Order.ID;
@@ -291,25 +303,29 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
             ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
             ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
-            if (model.ArticleCategory != null)
+            if(model.Order.ID > 0)
             {
-                ViewData["ArticleID"] = new SelectList(_context.Articles.Where(a => a.ArticleCategoryID == model.ArticleCategory.ID), "ID", "Name");
+                if (model.ArticleCategory != null)
+                {
+                    ViewData["ArticleID"] = new SelectList(_context.Articles.Where(a => a.ArticleCategoryID == model.ArticleCategory.ID), "ID", "Name");
+                }
+                if (model.OrderDetail != null && model.OrderDetail.ArticleID != 0)
+                {
+                    ViewData["WarehouseID"] = new SelectList((from aw in _context.ArticleWarehouseBalances
+                                                              where aw.ArticleID == model.OrderDetail.ArticleID
+                                                              join a in _context.Articles on aw.ArticleID equals a.ID
+                                                              join w in _context.Warehouses on aw.WarehouseID equals w.ID
+                                                              orderby w.Name
+                                                              select new
+                                                              {
+                                                                  Id = w.ID,
+                                                                  Name = w.Name,
+                                                                  Articlesonhand = " [Box: " + aw.QtyPackagesOnhand.ToString() + ", Extra: " + aw.QtyExtraOnhand.ToString() + "]"
+                                                              }
+                                    ), "ID", "Name");
+                }
             }
-            if(model.OrderDetail.ArticleID != 0)
-            {
-                ViewData["WarehouseID"] = new SelectList((from aw in _context.ArticleWarehouseBalances
-                                                                           where aw.ArticleID == model.OrderDetail.ArticleID
-                                                                           join a in _context.Articles on aw.ArticleID equals a.ID
-                                                                           join w in _context.Warehouses on aw.WarehouseID equals w.ID
-                                                                           orderby w.Name
-                                                                           select new
-                                                                           {
-                                                                               Id = w.ID,
-                                                                               Name = w.Name,
-                                                                               Articlesonhand = " [Box: " + aw.QtyPackagesOnhand.ToString() + ", Extra: " + aw.QtyExtraOnhand.ToString() + "]"
-                                                                           }
-                                ), "ID", "Name");
-            }
+            
            
         }
        
@@ -324,7 +340,7 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
             return new JsonResult(articleCategories);
         }
 
-        public JsonResult GetArticlesByCategoryId (Int64 categoryId)
+        public JsonResult GetArticlesByCategoryId (int categoryId)
         {
             var articles = from a in _context.Articles where a.ArticleCategoryID == categoryId orderby a.Name select new { ID = a.ID, Name = a.Name };
 
@@ -340,7 +356,7 @@ namespace TomasGreen.Web.Areas.Sales.Controllers
                                  select new
                                  {
                                      Id = w.ID, Name = w.Name, 
-                                     Articlesonhand = " [Box: " + aw.QtyPackagesOnhand.ToString() + ", Extra: " + aw.QtyExtraOnhand.ToString() + "]"
+                                     Articlesonhand = " [Package: " + aw.QtyPackagesOnhand.ToString() + ", Extra: " + aw.QtyExtraOnhand.ToString() + "]"
                                  }
                                 );
             return new JsonResult(warehouses.ToList());

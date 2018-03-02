@@ -7,9 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using TomasGreen.Web.Validations;
 
-
-
-
 namespace TomasGreen.Web.Balances
 {
     public class ArticleBalance
@@ -188,25 +185,7 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        private decimal CalculateTotalPerArticleUnit(PurchasedArticleWarehouse model)
-        {
-            decimal result = 0;
-            var article = _context.Articles.Where(a => a.ID == model.PurchasedArticle.ArticleID).FirstOrDefault();
-            var unit = _context.ArticleUnits.Where(u => u.ID == article.ArticleUnitID).FirstOrDefault();
-            if (unit != null)
-            {
-                if(unit.MeasuresByKg)
-                {
-                    result = (model.QtyPackages * article.WeightPerPackage) + model.QtyExtra;
-                }
-                else
-                {
-                    result = model.QtyPackages;
-                }
-            }
-
-            return result;
-        }
+        
 
     }
 }

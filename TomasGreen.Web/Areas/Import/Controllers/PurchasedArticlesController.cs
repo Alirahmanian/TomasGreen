@@ -107,10 +107,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 var guid = Guid.NewGuid();
                 model.PurchasedArticle.Guid = guid;
+                model.PurchasedArticle.Discount = 0;
+                model.PurchasedArticle.Received = false;
+                model.PurchasedArticle.TotalPrice = 0;
+                model.PurchasedArticle.TotalPerUnit = 0;
                 _context.Add(model.PurchasedArticle);
                 await _context.SaveChangesAsync();
-                var savedPurchasedArticle = _context.PurchasedArticles.Where(r => r.Date == model.PurchasedArticle.Date && r.ArticleID == r.ArticleID && r.Guid == guid).FirstOrDefault();
-                if(savedPurchasedArticle != null)
+                var savedPurchasedArticle = _context.PurchasedArticles.Where(r => r.Date == model.PurchasedArticle.Date && r.ArticleID == model.PurchasedArticle.ArticleID && r.Guid == guid).FirstOrDefault();
+                if(savedPurchasedArticle == null)
                 {
                     ModelState.AddModelError("", "Couldn't saved.");
                     model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
@@ -126,22 +130,22 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     return View(model);
                 }
                 var articleBalance = new ArticleBalance(_context);
-                var tempPurchasesArticleWarehouse = new PurchasedArticleWarehouse();
-                tempPurchasesArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
-                tempPurchasesArticleWarehouse.Warehouse = onThewayWarehouse;
-                tempPurchasesArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
-                tempPurchasesArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
+                var tempPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
+                tempPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
+                tempPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
+                tempPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
+                tempPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
                     foreach (var purchasedArticleWarehouse in model.PurchasedArticleWarehouses)
                     {
                         if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                         {
                             purchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
                             _context.Add(purchasedArticleWarehouse);
-                            tempPurchasesArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            tempPurchasesArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
+                            tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
+                            tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
                         }
                     }
-                var result = articleBalance.AddPurchasedArticleToBalance(tempPurchasesArticleWarehouse);
+                var result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
                 if (result.Value == false)
                 {
                     ModelState.AddModelError("", "Couldn't saved.");
@@ -168,22 +172,22 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     var errors = new List<PropertyValidatedMessage>();
                     var articleBalance = new ArticleBalance(_context);
                     var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
-                    var tempPurchasesArticleWarehouse = new PurchasedArticleWarehouse();
-                    tempPurchasesArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
-                    tempPurchasesArticleWarehouse.Warehouse = onThewayWarehouse;
-                    tempPurchasesArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
-                    tempPurchasesArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
+                    var tempPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
+                    tempPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
+                    tempPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
+                    tempPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
+                    tempPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
                     foreach (var purchasedArticleWarehouse in savedPurchasedArticle.Warehouses)
                     {
                         if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                         {
-                            tempPurchasesArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            tempPurchasesArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
+                            tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
+                            tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
                             _context.Remove(purchasedArticleWarehouse);
                         }
                     }
                   
-                    var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasesArticleWarehouse);
+                    var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasedArticleWarehouse);
                     if (result.Value == false)
                     {
                         ModelState.AddModelError("", "Couldn't saved.");
@@ -201,14 +205,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     {
                         // rollBack Company balance
                     }
-                    tempPurchasesArticleWarehouse.QtyPackages = 0;
-                    tempPurchasesArticleWarehouse.QtyExtra = 0;
+                    tempPurchasedArticleWarehouse.QtyPackages = 0;
+                    tempPurchasedArticleWarehouse.QtyExtra = 0;
                     foreach (var purchasedArticleWarehouse in model.PurchasedArticleWarehouses)
                     {
                         if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                         {
-                            tempPurchasesArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            tempPurchasesArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
+                            tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
+                            tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
 
                             purchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
                             purchasedArticleWarehouse.AddedDate = savedPurchasedArticle.AddedDate;
@@ -217,7 +221,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                            
                         }
                     }
-                    result = articleBalance.AddPurchasedArticleToBalance(tempPurchasesArticleWarehouse);
+                    result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
                     if (result.Value == false)
                     {
                         ModelState.AddModelError("", "Couldn't saved.");
@@ -286,30 +290,39 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var purchasedArticle = await _context.PurchasedArticles.Include(w => w.Warehouses).SingleOrDefaultAsync(m => m.ID == id);
+            var savedPurchasedArticle = await _context.PurchasedArticles.Include(w => w.Warehouses).SingleOrDefaultAsync(m => m.ID == id);
             //rollback old values from article balance
-            var articleBalance = new ArticleBalance(_context);
-            foreach (var purchasedArticleWarehouse in purchasedArticle.Warehouses)
+            if(savedPurchasedArticle.Warehouses.Count() > 0)
             {
-                if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
+                var articleBalance = new ArticleBalance(_context);
+                var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
+                var tempPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
+                tempPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
+                tempPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
+                tempPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
+                tempPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
+                foreach (var purchasedArticleWarehouse in savedPurchasedArticle.Warehouses)
                 {
-                    var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
-                    var result = articleBalance.RemovePurchasedArticleFromBalance(purchasedArticleWarehouse, onThewayWarehouse);
-                   if (result.Value == false)
+                    if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                     {
-                        ModelState.AddModelError("", "Couldn't saved.");
-                        if (_hostingEnvironment.IsDevelopment())
-                        {
-                            ModelState.AddModelError("", JSonHelper.ToJSon(result));
-                        }
-                        return View(purchasedArticle);
-
+                        tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
+                        tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
+                        _context.Remove(purchasedArticleWarehouse);
                     }
-                    _context.Remove(purchasedArticleWarehouse);
+                }
+                var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasedArticleWarehouse);
+                if (result.Value == false)
+                {
+                    ModelState.AddModelError("", "Couldn't saved.");
+                    if (_hostingEnvironment.IsDevelopment())
+                    {
+                        ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                    }
+                    return View(savedPurchasedArticle);
+
                 }
             }
-
-            _context.PurchasedArticles.Remove(purchasedArticle);
+            _context.PurchasedArticles.Remove(savedPurchasedArticle);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -327,6 +340,25 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         #region 
+        private decimal GetTotalPerUnit(PurchasedArticleWarehouse model)
+        {
+            decimal result = 0;
+            var article = _context.Articles.Where(a => a.ID == model.PurchasedArticle.ArticleID).FirstOrDefault();
+            var unit = _context.ArticleUnits.Where(u => u.ID == article.ArticleUnitID).FirstOrDefault();
+            if (unit != null)
+            {
+                if (unit.MeasuresByKg)
+                {
+                    result = (model.QtyPackages * article.WeightPerPackage) + model.QtyExtra;
+                }
+                else
+                {
+                    result = model.QtyPackages;
+                }
+            }
+
+            return result;
+        }
         private List<PurchasedArticleViewModel> GetIndexList()
         {
             var purchasedArticles = _context.PurchasedArticles.Include(r => r.Article).ThenInclude(u => u.ArticleUnit).Include(r => r.Company).Include(r => r.Warehouses).OrderBy(r => r.Date).ThenBy(r => r.Article.Name).ThenBy(r => r.Company.Name).AsNoTracking().ToList();

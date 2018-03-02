@@ -6,7 +6,7 @@ function LoadArticleCategories(element) {
         $.ajax
             ({
                 type: "GET",
-                url: 'Sales/Orders/GetArticleCategories',
+                url: 'GetArticleCategories',
                 success: function (data) {
                     ArticleCategories = data;
                     renderArticleCategories(element);
@@ -39,7 +39,7 @@ function LoadArticles(ArticleCategory) {
     if ($(ArticleCategory).val() !== "0" && $(ArticleCategory).val() !== "Select") {
         $.ajax({
             type: "GET",
-            url: "GetArticlesByCategoryId",
+            url: "https://localhost:44378/en/Import/Orders/GetArticlesByCategoryId",
             data: { 'categoryId': $(ArticleCategory).val() },
             dataType: "json",
             success: function (data) {
@@ -75,7 +75,7 @@ function LoadWarehouses(Article) {
     if ($(Article).val() !== "0" && $(Article).val() !== "Select") {
         $.ajax({
             type: "GET",
-            url: "GetWarehousesByArticleID",
+            url: "https://localhost:44378/en/Import/Orders/GetWarehousesByArticleID",
             data: { 'articleId': $("#OrderDetail_ArticleID").val() },
             success: function (data) {
                 renderWarehouses($("#OrderDetail_WarehouseID"), data);

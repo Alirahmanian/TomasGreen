@@ -52,12 +52,13 @@ namespace TomasGreen.Model.Models
         [Display(Name = "payment notes")]
         public string PaymentWarning { get; set; }
         [Display(Name = "Forced date")]
-        public bool ForcedPaid { get; set; }
+        public bool ForcedPaid { get; set; } = false;
         [Display(Name = "Order is paid")]
-        public bool OrderPaid { get; set; }
-        public bool Cash { get; set; }
-        public bool Confirmed { get; set; }
-        public bool Archive { get; set; } 
+        public bool OrderPaid { get; set; } = false;
+        public bool Cash { get; set; } = false;
+        public bool Confirmed { get; set; } = false;
+        public bool Archive { get; set; } = false;
+        public Guid? Guid { get; set; }
 
 
         public Company Company { get; set; }

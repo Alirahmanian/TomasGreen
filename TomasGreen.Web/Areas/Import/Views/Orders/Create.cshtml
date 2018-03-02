@@ -1,4 +1,4 @@
-﻿@model TomasGreen.Web.Areas.Sales.ViewModels.SaveOrderViewModel
+﻿@model TomasGreen.Web.Areas.Import.ViewModels.SaveOrderViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -73,7 +73,15 @@
                     <div><br /></div>
                     <div id="OrdedDetail_Mess">Mess</div>
                     <div>
-                        @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Sales.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail.ArticleID, warehousId = Model.OrderDetail.WarehouseID })
+                        @{
+                            @if (Model.Order.ID > 0 && Model.Order.OrderDetails.Count > 0)
+                            {
+                                  @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Import.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail.ArticleID, warehousId = Model.OrderDetail.WarehouseID })
+                            
+
+                            }
+
+                        }
                     </div>
                     <div id="ArticleWarehouseBalance"></div>
                     <div class="col-md-12">
@@ -99,16 +107,16 @@
                         </div>
                         <div class="col-md-1">
                             <div class="form-group">
-                                <label asp-for="@Model.OrderDetail.QtyBoxes" class="control-label">Box</label>
-                                <input asp-for="@Model.OrderDetail.QtyBoxes" class="form-control" />
-                                <span asp-validation-for="@Model.OrderDetail.QtyBoxes" class="text-danger"></span>
+                                <label asp-for="@Model.OrderDetail.QtyPackages" class="control-label">Package</label>
+                                <input asp-for="@Model.OrderDetail.QtyPackages" class="form-control" />
+                                <span asp-validation-for="@Model.OrderDetail.QtyPackages" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-1">
                             <div class="form-group">
-                                <label asp-for="@Model.OrderDetail.QtyKg" class="control-label">Extra kg</label>
-                                <input asp-for="@Model.OrderDetail.QtyKg" class="form-control" />
-                                <span asp-validation-for="@Model.OrderDetail.QtyKg" class="text-danger"></span>
+                                <label asp-for="@Model.OrderDetail.QtyExtra" class="control-label">Extra</label>
+                                <input asp-for="@Model.OrderDetail.QtyExtra" class="form-control" />
+                                <span asp-validation-for="@Model.OrderDetail.QtyExtra" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-1">

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TomasGreen.Model.Models;
 
-namespace TomasGreen.Web.Areas.Sales.ViewModels
+namespace TomasGreen.Web.Areas.Import.ViewModels
 {
     public class SaveOrderViewModel
     {

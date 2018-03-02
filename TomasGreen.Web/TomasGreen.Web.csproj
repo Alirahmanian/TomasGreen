@@ -59,6 +59,7 @@
     <Folder Include="Areas\FoodCity\Views\" />
     <Folder Include="Areas\Import\Management\Data\" />
     <Folder Include="Areas\Import\Management\Models\" />
+    <Folder Include="Areas\Import\Sales\ViewModels\" />
     <Folder Include="Areas\Office\Controllers\" />
     <Folder Include="Areas\Office\Data\" />
     <Folder Include="Areas\Office\Models\" />

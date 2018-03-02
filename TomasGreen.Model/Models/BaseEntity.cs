@@ -12,7 +12,7 @@ namespace TomasGreen.Model.Models
         public Int64 ID { get; set; }
         [ScaffoldColumn(false)]
         [DisplayName("Created by")]
-        public DateTime AddedDate { get; set; }
+        public DateTime AddedDate { get; set; } = DateTime.Now;
         [ScaffoldColumn(false)]
         [DisplayName("Changed by")]
         public DateTime? ModifiedDate { get; set; }

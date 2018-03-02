@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TomasGreen.Web.Data;
 using TomasGreen.Model.Models;
 
-namespace TomasGreen.Web.Areas.Sales.Components
+namespace TomasGreen.Web.Areas.Import.Components
 {
     public class ArticleWarehouseAvailability : ViewComponent
     {

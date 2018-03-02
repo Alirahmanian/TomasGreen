@@ -20,6 +20,17 @@ namespace TomasGreen.Model.Models
         [Range(0, Int32.MaxValue)]
         public decimal QtyExtra { get; set; } = 0;
 
+        //Arrived
+        public DateTime? ArrivedDate{ get; set; }
+        [Display(Name = "Packages arrived")]
+        [Required(ErrorMessage = "Please put packages.")]
+        [Range(0, Int32.MaxValue)]
+        public int QtyPackagesArrived { get; set; } = 0;
+        [Display(Name = "Extra arrived")]
+        [Range(0, Int32.MaxValue)]
+        public decimal QtyExtraArrived { get; set; } = 0;
+
+
         //nav
         public virtual PurchasedArticle PurchasedArticle { get; set; }
         public virtual Warehouse Warehouse { get; set; }

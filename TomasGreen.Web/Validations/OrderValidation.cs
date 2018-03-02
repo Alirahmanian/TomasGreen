@@ -24,33 +24,46 @@ namespace TomasGreen.Web.Validations
         }
         public static PropertyValidatedMessage OrderDetailIsValid(ApplicationDbContext _context, OrderDetail model)
         {
+            var result = new PropertyValidatedMessage(true, "OrderDetailIsValid", "OrderDetail", "", "");
             if (model.OrderID == 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.OrderID), "Order id is missing."));
+                result.Value = false; result.Property = nameof(model.OrderID); result.Message = "Order id is missing.";
+                return result;
             }
             if (model.ArticleID == 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.ArticleID), "Please choose an article."));
+                result.Value = false; result.Property = nameof(model.ArticleID); result.Message = "Please choose an article.";
+                return result;
             }
             if (model.WarehouseID == 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.WarehouseID), "Please choose a warehouse."));
+                result.Value = false; result.Property = nameof(model.WarehouseID); result.Message = "Please choose an warehouse.";
+                return result;
             }
             if(model.QtyPackages < 0 )
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.QtyPackages), "Please put a positive value."));
+                result.Value = false; result.Property = nameof(model.QtyPackages); result.Message = "Please put a positive value.";
+                return result;
             }
             if (model.QtyExtra < 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.QtyExtra), "Please put a positive value."));
+                result.Value = false; result.Property = nameof(model.QtyExtra); result.Message = "Please put a positive value.";
+                return result;
+            }
+            if(model.QtyPackages  == 0 && model.QtyExtra == 0)
+            {
+                result.Value = false; result.Property = nameof(model.QtyExtra); result.Message = "Please put value for packages or Extra.";
+                return result;
             }
             if (model.Price <= 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", nameof(model.Price), "Please put a price."));
+                result.Value = false; result.Property = nameof(model.Price); result.Message = "Please put a positive value.";
+                return result;
             }
-            if(OrderDetailITotalWeight(_context, model) <=0)
+            if(OrderDetailTotalWeightOrPackage(_context, model) <= 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderDetailIsValid", "OrderDetail", "", "Please put boxes, reserve or extra kg."));
+                result.Value = false; result.Property = nameof(model.Extended_Price); result.Message = "Please put value for packages or Extra.";
+                return result;
 
             }
 
@@ -80,11 +93,39 @@ namespace TomasGreen.Web.Validations
             return (new PropertyValidatedMessage(true, "", "", "", ""));
         }
 
-        public static decimal OrderDetailITotalWeight(ApplicationDbContext _context, OrderDetail model)
+        public static ArticleUnit GetArticleUnitByArticle(ApplicationDbContext _context, Article article)
         {
-            var articlePackageWeight = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault()?.WeightPerPackage ?? 0;
-            var totalWeight = (model.QtyPackages * articlePackageWeight) + model.QtyExtra;
-            return totalWeight;
+            var unit = _context.ArticleUnits.Where(u => u.ID == article.ArticleUnitID).FirstOrDefault();
+            return unit;
+        }
+        public static bool CheckArticleUnitMeasuresByKG(ApplicationDbContext _context, Article article)
+        {
+            var unit = _context.ArticleUnits.Where(u => u.ID == article.ArticleUnitID).FirstOrDefault();
+            if(unit != null)
+            {
+                if (unit.MeasuresByKg)
+                    return true;
+            }
+            return false;
+        }
+        public static decimal OrderDetailTotalWeightOrPackage(ApplicationDbContext _context, OrderDetail model)
+        {
+             
+            var article = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault();
+            if(article != null)
+            {
+                var isPerKg = CheckArticleUnitMeasuresByKG(_context, article);
+                if (isPerKg)
+                {
+                   return ((model.QtyPackages * article.WeightPerPackage) + model.QtyExtra);
+                }
+                else
+                {
+                    return (model.QtyPackages);
+                }
+            }
+            
+            return 0;
         }
 
     }
