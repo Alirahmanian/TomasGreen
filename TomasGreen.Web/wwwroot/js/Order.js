@@ -3,10 +3,17 @@
 //=======================================
 function LoadArticleCategories(element) {
     if (ArticleCategories.length === 0) {
+        var urlWithLang = "Import/Orders/GetArticleCategories";
+        if (window.location.href.indexOf('/en/') != -1) {
+            urlWithLang = "/en/" + urlWithLang;
+        }
+        if (window.location.href.indexOf('/ru/') != -1) {
+            urlWithLang = "/ru/" + urlWithLang;
+        }
         $.ajax
             ({
                 type: "GET",
-                url: 'GetArticleCategories',
+                url: urlWithLang,
                 success: function (data) {
                     ArticleCategories = data;
                     renderArticleCategories(element);
@@ -37,9 +44,17 @@ function renderArticleCategories(element) {
 //=======================================
 function LoadArticles(ArticleCategory) {
     if ($(ArticleCategory).val() !== "0" && $(ArticleCategory).val() !== "Select") {
+        var urlWithLang = "Import/Orders/GetArticlesByCategoryId";
+        if (window.location.href.indexOf('/en/') != -1) {
+            urlWithLang = "/en/" + urlWithLang;
+        }
+        if (window.location.href.indexOf('/ru/') != -1) {
+            urlWithLang = "/ru/" + urlWithLang;
+        }
         $.ajax({
             type: "GET",
-            url: "https://localhost:44378/en/Import/Orders/GetArticlesByCategoryId",
+            //url: "https://localhost:44378/en/Import/Orders/GetArticlesByCategoryId",
+            url: urlWithLang,
             data: { 'categoryId': $(ArticleCategory).val() },
             dataType: "json",
             success: function (data) {
@@ -73,9 +88,16 @@ function renderArticles(element, data) {
 //=======================================
 function LoadWarehouses(Article) {
     if ($(Article).val() !== "0" && $(Article).val() !== "Select") {
+        var urlWithLang = "Import/Orders/GetWarehousesByArticleID";
+        if (window.location.href.indexOf('/en/') != -1) {
+            urlWithLang = "/en/" + urlWithLang;
+        }
+        if (window.location.href.indexOf('/ru/') != -1) {
+            urlWithLang = "/ru/" + urlWithLang;
+        }
         $.ajax({
             type: "GET",
-            url: "https://localhost:44378/en/Import/Orders/GetWarehousesByArticleID",
+            url: urlWithLang,
             data: { 'articleId': $("#OrderDetail_ArticleID").val() },
             success: function (data) {
                 renderWarehouses($("#OrderDetail_WarehouseID"), data);
@@ -134,7 +156,14 @@ function LoadCustomerInfo(customer) {
 function LoadArticleWarehoseBalance(warehouse) {
     if ($(warehouse).val() !== "" && $(warehouse).val() !== "0" && $(warehouse).val() !== "Select") {
         if ($("#OrderDetail_ArticleID").val() !== "" && $("#OrderDetail_ArticleID").val() !== "0" && $("#OrderDetail_ArticleID").val() !== "Select") {
-            $("#ArticleWarehouseBalance").load("GetArticleWarehouseBalance",
+            var urlWithLang = "Import/Orders/GetArticleWarehouseBalance";
+            if (window.location.href.indexOf('/en/') != -1) {
+                urlWithLang = "/en/" + urlWithLang;
+            }
+            if (window.location.href.indexOf('/ru/') != -1) {
+                urlWithLang = "/ru/" + urlWithLang;
+            }
+            $("#ArticleWarehouseBalance").load(urlWithLang,
                 { articleId: $("#OrderDetail_ArticleID").val(), warehouseId: $(warehouse).val() });
         }
       
