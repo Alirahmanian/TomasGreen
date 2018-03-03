@@ -59,7 +59,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,MinimumPrice,WeightPerPackage,ArticleCategoryID,CountryID,ArticleUnitID,ArticlePackageFormID")] Article article)
+        public async Task<IActionResult> Create([Bind("Name,Description,MinimumPricePerUSD,WeightPerPackage,ArticleCategoryID,CountryID,ArticleUnitID,ArticlePackageFormID")] Article article)
         {
             if (ModelState.IsValid)
             {
@@ -111,7 +111,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,AddedDate,Name,Description,MinimumPrice,WeightPerPackage,ArticleCategoryID,CountryID,ArticleUnitID,ArticlePackageFormID")] Article article)
+        public async Task<IActionResult> Edit(long id, [Bind("ID,AddedDate,Name,Description,MinimumPricePerUSD,WeightPerPackage,ArticleCategoryID,CountryID,ArticleUnitID,ArticlePackageFormID")] Article article)
         {
             if (id != article.ID)
             {

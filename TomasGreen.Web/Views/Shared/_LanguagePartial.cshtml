@@ -1,0 +1,20 @@
+﻿@{
+    string currentArea = ViewContext.RouteData.Values["Area"]?.ToString();
+    string currentlang = ViewContext.RouteData.Values["Lang"].ToString();
+    string currentController = ViewContext.RouteData.Values["Controller"].ToString();
+    string currentAction = ViewContext.RouteData.Values["Action"].ToString();
+
+    @if (@currentlang == "en")
+    {
+        <a asp-route-area="@currentArea" asp-controller=@currentController asp-action=@currentAction asp-route-lang="ru" class="navbar-brand">
+            <img src="~/images/RussianFlag.jpg" width="15" height="15" alt="Русский" />
+        </a>
+    }
+    else
+    {
+        <a asp-route-area="@currentArea" asp-controller=@currentController asp-action=@currentAction asp-route-lang="en" class="navbar-brand">
+            <img src="~/images/EnglishFlag.jpg" width="15" height="15" alt="English" />
+        </a>
+    }
+
+}
