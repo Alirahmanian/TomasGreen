@@ -42,7 +42,8 @@ namespace TomasGreen.Model.Models
         public ArticlePackageForm ArticlePackageForm { get; set; }
         public Country Country { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
-       // public ArticleWarehouseBalance ArticleWarehouseBalance { get; set; }
+        public ICollection<RoastingPlan> RoastingPlans { get; set; }
+        // public ArticleWarehouseBalance ArticleWarehouseBalance { get; set; }
 
     }
 }

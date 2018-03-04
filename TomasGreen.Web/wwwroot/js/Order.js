@@ -33,7 +33,7 @@ function LoadArticleCategories(element) {
 function renderArticleCategories(element) {
     var $ele = $(element);
     $ele.empty();
-    $ele.append($('<option/>').val('0').text('Select'));
+   // $ele.append($('<option/>').val('0').text('Select'));
     $.each(ArticleCategories,
         function (i, val) {
             $ele.append($('<option/>').val(val.ID).text(val.Name));
@@ -77,7 +77,7 @@ function LoadArticles(ArticleCategory) {
 function renderArticles(element, data) {
     var $ele = $(element);
     $ele.empty();
-    $ele.append($('<option/>').val('0').text('Select'));
+   // $ele.append($('<option/>').val('0').text('Select'));
     $.each(data,
         function (i, val) {
             $ele.append($('<option/>').val(val.id).text(val.name));
@@ -118,7 +118,7 @@ function LoadWarehouses(Article) {
 function renderWarehouses(element, data) {
     var $ele = $(element);
     $ele.empty();
-    $ele.append($('<option/>').val('0').text('Select'));
+   // $ele.append($('<option/>').val('0').text('Select'));
     $.each(data,
         function (i, val) {
             $ele.append($('<option/>').val(val.id).text(val.name + val.articlesonhand));

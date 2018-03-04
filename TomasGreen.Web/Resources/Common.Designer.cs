@@ -61,119 +61,11 @@ namespace TomasGreen.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to About.
-        /// </summary>
-        public static string About {
-            get {
-                return ResourceManager.GetString("About", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Accounting.
-        /// </summary>
-        public static string Accounting {
-            get {
-                return ResourceManager.GetString("Accounting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Admin.
-        /// </summary>
-        public static string Admin {
-            get {
-                return ResourceManager.GetString("Admin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Contacts.
-        /// </summary>
-        public static string Contacts {
-            get {
-                return ResourceManager.GetString("Contacts", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Localized data annotations.
-        /// </summary>
-        public static string DataAnnotations {
-            get {
-                return ResourceManager.GetString("DataAnnotations", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to E-mail.
-        /// </summary>
-        public static string Email {
-            get {
-                return ResourceManager.GetString("Email", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Email field is required.
-        /// </summary>
-        public static string EmailRequired {
-            get {
-                return ResourceManager.GetString("EmailRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Hello, world!(Common).
-        /// </summary>
-        public static string HelloWorld {
-            get {
-                return ResourceManager.GetString("HelloWorld", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Home.
-        /// </summary>
-        public static string Home {
-            get {
-                return ResourceManager.GetString("Home", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Management.
-        /// </summary>
-        public static string Management {
-            get {
-                return ResourceManager.GetString("Management", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name is already taken..
-        /// </summary>
-        public static string Name_is_already_taken_ {
-            get {
-                return ResourceManager.GetString("Name is already taken.", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Name field is required.
         /// </summary>
         public static string NameRequired {
             get {
                 return ResourceManager.GetString("NameRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Password.
-        /// </summary>
-        public static string Password {
-            get {
-                return ResourceManager.GetString("Password", resourceCulture);
             }
         }
         
@@ -187,56 +79,11 @@ namespace TomasGreen.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Purchase.
+        ///   Looks up a localized string similar to TomasGreen.
         /// </summary>
-        public static string Purchase {
+        public static string TomasGreen_web {
             get {
-                return ResourceManager.GetString("Purchase", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sales.
-        /// </summary>
-        public static string Sales {
-            get {
-                return ResourceManager.GetString("Sales", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sign in.
-        /// </summary>
-        public static string SignIn {
-            get {
-                return ResourceManager.GetString("SignIn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stock.
-        /// </summary>
-        public static string Stock {
-            get {
-                return ResourceManager.GetString("Stock", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is already a reserve warehouse..
-        /// </summary>
-        public static string There_is_already_a_reserve_warehouse_ {
-            get {
-                return ResourceManager.GetString("There is already a reserve warehouse.", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Warehouse.
-        /// </summary>
-        public static string Warehouse {
-            get {
-                return ResourceManager.GetString("Warehouse", resourceCulture);
+                return ResourceManager.GetString("TomasGreen.web", resourceCulture);
             }
         }
     }

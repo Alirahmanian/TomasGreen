@@ -13,6 +13,7 @@ using TomasGreen.Web.Balances;
 using TomasGreen.Web.Validations;
 using TomasGreen.Web.Extensions;
 using TomasGreen.Web.BaseModels;
+using Microsoft.Extensions.Localization;
 
 namespace TomasGreen.Web.Areas.Import.Controllers
 {
@@ -21,11 +22,12 @@ namespace TomasGreen.Web.Areas.Import.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
-
-        public OrdersController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+        private readonly IStringLocalizer<OrdersController> _localizer;
+        public OrdersController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<OrdersController> localizer)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _localizer = localizer;
         }
 
         // GET: Sales/Orders
@@ -320,7 +322,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                                               {
                                                                   Id = w.ID,
                                                                   Name = w.Name,
-                                                                  Articlesonhand = " [Box: " + aw.QtyPackagesOnhand.ToString() + ", Extra: " + aw.QtyExtraOnhand.ToString() + "]"
+                                                                  Articlesonhand = _localizer["[Package"] + ":" + aw.QtyPackagesOnhand.ToString() + ", " + _localizer["Extra"] + ": " + aw.QtyExtraOnhand.ToString() + "]"
                                                               }
                                     ), "ID", "Name");
                 }
@@ -356,7 +358,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                  select new
                                  {
                                      Id = w.ID, Name = w.Name, 
-                                     Articlesonhand = " [Package: " + aw.QtyPackagesOnhand.ToString() + ", Extra: " + aw.QtyExtraOnhand.ToString() + "]"
+                                     Articlesonhand = _localizer["[Package"] + ": " + aw.QtyPackagesOnhand.ToString() + ", " + _localizer["Extra"] + ": " + aw.QtyExtraOnhand.ToString() + "]"
                                  }
                                 );
             return new JsonResult(warehouses.ToList());

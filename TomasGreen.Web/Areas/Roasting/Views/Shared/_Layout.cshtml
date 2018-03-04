@@ -32,52 +32,18 @@
             </div>
             <div class="navbar-collapse collapse avbar navbar-toggleable-md navbar-dark bg-company-red">
                 <ul class="nav nav-pills">
-                    <li><a asp-area="Import" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Import"]</a></li>
+                    <li><a asp-area="Roasting" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Roasting"]</a></li>
                     <li role="presentation" class="dropdown">
                         <a class=" dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            @localizer["Accounting"] <span class="caret"></span>
+                            @localizer["Plans"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="Import" asp-controller="Accounting" asp-action="Index">@localizer["Accounting"]</a></li>
+                            <li><a asp-area="Roasting" asp-controller="RoastingPlans" asp-action="Index">@localizer["Roasting"]</a></li>
                         </ul>
+                        
                     </li>
-                    <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            @localizer["Management"] <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-area="Import" asp-controller="Management" asp-action="Index">@localizer["Management"]</a></li>
-                        </ul>
-                    </li>
-                    <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            @localizer["Purchase"] <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-area="Import" asp-controller="PurchasedArticles" asp-action="Index">@localizer["Buy articles"]</a></li>
-                        </ul>
-                    </li>
-                    <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            @localizer["Stock"] <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-area="Import" asp-controller="Articles" asp-action="Index" >@localizer["Article"]</a></li>
-                            <li><a asp-area="Import" asp-controller="ArticleCategories" asp-action="Index" >@localizer["Article category"]</a></li>
-                            <li><a asp-area="Import" asp-controller="Countries" asp-action="Index" >@localizer["Article"] country</a></li>
-                            <li><a asp-area="Import" asp-controller="Warehouses" asp-action="Index" >@localizer["Warehouse"]</a></li>
-                            <li><a asp-area="Import" asp-controller="ArrivedArticles" asp-action="Index" >@localizer["Comming articles"]</a></li>
-                        </ul>
-                    </li>
-                    <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            @localizer["Sales"] <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-area="Import" asp-controller="Companies" asp-action="Index" >@localizer["Company"]</a></li>
-                            <li><a asp-area="Import" asp-controller="Orders" asp-action="Index" >@localizer["Order"]</a></li>
-                        </ul>
-                    </li>
+                   
+                
 
 
 

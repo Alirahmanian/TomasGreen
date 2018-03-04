@@ -70,10 +70,8 @@
     <Folder Include="Areas\Packing\Views\" />
     <Folder Include="Areas\Import\Purchase\Data\" />
     <Folder Include="Areas\Import\Purchase\Models\" />
-    <Folder Include="Areas\Roasting\Controllers\" />
     <Folder Include="Areas\Roasting\Data\" />
     <Folder Include="Areas\Roasting\Models\" />
-    <Folder Include="Areas\Roasting\Views\" />
     <Folder Include="Areas\Import\Sales\Data\" />
     <Folder Include="Areas\Import\Stock\Data\" />
     <Folder Include="Areas\Import\Stock\Css\" />

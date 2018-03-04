@@ -117,64 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="About" xml:space="preserve">
-    <value>About</value>
-  </data>
-  <data name="Accounting" xml:space="preserve">
-    <value>Accounting</value>
-  </data>
-  <data name="Admin" xml:space="preserve">
-    <value>Admin</value>
-  </data>
-  <data name="Contacts" xml:space="preserve">
-    <value>Contacts</value>
-  </data>
-  <data name="DataAnnotations" xml:space="preserve">
-    <value>Localized data annotations</value>
-  </data>
-  <data name="Email" xml:space="preserve">
-    <value>E-mail</value>
-  </data>
-  <data name="EmailRequired" xml:space="preserve">
-    <value>Email field is required</value>
-  </data>
-  <data name="HelloWorld" xml:space="preserve">
-    <value>Hello, world!(Common)</value>
-  </data>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="Management" xml:space="preserve">
-    <value>Management</value>
-  </data>
-  <data name="Name is already taken." xml:space="preserve">
-    <value>Name is already taken.</value>
-  </data>
   <data name="NameRequired" xml:space="preserve">
     <value>Name field is required</value>
-  </data>
-  <data name="Password" xml:space="preserve">
-    <value>Password</value>
   </data>
   <data name="PasswordRequired" xml:space="preserve">
     <value>Password field is required</value>
   </data>
-  <data name="Purchase" xml:space="preserve">
-    <value>Purchase</value>
-  </data>
-  <data name="Sales" xml:space="preserve">
-    <value>Sales</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Sign in</value>
-  </data>
-  <data name="Stock" xml:space="preserve">
-    <value>Stock</value>
-  </data>
-  <data name="There is already a reserve warehouse." xml:space="preserve">
-    <value>There is already a reserve warehouse.</value>
-  </data>
-  <data name="Warehouse" xml:space="preserve">
-    <value>Warehouse</value>
+  <data name="TomasGreen.web" xml:space="preserve">
+    <value>TomasGreen</value>
   </data>
 </root>

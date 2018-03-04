@@ -144,20 +144,38 @@
   <data name="Commision" xml:space="preserve">
     <value>комиссионной</value>
   </data>
+  <data name="Company" xml:space="preserve">
+    <value>Компай</value>
+  </data>
   <data name="Contacts" xml:space="preserve">
     <value>Контакты</value>
   </data>
   <data name="Country" xml:space="preserve">
     <value>Страна</value>
   </data>
+  <data name="Create New" xml:space="preserve">
+    <value>Создавать новое</value>
+  </data>
   <data name="DataAnnotations" xml:space="preserve">
     <value>Локализованные аннотации данных</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Описание</value>
   </data>
+  <data name="Details" xml:space="preserve">
+    <value>Детали</value>
+  </data>
   <data name="Dicing" xml:space="preserve">
     <value>кузнечная</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Изменить</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>Электронная почта</value>
@@ -201,6 +219,15 @@
   <data name="Office" xml:space="preserve">
     <value>офис</value>
   </data>
+  <data name="Order" xml:space="preserve">
+    <value>заказ</value>
+  </data>
+  <data name="Order date" xml:space="preserve">
+    <value>Дата заказа</value>
+  </data>
+  <data name="Package" xml:space="preserve">
+    <value>пакет</value>
+  </data>
   <data name="Packing" xml:space="preserve">
     <value>упаковка</value>
   </data>
@@ -212,6 +239,9 @@
   </data>
   <data name="Purchase" xml:space="preserve">
     <value>покупка</value>
+  </data>
+  <data name="Return to list" xml:space="preserve">
+    <value>вернуться к списку</value>
   </data>
   <data name="Roasting" xml:space="preserve">
     <value>жарка</value>
@@ -227,6 +257,12 @@
   </data>
   <data name="There is already a reserve warehouse." xml:space="preserve">
     <value>Уже есть резервный склад.</value>
+  </data>
+  <data name="TomaasGreen.web" xml:space="preserve">
+    <value>ТомасГрин</value>
+  </data>
+  <data name="TomasGreen" xml:space="preserve">
+    <value>ТомасГрин</value>
   </data>
   <data name="Transport" xml:space="preserve">
     <value>Транспорт</value>

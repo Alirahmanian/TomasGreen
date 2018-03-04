@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180304143117_RoastingPlans")]
+    partial class RoastingPlans
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -352,6 +353,51 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("Countries");
                 });
 
+            modelBuilder.Entity("TomasGreen.Model.Models.CustomerRoastingPlan", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddedDate");
+
+                    b.Property<long>("ArticleID");
+
+                    b.Property<int>("ArticleUnitID");
+
+                    b.Property<long>("CompanyID");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<decimal>("Discount");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<decimal>("PricePerUnit");
+
+                    b.Property<decimal>("QtExtra");
+
+                    b.Property<int>("QtyPackages");
+
+                    b.Property<decimal>("TotalPrice");
+
+                    b.Property<decimal>("TotalWeight");
+
+                    b.Property<string>("UserName");
+
+                    b.Property<decimal>("WeightChange");
+
+                    b.Property<decimal>("WeightPerPackage");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CompanyID");
+
+                    b.HasIndex("ArticleID", "CompanyID", "Date")
+                        .IsUnique();
+
+                    b.ToTable("CustomerRoastingPlans");
+                });
+
             modelBuilder.Entity("TomasGreen.Model.Models.Employee", b =>
                 {
                     b.Property<long>("ID")
@@ -515,60 +561,6 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("OrderTranports");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PackagingCategory", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("PackagingCategory");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.PackagingMaterial", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<long>("ArticleUnitID");
-
-                    b.Property<string>("Description");
-
-                    b.Property<decimal>("Dimensions");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name");
-
-                    b.Property<bool>("PackagingCategoryID");
-
-                    b.Property<long?>("PackagingCategoryID1");
-
-                    b.Property<decimal>("Price");
-
-                    b.Property<string>("UserName");
-
-                    b.Property<decimal>("Volume");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ArticleUnitID");
-
-                    b.HasIndex("PackagingCategoryID1");
-
-                    b.ToTable("PackagingMaterial");
-                });
-
             modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
                 {
                     b.Property<long>("ID")
@@ -667,71 +659,23 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("ArticleUnitID");
 
-                    b.Property<long>("CompanyID");
-
                     b.Property<DateTime>("Date");
 
-                    b.Property<long>("ManagerID");
-
                     b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<long>("NewArticleID");
-
-                    b.Property<int>("NewArticleUnitID");
-
-                    b.Property<int>("NewBags");
-
-                    b.Property<long?>("NewPackageID");
-
-                    b.Property<int>("NewPackages");
-
-                    b.Property<long>("NewPackagingMaterialBagID");
-
-                    b.Property<long>("NewPackagingMaterialPackageID");
-
-                    b.Property<decimal>("NewQtyExtra");
-
-                    b.Property<int>("NewQtyPackages");
-
-                    b.Property<decimal>("NewTotalWeight");
-
-                    b.Property<decimal>("NewWeightPerPackage");
-
-                    b.Property<long?>("NewbagID");
-
-                    b.Property<decimal>("PricePerUnit");
 
                     b.Property<decimal>("QtExtra");
 
                     b.Property<int>("QtyPackages");
 
-                    b.Property<decimal>("Salt");
-
-                    b.Property<decimal>("SaltLimit");
-
-                    b.Property<decimal>("TotalPrice");
-
                     b.Property<decimal>("TotalWeight");
 
                     b.Property<string>("UserName");
-
-                    b.Property<long>("WarehouseID");
 
                     b.Property<decimal>("WeightChange");
 
                     b.Property<decimal>("WeightPerPackage");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("CompanyID");
-
-                    b.HasIndex("ManagerID");
-
-                    b.HasIndex("NewPackageID");
-
-                    b.HasIndex("NewbagID");
-
-                    b.HasIndex("WarehouseID");
 
                     b.HasIndex("ArticleID", "Date")
                         .IsUnique();
@@ -904,6 +848,19 @@ namespace TomasGreen.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("TomasGreen.Model.Models.CustomerRoastingPlan", b =>
+                {
+                    b.HasOne("TomasGreen.Model.Models.Article", "Article")
+                        .WithMany("CustomerRoastingPlans")
+                        .HasForeignKey("ArticleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("TomasGreen.Model.Models.Order", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
@@ -940,18 +897,6 @@ namespace TomasGreen.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PackagingMaterial", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.ArticleUnit", "ArticleUnit")
-                        .WithMany()
-                        .HasForeignKey("ArticleUnitID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.PackagingCategory", "PackagingCategory")
-                        .WithMany()
-                        .HasForeignKey("PackagingCategoryID1");
-                });
-
             modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Article", "Article")
@@ -982,29 +927,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Article", "Article")
                         .WithMany("RoastingPlans")
                         .HasForeignKey("ArticleID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Employee", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "NewPackage")
-                        .WithMany()
-                        .HasForeignKey("NewPackageID");
-
-                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "Newbag")
-                        .WithMany()
-                        .HasForeignKey("NewbagID");
-
-                    b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
-                        .WithMany()
-                        .HasForeignKey("WarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

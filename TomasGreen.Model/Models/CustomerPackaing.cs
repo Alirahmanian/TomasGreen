@@ -7,12 +7,9 @@ namespace TomasGreen.Model.Models
 {
     public class CustomerPackaging : BaseEntity
     {
-        public Int64 CustomerID { get; set; }
-        public bool Mix { get; set; }
-        public DateTime DeliveringDate { get; set; }
-        public DateTime DeliveredDate { get; set; }
-        public DateTime PaymentDate { get; set; }
-        public DateTime PaidDate { get; set; }
+        public Int64 CompanyID { get; set; }
+        public Int64 ManagerID { get; set; }
+        public DateTime Date { get; set; }
         public decimal TotalPrice { get; set; }
 
         //

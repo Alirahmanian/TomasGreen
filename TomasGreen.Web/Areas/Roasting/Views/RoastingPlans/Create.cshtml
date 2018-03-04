@@ -1,0 +1,146 @@
+﻿@model TomasGreen.Model.Models.RoastingPlan
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>RoastingPlan</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="WarehouseID" class="control-label"></label>
+                <select asp-for="WarehouseID" class ="form-control" asp-items="ViewBag.WarehouseID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArticleID" class="control-label"></label>
+                <select asp-for="ArticleID" class ="form-control" asp-items="ViewBag.ArticleID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyID" class="control-label"></label>
+                <select asp-for="CompanyID" class ="form-control" asp-items="ViewBag.CompanyID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ManagerID" class="control-label"></label>
+                <select asp-for="ManagerID" class ="form-control" asp-items="ViewBag.ManagerID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QtyPackages" class="control-label"></label>
+                <input asp-for="QtyPackages" class="form-control" />
+                <span asp-validation-for="QtyPackages" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QtExtra" class="control-label"></label>
+                <input asp-for="QtExtra" class="form-control" />
+                <span asp-validation-for="QtExtra" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArticleUnitID" class="control-label"></label>
+                <input asp-for="ArticleUnitID" class="form-control" />
+                <span asp-validation-for="ArticleUnitID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WeightPerPackage" class="control-label"></label>
+                <input asp-for="WeightPerPackage" class="form-control" />
+                <span asp-validation-for="WeightPerPackage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalWeight" class="control-label"></label>
+                <input asp-for="TotalWeight" class="form-control" />
+                <span asp-validation-for="TotalWeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WeightChange" class="control-label"></label>
+                <input asp-for="WeightChange" class="form-control" />
+                <span asp-validation-for="WeightChange" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewArticleID" class="control-label"></label>
+                <input asp-for="NewArticleID" class="form-control" />
+                <span asp-validation-for="NewArticleID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewQtyPackages" class="control-label"></label>
+                <input asp-for="NewQtyPackages" class="form-control" />
+                <span asp-validation-for="NewQtyPackages" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewQtyExtra" class="control-label"></label>
+                <input asp-for="NewQtyExtra" class="form-control" />
+                <span asp-validation-for="NewQtyExtra" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewArticleUnitID" class="control-label"></label>
+                <input asp-for="NewArticleUnitID" class="form-control" />
+                <span asp-validation-for="NewArticleUnitID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewWeightPerPackage" class="control-label"></label>
+                <input asp-for="NewWeightPerPackage" class="form-control" />
+                <span asp-validation-for="NewWeightPerPackage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewTotalWeight" class="control-label"></label>
+                <input asp-for="NewTotalWeight" class="form-control" />
+                <span asp-validation-for="NewTotalWeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Salt" class="control-label"></label>
+                <input asp-for="Salt" class="form-control" />
+                <span asp-validation-for="Salt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SaltLimit" class="control-label"></label>
+                <input asp-for="SaltLimit" class="form-control" />
+                <span asp-validation-for="SaltLimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewPackagingMaterialPackageID" class="control-label"></label>
+                <input asp-for="NewPackagingMaterialPackageID" class="form-control" />
+                <span asp-validation-for="NewPackagingMaterialPackageID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewPackages" class="control-label"></label>
+                <input asp-for="NewPackages" class="form-control" />
+                <span asp-validation-for="NewPackages" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewPackagingMaterialBagID" class="control-label"></label>
+                <input asp-for="NewPackagingMaterialBagID" class="form-control" />
+                <span asp-validation-for="NewPackagingMaterialBagID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewBags" class="control-label"></label>
+                <input asp-for="NewBags" class="form-control" />
+                <span asp-validation-for="NewBags" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PricePerUnit" class="control-label"></label>
+                <input asp-for="PricePerUnit" class="form-control" />
+                <span asp-validation-for="PricePerUnit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalPrice" class="control-label"></label>
+                <input asp-for="TotalPrice" class="form-control" />
+                <span asp-validation-for="TotalPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

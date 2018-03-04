@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    class packagingMaterial : BaseEntity
+    public class PackagingMaterial : BaseEntity
     {
         public string Name { get; set; }
         public decimal Dimensions { get; set; }

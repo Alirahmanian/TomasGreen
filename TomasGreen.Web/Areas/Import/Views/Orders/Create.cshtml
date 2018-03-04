@@ -1,25 +1,27 @@
-﻿@model TomasGreen.Web.Areas.Import.ViewModels.SaveOrderViewModel
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+@model TomasGreen.Web.Areas.Import.ViewModels.SaveOrderViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = @localizer["Create"];
 }
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<h4> Create Order </h4>
+<h4> @localizer["Create Order"] </h4>
 <hr />
 
 <div class="row">
 
     <form asp-action="Create">
-        <input asp-for="@Model.Order.ID" class="form-control"  />
+        <input asp-for="@Model.Order.ID" class="form-control" />
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="col-md-12">
             <div class="col-md-3">
                 <div class="form-group">
-                    <label asp-for="@Model.Order.CompanyID" class="control-label">Customer</label>
+                    <label asp-for="@Model.Order.CompanyID" class="control-label">@localizer["Customer"]</label>
                     <select asp-for="@Model.Order.CompanyID" class="form-control" asp-items="ViewBag.CompanyID" onchange=" LoadCustomerInfo(this)">
-                        <option>Select</option>
+                        <option>@localizer["Select"]</option>
                     </select>
                 </div>
             </div>
@@ -37,12 +39,12 @@
                     @{
                         if (Model.Order.ID == 0)
                         {
-                                <input type="submit" name="SaveOrder" id="SaveOrder" value="Create" class="btn btn-primary" onclick="return ValidateOrder()" />
+                            <input type="submit" name="SaveOrder" id="SaveOrder" value=@localizer["Create"] class="btn btn-primary" onclick="return ValidateOrder()" />
 
                         }
                         else
                         {
-                                <input type="submit" name="SaveOrder" id="SaveOrder" value="Update" class="btn btn-primary" onclick="return ValidateOrder()" />
+                            <input type="submit" name="SaveOrder" id="SaveOrder" value=@localizer["Update"] class="btn btn-primary" onclick="return ValidateOrder()" />
 
                         }
                     }
@@ -60,24 +62,24 @@
         <div class="tab" role="tabpanel">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-                <li id="OrderDetail_Tab" class="active" role="presentation"><a role="tab" aria-controls="home" href="#Section1" data-toggle="tab"> Articles &nbsp;<img style="width:25px; height:25px;" src="~/images/inviceRows.png" /></a></li>
-                <li id="OrderDetail_Tab" role="presentation"><a role="tab" aria-controls="Parment" href="#Section2" data-toggle="tab"> Payment </a></li>
-                <li id="Loading_Tab" role="presentation"><a role="tab" aria-controls="Loading" href="#Section3" data-toggle="tab"> Loading </a></li>
-                <li id="MoreInfo_Tab" role="presentation"><a role="tab" aria-controls="More info." href="#Section4" data-toggle="tab"> More inf. </a></li>
-                <li id="Customer_Tab" role="presentation"><a role="tab" aria-controls="Customer info." href="#Section5" data-toggle="tab"> Customer info. </a></li>
+                <li id="OrderDetail_Tab" class="active" role="presentation"><a role="tab" aria-controls="home" href="#Section1" data-toggle="tab"> @localizer["Articles"] &nbsp;<img style="width:25px; height:25px;" src="~/images/inviceRows.png" /></a></li>
+                <li id="OrderDetail_Tab" role="presentation"><a role="tab" aria-controls="Parment" href="#Section2" data-toggle="tab"> @localizer["Payment"] </a></li>
+                <li id="Loading_Tab" role="presentation"><a role="tab" aria-controls="Loading" href="#Section3" data-toggle="tab"> @localizer["Loading"] </a></li>
+                <li id="MoreInfo_Tab" role="presentation"><a role="tab" aria-controls="More info." href="#Section4" data-toggle="tab"> @localizer["More inf."] </a></li>
+                <li id="Customer_Tab" role="presentation"><a role="tab" aria-controls="Customer info." href="#Section5" data-toggle="tab"> @localizer["Customer info."] </a></li>
 
             </ul>
             <!-- Tab panes -->
             <div class="tab-content tabs">
                 <div class="tab-pane fade in active" id="Section1" role="tabpanel">
                     <div><br /></div>
-                    <div id="OrdedDetail_Mess">Mess</div>
+                    <div id="OrdedDetail_Mess"></div>
                     <div>
                         @{
                             @if (Model.Order.ID > 0 && Model.Order.OrderDetails.Count > 0)
                             {
-                                  @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Import.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail.ArticleID, warehousId = Model.OrderDetail.WarehouseID })
-                            
+                                @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Import.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail.ArticleID, warehousId = Model.OrderDetail.WarehouseID })
+
 
                             }
 
@@ -89,20 +91,24 @@
                             <div class="form-group">
                                 <label asp-for="@Model.ArticleCategory.Name" class="control-label"></label>
                                 <select asp-for="@Model.ArticleCategory.ID" class="form-control" asp-items="ViewBag.ArticleCategoryID" onchange="LoadArticles(this)">
-                                    <option>Select</option>
+                                    <option>@localizer["Select"]</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label asp-for="@Model.OrderDetail.ArticleID" class="control-label"></label>
-                                <select asp-for="@Model.OrderDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID" onchange="LoadWarehouses(this)"></select>
+                                <select asp-for="@Model.OrderDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID" onchange="LoadWarehouses(this)">
+                                    <option>@localizer["Select"]</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.OrderDetail.WarehouseID" class="control-label"></label>
-                                <select asp-for="@Model.OrderDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onchange=" LoadArticleWarehoseBalance(this)"></select>
+                                <select asp-for="@Model.OrderDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onchange=" LoadArticleWarehoseBalance(this)">
+                                    <option>@localizer["Select"]</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-1">
@@ -126,7 +132,7 @@
                                 <span asp-validation-for="@Model.OrderDetail.Price" class="text-danger"></span>
                             </div>
                         </div>
-                       
+
                         <div class="col-md-1">
                             <div class="form-group">
                                 <br />
@@ -310,7 +316,7 @@
 
 <div>
     <br /><br />
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@localizer["Back to List"]</a>
 </div>
 
 <script src="~/js/Order.js"></script>

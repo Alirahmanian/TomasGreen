@@ -36,6 +36,7 @@ namespace TomasGreen.Web.Data
         public DbSet<ArticleWarehouseBalance> ArticleWarehouseBalances { get; set; }
         public DbSet<ArticleUnit> ArticleUnits { get; set; }
         public DbSet<ArticlePackageForm> ArticlePakageForms { get; set; }
+        public DbSet<RoastingPlan> RoastingPlans { get; set; }
 
         public virtual async Task<int> SaveChangesAsync()
         {
@@ -100,8 +101,10 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<OrderTransport>()
             .HasIndex(p => p.Name)
             .IsUnique(true);
-
-            
+            modelBuilder.Entity<RoastingPlan>()
+             .HasIndex(p => new { p.ArticleID, p.Date })
+             .IsUnique(true);
+          
             modelBuilder.Entity<OrderDetail>()
             .HasIndex(p => new { p.OrderID, p.ArticleID, p.WarehouseID, p.Price})
             .IsUnique(true);
