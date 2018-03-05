@@ -201,6 +201,12 @@
   <data name="Inventory" xml:space="preserve">
     <value>инвентарь</value>
   </data>
+  <data name="Is customers" xml:space="preserve">
+    <value>ли клиент</value>
+  </data>
+  <data name="Is on the way" xml:space="preserve">
+    <value>В пути</value>
+  </data>
   <data name="Management" xml:space="preserve">
     <value>управление</value>
   </data>

@@ -1,146 +1,203 @@
-﻿@model TomasGreen.Model.Models.RoastingPlan
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+@model TomasGreen.Model.Models.RoastingPlan
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = @localizer["Create"];
 }
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<h2>Create</h2>
+<h2>@localizer["Roasting plan"]</h2>
 
-<h4>RoastingPlan</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="WarehouseID" class="control-label"></label>
-                <select asp-for="WarehouseID" class ="form-control" asp-items="ViewBag.WarehouseID"></select>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label asp-for="Date" class="control-label"></label>
+                    <input asp-for="Date" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ArticleID" class="control-label"></label>
-                <select asp-for="ArticleID" class ="form-control" asp-items="ViewBag.ArticleID"></select>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="ManagerID" class="control-label">@localizer["Manager"]</label>
+                    <select asp-for="ManagerID" class="form-control" asp-items="ViewBag.ManagerID">
+                        <option>Select</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="CompanyID" class="control-label"></label>
-                <select asp-for="CompanyID" class ="form-control" asp-items="ViewBag.CompanyID"></select>
+            <div class="col-md-2">
+                
             </div>
-            <div class="form-group">
-                <label asp-for="ManagerID" class="control-label"></label>
-                <select asp-for="ManagerID" class ="form-control" asp-items="ViewBag.ManagerID"></select>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="CompanyID" class="control-label">@localizer["Customer"]</label>
+                    <select asp-for="CompanyID" class="form-control" asp-items="ViewBag.CompanyID"  onchange="LoadWarehouses(this)">
+                        <option>Select</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="QtyPackages" class="control-label"></label>
-                <input asp-for="QtyPackages" class="form-control" />
-                <span asp-validation-for="QtyPackages" class="text-danger"></span>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <h3 class="text-on-pannel text-primary"><strong class=""> Article in </strong></h3>
+                        <div class="form-group">
+                            <label asp-for="WarehouseID" class="control-label">@localizer["Warehouse"]</label>
+                            <select asp-for="WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onchange="LoadArticles(this)">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ArticleID" class="control-label">@localizer["Article"]</label>
+                            <select asp-for="ArticleID" class="form-control" asp-items="ViewBag.ArticleID">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="QtyPackages" class="control-label">@localizer["Packages"]</label>
+                            <input asp-for="QtyPackages" class="form-control" />
+                            <span asp-validation-for="QtyPackages" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="QtExtra" class="control-label">@localizer["Extra"]</label>
+                            <input asp-for="QtExtra" class="form-control" />
+                            <span asp-validation-for="QtExtra" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ArticleUnitID" class="control-label">@localizer["Article unit"]</label>
+                            <select asp-for="ArticleUnitID" class="form-control" asp-items="ViewBag.ArticleUnitID">
+                                <option>Select</option>
+                            </select>
+
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="WeightPerPackage" class="control-label"></label>
+                            <input asp-for="WeightPerPackage" class="form-control" />
+                            <span asp-validation-for="WeightPerPackage" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalWeight" class="control-label"></label>
+                            <input asp-for="TotalWeight" class="form-control" />
+                            <span asp-validation-for="TotalWeight" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="QtExtra" class="control-label"></label>
-                <input asp-for="QtExtra" class="form-control" />
-                <span asp-validation-for="QtExtra" class="text-danger"></span>
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <h3 class="text-on-pannel text-primary"><strong class=""> @localizer["Work and material"] </strong></h3>
+                        <div class="form-group">
+                            <label asp-for="Salt" class="control-label"></label>
+                            <input asp-for="Salt" class="form-control" />
+                            <span asp-validation-for="Salt" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="WeightChange" class="control-label">@localizer["weight change"]</label>
+                            <input asp-for="WeightChange" class="form-control" />
+                            <span asp-validation-for="WeightChange" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewPackagingMaterialPackageID" class="control-label">@localizer["Packaging material(Package)"]</label>
+                            <select asp-for="NewPackagingMaterialPackageID" class="form-control" asp-items="ViewBag.NewPackagingMaterialPackageID">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewPackages" class="control-label">@localizer["Packages"]</label>
+                            <input asp-for="NewPackages" class="form-control" />
+                            <span asp-validation-for="NewPackages" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewPackagingMaterialBagID" class="control-label">@localizer["Packaging material(Bag)"]</label>
+                            <select asp-for="NewPackagingMaterialBagID" class="form-control" asp-items="ViewBag.NewPackagingMaterialBagID">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewBags" class="control-label">@localizer["Bags"]</label>
+                            <input asp-for="NewBags" class="form-control" />
+                            <span asp-validation-for="NewBags" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PricePerUnit" class="control-label">@localizer["Price/unit"]</label>
+                            <input asp-for="PricePerUnit" class="form-control" />
+                            <span asp-validation-for="PricePerUnit" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalPrice" class="control-label">@localizer["Total price"]</label>
+                            <input asp-for="TotalPrice" class="form-control" disabled />
+                            <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ArticleUnitID" class="control-label"></label>
-                <input asp-for="ArticleUnitID" class="form-control" />
-                <span asp-validation-for="ArticleUnitID" class="text-danger"></span>
+            <div class="col-md-4">
+
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <h3 class="text-on-pannel text-primary"><strong class="">Article out </strong></h3>
+                        <div class="form-group">
+                            <label asp-for="NewArticleID" class="control-label">@localizer["Article"]</label>
+                            <select asp-for="NewArticleID" class="form-control" asp-items="ViewBag.NewArticleID">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewQtyPackages" class="control-label">@localizer["packages"]</label>
+                            <input asp-for="NewQtyPackages" class="form-control" />
+                            <span asp-validation-for="NewQtyPackages" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewQtyExtra" class="control-label">@localizer["Extra"]</label>
+                            <input asp-for="NewQtyExtra" class="form-control" />
+                            <span asp-validation-for="NewQtyExtra" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewArticleUnitID" class="control-label"></label>
+                            <select asp-for="NewArticleUnitID" class="form-control" asp-items="ViewBag.NewArticleUnitID">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewWeightPerPackage" class="control-label">@localizer["Weight/Package"]</label>
+                            <input asp-for="NewWeightPerPackage" class="form-control" />
+                            <span asp-validation-for="NewWeightPerPackage" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewTotalWeight" class="control-label">@localizer["Total weight"]</label>
+                            <input asp-for="NewTotalWeight" class="form-control" />
+                            <span asp-validation-for="NewTotalWeight" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="WeightPerPackage" class="control-label"></label>
-                <input asp-for="WeightPerPackage" class="form-control" />
-                <span asp-validation-for="WeightPerPackage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalWeight" class="control-label"></label>
-                <input asp-for="TotalWeight" class="form-control" />
-                <span asp-validation-for="TotalWeight" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WeightChange" class="control-label"></label>
-                <input asp-for="WeightChange" class="form-control" />
-                <span asp-validation-for="WeightChange" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewArticleID" class="control-label"></label>
-                <input asp-for="NewArticleID" class="form-control" />
-                <span asp-validation-for="NewArticleID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewQtyPackages" class="control-label"></label>
-                <input asp-for="NewQtyPackages" class="form-control" />
-                <span asp-validation-for="NewQtyPackages" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewQtyExtra" class="control-label"></label>
-                <input asp-for="NewQtyExtra" class="form-control" />
-                <span asp-validation-for="NewQtyExtra" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewArticleUnitID" class="control-label"></label>
-                <input asp-for="NewArticleUnitID" class="form-control" />
-                <span asp-validation-for="NewArticleUnitID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewWeightPerPackage" class="control-label"></label>
-                <input asp-for="NewWeightPerPackage" class="form-control" />
-                <span asp-validation-for="NewWeightPerPackage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewTotalWeight" class="control-label"></label>
-                <input asp-for="NewTotalWeight" class="form-control" />
-                <span asp-validation-for="NewTotalWeight" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Salt" class="control-label"></label>
-                <input asp-for="Salt" class="form-control" />
-                <span asp-validation-for="Salt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SaltLimit" class="control-label"></label>
-                <input asp-for="SaltLimit" class="form-control" />
-                <span asp-validation-for="SaltLimit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewPackagingMaterialPackageID" class="control-label"></label>
-                <input asp-for="NewPackagingMaterialPackageID" class="form-control" />
-                <span asp-validation-for="NewPackagingMaterialPackageID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewPackages" class="control-label"></label>
-                <input asp-for="NewPackages" class="form-control" />
-                <span asp-validation-for="NewPackages" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewPackagingMaterialBagID" class="control-label"></label>
-                <input asp-for="NewPackagingMaterialBagID" class="form-control" />
-                <span asp-validation-for="NewPackagingMaterialBagID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NewBags" class="control-label"></label>
-                <input asp-for="NewBags" class="form-control" />
-                <span asp-validation-for="NewBags" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PricePerUnit" class="control-label"></label>
-                <input asp-for="PricePerUnit" class="form-control" />
-                <span asp-validation-for="PricePerUnit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalPrice" class="control-label"></label>
-                <input asp-for="TotalPrice" class="form-control" />
-                <span asp-validation-for="TotalPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+    <div class="row">
+
+    </div>
+
+
+</form>
+
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@localizer["Back to List"]</a>
 </div>
-
+<script src="~/js/RoastingPlan.js"></script>

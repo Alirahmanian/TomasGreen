@@ -1,136 +1,90 @@
-﻿@model IEnumerable<TomasGreen.Model.Models.RoastingPlan>
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+@model IEnumerable<TomasGreen.Model.Models.RoastingPlan>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = @localizer["Index"];
 }
 
-<h2>Index</h2>
+<h2>@localizer["Index"]</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">@localizer["Create New"]</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Company)
+                @localizer[@Html.DisplayNameFor(model => model.Company)]
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                @localizer[@Html.DisplayNameFor(model => model.Date)]
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Article)
+                @localizer[@Html.DisplayNameFor(model => model.Article)]
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NewArticleID)
-            </th>
-           
-            <th>
-                @Html.DisplayNameFor(model => model.TotalWeight)
+                @localizer[@Html.DisplayNameFor(model => model.TotalWeight)]
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.WeightChange)
-            </th>
-
-            
-            <th>
-                @Html.DisplayNameFor(model => model.NewTotalWeight)
-            </th>
-           
-            <th>
-                @Html.DisplayNameFor(model => model.PricePerUnit)
+                @localizer[@Html.DisplayNameFor(model => model.NewArticleID)]
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TotalPrice)
+                @localizer[@Html.DisplayNameFor(model => model.NewTotalWeight)]
+            </th>
+            <th>
+                @localizer[@Html.DisplayNameFor(model => model.WeightChange)]
+            </th>
+            <th>
+                @localizer[@Html.DisplayNameFor(model => model.PricePerUnit)]
+            </th>
+            <th>
+                @localizer[@Html.DisplayNameFor(model => model.TotalPrice)]
             </th>
 
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QtyPackages)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QtExtra)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArticleUnitID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WeightPerPackage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalWeight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WeightChange)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewArticleID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewQtyPackages)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewQtyExtra)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewArticleUnitID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewWeightPerPackage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewTotalWeight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Salt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SaltLimit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewPackagingMaterialPackageID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewPackages)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewPackagingMaterialBagID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewBags)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PricePerUnit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Article.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Company.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Manager.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Warehouse.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Company.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Article.Name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalWeight)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewArticleID)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewTotalWeight)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WeightChange)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PricePerUnit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                </td>
+
+                <td>
+                    <a asp-action="Create" asp-route-id="@item.ID">@localizer["Edit"]</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">@localizer["Details"]</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">@localizer["Delete"]</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

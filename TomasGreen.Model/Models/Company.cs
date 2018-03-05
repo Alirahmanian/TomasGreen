@@ -33,5 +33,6 @@ namespace TomasGreen.Model.Models
         public bool Archive { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<CompanySection> Sections { get; set; }
     }
 }

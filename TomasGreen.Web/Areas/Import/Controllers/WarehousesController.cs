@@ -26,7 +26,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // GET: Stock/Warehouses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Warehouses.ToListAsync());
+            return View(await _context.Warehouses.Include(s => s.Section).ToListAsync());
         }
 
         // GET: Stock/Warehouses/Details/5
@@ -50,6 +50,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // GET: Stock/Warehouses/Create
         public IActionResult Create()
         {
+            ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+
             return View();
         }
 
@@ -58,18 +60,41 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Address,Phone, IsOnTheWay")] Warehouse warehouse)
+        public async Task<IActionResult> Create([Bind("Name,Description,Address,Phone,IsOnTheWay,IsCutomers,CompanySectionID")] Warehouse warehouse)
         {
+            var skippedErrors = ModelState.Keys.Where(key => key.StartsWith("Warehouse.CompanySectionID"));
+            foreach (var key in skippedErrors)
+            {
+                ModelState.Remove(key);
+            }
             if (ModelState.IsValid)
             {
+                if (warehouse.CompanySectionID == 0)
+                {
+                    warehouse.CompanySectionID = null;
+                }
                 if (!VerifyUniqueName(warehouse.Name, (int)warehouse.ID))
                 {
+                    ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
                     ModelState.AddModelError(nameof(warehouse.Name), _localizer["Name is already taken."]);
                     return View(warehouse);
                 }
                 if (!VerifyUniqueIsOnTheWayWarehouse(warehouse))
                 {
-                    ModelState.AddModelError(nameof(warehouse.IsOnTheWay), _localizer["There is already a reserve warehouse."]);
+                    ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+                    ModelState.AddModelError(nameof(warehouse.IsOnTheWay), _localizer["There is already an on the way warehouse."]);
+                    return View(warehouse);
+                }
+                if(!VerifyUniqueIsCustomersWarehouse(warehouse))
+                {
+                    ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+                    ModelState.AddModelError(nameof(warehouse.IsCustomers), _localizer["There is already a customer warehouse."]);
+                    return View(warehouse);
+                }
+                if (!VerifyIsCustomersWithNoSectionWarehouse(warehouse))
+                {
+                    ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+                    ModelState.AddModelError(nameof(warehouse.CompanySectionID), _localizer["Customer warehouse can't have section."]);
                     return View(warehouse);
                 }
                 _context.Add(warehouse);
@@ -92,6 +117,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
+            ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
             return View(warehouse);
         }
 
@@ -100,25 +126,48 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,Name,Description,Address,Phone,AddedDate, IsOnTheWay")] Warehouse warehouse)
+        public async Task<IActionResult> Edit(long id, [Bind("ID,Name,Description,Address,Phone,AddedDate,IsOnTheWay,IsCustomers,CompanySectionID")] Warehouse warehouse)
         {
             if (id != warehouse.ID)
             {
                 return NotFound();
             }
-
+            var skippedErrors = ModelState.Keys.Where(key => key.StartsWith("Warehouse.CompanySectionID"));
+            foreach (var key in skippedErrors)
+            {
+                ModelState.Remove(key);
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if(warehouse.CompanySectionID == 0)
+                    {
+                        warehouse.CompanySectionID = null;
+                    }
                     if (!VerifyUniqueName(warehouse.Name, (int)warehouse.ID))
                     {
+                        ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
                         ModelState.AddModelError(nameof(warehouse.Name), _localizer["Name is already taken."]);
                         return View(warehouse);
                     }
                     if (!VerifyUniqueIsOnTheWayWarehouse(warehouse))
                     {
-                        ModelState.AddModelError(nameof(warehouse.IsOnTheWay), _localizer["There is already a reserve warehouse."]);
+                        ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+                        ModelState.AddModelError(nameof(warehouse.IsOnTheWay), _localizer["There is already an on the way warehouse."]);
+                        return View(warehouse);
+                    }
+                    if (!VerifyUniqueIsCustomersWarehouse(warehouse))
+                    {
+                        ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+                        ModelState.AddModelError(nameof(warehouse.IsCustomers), _localizer["There is already a customer warehouse."]);
+                        return View(warehouse);
+                    }
+                    
+                    if(!VerifyIsCustomersWithNoSectionWarehouse(warehouse))
+                    {
+                        ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+                        ModelState.AddModelError(nameof(warehouse.CompanySectionID), _localizer["Customer warehouse can't have section."]);
                         return View(warehouse);
                     }
                     _context.Update(warehouse);
@@ -136,6 +185,12 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                ViewData["CompanySectionID"] = new SelectList(_context.CompanySections, "ID", "Name");
+                return View(warehouse);
+
             }
             return View(warehouse);
         }
@@ -229,11 +284,63 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         return false;
                     }
                 }
-
             }
-
             return true;
         }
-        #endregion
-    }
+        public bool VerifyUniqueIsCustomersWarehouse(Warehouse model)
+        {
+            if (model.IsCustomers)
+            {
+                var warehouse = _context.Warehouses.Where(a => a.IsCustomers == true).AsNoTracking().FirstOrDefault();
+                if (warehouse != null)
+                {
+                    if (model.ID > 0)
+                    {
+                        if (warehouse.ID == model.ID)
+                            return true;
+                        else
+                            return false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        public bool VerifyIsCustomersWithNoSectionWarehouse(Warehouse model)
+        {
+            if(model.IsCustomers && model.CompanySectionID != null && model.CompanySectionID != 0)
+            {
+                return false;
+            }
+            
+            return true;
+        }
+        public bool VerifyUniqueCompanySectionWarehouse(Warehouse model)
+        {
+            if(model.CompanySectionID != null)
+            {
+                var warehouse = _context.Warehouses.Where(a => a.CompanySectionID == model.CompanySectionID).AsNoTracking().FirstOrDefault();
+                if (warehouse != null)
+                {
+                    if (model.ID > 0)
+                    {
+                        if (warehouse.ID == model.ID)
+                            return true;
+                        else
+                            return false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+            #endregion
+     }
 }

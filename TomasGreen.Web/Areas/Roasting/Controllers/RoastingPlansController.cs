@@ -60,10 +60,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         // GET: Roasting/RoastingPlans/Create
         public IActionResult Create()
         {
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
-            ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "Email");
-            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+            GetRoastingPlanLists();
             return View();
         }
 
@@ -72,8 +69,9 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("WarehouseID,ArticleID,CompanyID,ManagerID,Date,QtyPackages,QtExtra,ArticleUnitID,WeightPerPackage,TotalWeight,WeightChange,NewArticleID,NewQtyPackages,NewQtyExtra,NewArticleUnitID,NewWeightPerPackage,NewTotalWeight,Salt,SaltLimit,NewPackagingMaterialPackageID,NewPackages,NewPackagingMaterialBagID,NewBags,PricePerUnit,TotalPrice")] RoastingPlan roastingPlan)
+        public async Task<IActionResult> Create([Bind("WarehouseID,ArticleID,CompanyID,ManagerID,Date,QtyPackages,QtExtra,ArticleUnitID,WeightPerPackage,TotalWeight,WeightChange,NewArticleID,NewQtyPackages,NewQtyExtra,NewArticleUnitID,NewWeightPerPackage,NewTotalWeight,Salt,NewPackagingMaterialPackageID,NewPackages,NewPackagingMaterialBagID,NewBags,PricePerUnit,TotalPrice")] RoastingPlan roastingPlan)
         {
+
             if (ModelState.IsValid)
             {
                 _context.Add(roastingPlan);
@@ -100,10 +98,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             {
                 return NotFound();
             }
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", roastingPlan.ArticleID);
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", roastingPlan.CompanyID);
-            ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "Email", roastingPlan.ManagerID);
-            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name", roastingPlan.WarehouseID);
+            GetRoastingPlanLists();
             return View(roastingPlan);
         }
 
@@ -139,10 +134,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", roastingPlan.ArticleID);
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", roastingPlan.CompanyID);
-            ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "Email", roastingPlan.ManagerID);
-            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name", roastingPlan.WarehouseID);
+            GetRoastingPlanLists();
             return View(roastingPlan);
         }
 
@@ -183,5 +175,58 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         {
             return _context.RoastingPlans.Any(e => e.ID == id);
         }
+
+        private void GetRoastingPlanLists()
+        {
+            // ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
+          //  ViewData["NewArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
+           // ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+          //  ViewData["NewArticleID"] = new SelectList(_context.Articles, "ID", "Name");
+            ViewData["ArticleUnitID"] = new SelectList(_context.ArticleUnits, "ID", "Name");
+            ViewData["NewArticleUnitID"] = new SelectList(_context.ArticleUnits, "ID", "Name");
+            ViewData["NewPackagingMaterialPackageID"] = new SelectList(_context.PackagingMaterials, "ID", "Name");
+            ViewData["NewPackagingMaterialBagID"] = new SelectList(_context.PackagingMaterials, "ID", "Name");
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
+            ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "FullName");
+            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+
+        }
+        #region Ajax Calls
+        public JsonResult GetCompaniessByWarehouseId(int warehouseID)
+        {
+            List<Company> companies = new List<Company>();
+            if (_context.Warehouses.Any(w => w.ID == warehouseID && w.IsCustomers == true))
+            {
+               // var companies = _context.
+            }
+           
+
+            return new JsonResult(companies.ToList());
+        }
+        public JsonResult GetArticlesByWarehouseId(int warehouseID)
+        {
+            //if(_context.Warehouses.Any(w => w.ID == warehouseID && w.IsCustomers == true))
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
+            var articles = (from aw in _context.ArticleWarehouseBalances
+                            where aw.WarehouseID == warehouseID
+                            join a in _context.Articles on aw.ArticleID equals a.ID
+                            join w in _context.Warehouses on aw.WarehouseID equals w.ID
+                              orderby a.Name
+                              select new
+                              {
+                                  Id = a.ID,
+                                  Name = a.Name,
+                                  Articlesonhand = _localizer["[Package"] + ": " + aw.QtyPackagesOnhand.ToString() + ", " + _localizer["Extra"] + ": " + aw.QtyExtraOnhand.ToString() + "]"
+                              }
+                               );
+            return new JsonResult(articles.ToList());
+        }
+        #endregion
     }
 }

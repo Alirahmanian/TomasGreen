@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace TomasGreen.Model.Models
 {
     public class RoastingPlan : BaseEntity
     {
+        [Display(Name = "Warehouse")]
+        [Required(ErrorMessage = "Please choose a warehouse.")]
         public Int64 WarehouseID { get; set; }
+        [Display(Name = "Article")]
+        [Required(ErrorMessage = "Please choose an article.")]
         public Int64 ArticleID { get; set; }
+        [Display(Name = "Company")]
+        [Required(ErrorMessage = "Please choose a company.")]
         public Int64 CompanyID { get; set; }
         public Int64 ManagerID { get; set; }
         public DateTime Date { get; set; }

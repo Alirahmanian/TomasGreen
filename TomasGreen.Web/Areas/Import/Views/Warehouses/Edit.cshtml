@@ -37,9 +37,21 @@
                 <input asp-for="IsOnTheWay" class="form-control" />
                 <span asp-validation-for="IsOnTheWay" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="IsCustomers" class="control-label"></label>
+                <input asp-for="IsCustomers" class="form-control" />
+                <span asp-validation-for="IsCustomers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanySectionID" class="control-label"></label>
+                <select asp-for="CompanySectionID" id="CompanySectionID" class="form-control" asp-items="ViewBag.CompanySectionID">
+                    <option>Select</option>
+                </select>
+                <span asp-validation-for="CompanySectionID" class="text-danger"></span>
+            </div>
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Save" id="Save" class="btn btn-default" onclick="return Validate()" />
             </div>
         </form>
     </div>
@@ -48,4 +60,5 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+<script src="~/js/Warehouse.js"></script>
 

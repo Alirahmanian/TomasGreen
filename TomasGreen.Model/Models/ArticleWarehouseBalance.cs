@@ -8,7 +8,7 @@ namespace TomasGreen.Model.Models
     {
         public Int64 ArticleID { get; set; }
         public Int64 WarehouseID { get; set; }
-
+        public Int64 CompanyID { get; set; }
         public int QtyPackagesIn { get; set; }
         public decimal QtyExtraIn { get; set; }
 
@@ -23,7 +23,7 @@ namespace TomasGreen.Model.Models
         //nav
         public virtual Article Article { get; set; }
         public virtual Warehouse Warehouse { get; set; }
+        public virtual Company Company { get; set; }
 
-        
     }
 }

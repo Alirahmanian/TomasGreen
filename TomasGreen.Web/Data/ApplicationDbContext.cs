@@ -37,7 +37,9 @@ namespace TomasGreen.Web.Data
         public DbSet<ArticleUnit> ArticleUnits { get; set; }
         public DbSet<ArticlePackageForm> ArticlePakageForms { get; set; }
         public DbSet<RoastingPlan> RoastingPlans { get; set; }
-
+        public DbSet<PackagingMaterial> PackagingMaterials { get; set; }
+        public DbSet<CompanySection> CompanySections { get; set; }
+        
         public virtual async Task<int> SaveChangesAsync()
         {
             PutBaseEntityValues();
@@ -95,6 +97,9 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Company>()
            .HasIndex(p => p.Name)
            .IsUnique(true);
+            modelBuilder.Entity<CompanySection>()
+             .HasIndex(p => new { p.Name, p.CompanyID })
+             .IsUnique(true);
             modelBuilder.Entity<Warehouse>()
            .HasIndex(p => p.Name)
            .IsUnique(true);
@@ -104,7 +109,10 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<RoastingPlan>()
              .HasIndex(p => new { p.ArticleID, p.Date })
              .IsUnique(true);
-          
+            modelBuilder.Entity<PackagingMaterial>()
+              .HasIndex(p => new { p.Name, p.ArticleUnitID })
+              .IsUnique(true);
+
             modelBuilder.Entity<OrderDetail>()
             .HasIndex(p => new { p.OrderID, p.ArticleID, p.WarehouseID, p.Price})
             .IsUnique(true);
@@ -126,16 +134,10 @@ namespace TomasGreen.Web.Data
                 .HasForeignKey(p => p.WarehouseID);
 
             modelBuilder.Entity<ArticleWarehouseBalance>()
-               .HasIndex(p => new { p.ArticleID, p.WarehouseID })
+               .HasIndex(p => new { p.ArticleID, p.WarehouseID, p.CompanyID })
                .IsUnique(true);
 
-            // modelBuilder.Entity<UserType>()
-            // .HasIndex(p => p.Name)
-            // .IsUnique(true);
-            // modelBuilder.Entity<UserType>()
-            //.HasIndex(p => p.DbTableName)
-            //.IsUnique(true);
-
+            
 
 
             base.OnModelCreating(modelBuilder);

@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180305170959_CompanySection")]
+    partial class CompanySection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -785,8 +786,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<long?>("CompanySectionID");
-
                     b.Property<string>("Description");
 
                     b.Property<bool>("IsCustomers");
@@ -804,8 +803,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<string>("UserName");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("CompanySectionID");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -1060,13 +1057,6 @@ namespace TomasGreen.Web.Migrations
                         .WithMany()
                         .HasForeignKey("WarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.Warehouse", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.CompanySection", "Section")
-                        .WithMany()
-                        .HasForeignKey("CompanySectionID");
                 });
 #pragma warning restore 612, 618
         }
