@@ -11,12 +11,11 @@ namespace TomasGreen.Model.Models
         public Int64 ArticleUnitID { get; set; }
         public decimal Volume { get; set; }
         public string Description { get; set; }
-        public bool PackagingCategoryID { get; set; }
+        public Int64 PackagingCategoryID { get; set; }
         public decimal Price { get; set; }
 
         //nav
         public ArticleUnit ArticleUnit { get; set; }
         public PackagingCategory PackagingCategory { get; set; }
-
     }
 }

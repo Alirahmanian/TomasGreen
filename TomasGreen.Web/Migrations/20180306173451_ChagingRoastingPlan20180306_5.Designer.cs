@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180306173451_ChagingRoastingPlan20180306_5")]
+    partial class ChagingRoastingPlan20180306_5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -724,7 +725,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<long>("PackagingMaterialBagID");
 
+                    b.Property<long?>("PackagingMaterialBagsID");
+
                     b.Property<long>("PackagingMaterialPackageID");
+
+                    b.Property<long?>("PackagingMaterialPackagesID");
 
                     b.Property<decimal>("PricePerUnit");
 
@@ -750,7 +755,17 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("CompanyID");
 
+                    b.HasIndex("FromWarehouseID");
+
                     b.HasIndex("ManagerID");
+
+                    b.HasIndex("NewArticleID");
+
+                    b.HasIndex("PackagingMaterialBagsID");
+
+                    b.HasIndex("PackagingMaterialPackagesID");
+
+                    b.HasIndex("ToWarehouseID");
 
                     b.HasIndex("ArticleID", "Date")
                         .IsUnique();
@@ -1018,14 +1033,42 @@ namespace TomasGreen.Web.Migrations
 
             modelBuilder.Entity("TomasGreen.Model.Models.RoastingPlan", b =>
                 {
+                    b.HasOne("TomasGreen.Model.Models.Article", "Article")
+                        .WithMany()
+                        .HasForeignKey("ArticleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyID")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("TomasGreen.Model.Models.Warehouse", "FromWarehouse")
+                        .WithMany()
+                        .HasForeignKey("FromWarehouseID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("TomasGreen.Model.Models.Employee", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TomasGreen.Model.Models.Article", "NewArticle")
+                        .WithMany()
+                        .HasForeignKey("NewArticleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "PackagingMaterialBags")
+                        .WithMany()
+                        .HasForeignKey("PackagingMaterialBagsID");
+
+                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "PackagingMaterialPackages")
+                        .WithMany()
+                        .HasForeignKey("PackagingMaterialPackagesID");
+
+                    b.HasOne("TomasGreen.Model.Models.Warehouse", "ToWarehouse")
+                        .WithMany()
+                        .HasForeignKey("ToWarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

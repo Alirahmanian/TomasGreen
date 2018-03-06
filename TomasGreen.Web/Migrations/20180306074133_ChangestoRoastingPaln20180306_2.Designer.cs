@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180306074133_ChangestoRoastingPaln20180306_2")]
+    partial class ChangestoRoastingPaln20180306_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -583,7 +584,9 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<long>("PackagingCategoryID");
+                    b.Property<bool>("PackagingCategoryID");
+
+                    b.Property<long?>("PackagingCategoryID1");
 
                     b.Property<decimal>("Price");
 
@@ -595,7 +598,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("ArticleUnitID");
 
-                    b.HasIndex("PackagingCategoryID");
+                    b.HasIndex("PackagingCategoryID1");
 
                     b.HasIndex("Name", "ArticleUnitID")
                         .IsUnique()
@@ -700,7 +703,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<long>("ArticleID");
 
-                    b.Property<int>("Bags");
+                    b.Property<int>("ArticleUnitID");
 
                     b.Property<long>("CompanyID");
 
@@ -714,21 +717,31 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<long>("NewArticleID");
 
+                    b.Property<long>("NewArticleUnitID");
+
+                    b.Property<int>("NewBags");
+
+                    b.Property<long?>("NewPackageID");
+
+                    b.Property<int>("NewPackages");
+
+                    b.Property<long>("NewPackagingMaterialBagID");
+
+                    b.Property<long>("NewPackagingMaterialPackageID");
+
                     b.Property<decimal>("NewQtyExtra");
 
                     b.Property<int>("NewQtyPackages");
 
                     b.Property<decimal>("NewTotalWeight");
 
-                    b.Property<int>("Packages");
+                    b.Property<decimal>("NewWeightPerPackage");
 
-                    b.Property<long>("PackagingMaterialBagID");
-
-                    b.Property<long>("PackagingMaterialPackageID");
+                    b.Property<long?>("NewbagID");
 
                     b.Property<decimal>("PricePerUnit");
 
-                    b.Property<decimal>("QtyExtra");
+                    b.Property<decimal>("QtExtra");
 
                     b.Property<int>("QtyPackages");
 
@@ -746,11 +759,17 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("WeightChange");
 
+                    b.Property<decimal>("WeightPerPackage");
+
                     b.HasKey("ID");
 
                     b.HasIndex("CompanyID");
 
                     b.HasIndex("ManagerID");
+
+                    b.HasIndex("NewPackageID");
+
+                    b.HasIndex("NewbagID");
 
                     b.HasIndex("ArticleID", "Date")
                         .IsUnique();
@@ -987,8 +1006,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasOne("TomasGreen.Model.Models.PackagingCategory", "PackagingCategory")
                         .WithMany()
-                        .HasForeignKey("PackagingCategoryID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PackagingCategoryID1");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
@@ -1027,6 +1045,14 @@ namespace TomasGreen.Web.Migrations
                         .WithMany()
                         .HasForeignKey("ManagerID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "NewPackage")
+                        .WithMany()
+                        .HasForeignKey("NewPackageID");
+
+                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "Newbag")
+                        .WithMany()
+                        .HasForeignKey("NewbagID");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Warehouse", b =>

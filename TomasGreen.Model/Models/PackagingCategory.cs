@@ -3,5 +3,7 @@
     public class PackagingCategory : BaseEntity
     {
         public string Name { get; set; }
+
+        //nav
     }
 }

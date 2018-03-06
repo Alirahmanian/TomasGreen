@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180306090831_ChagingPackagingmaterial2")]
+    partial class ChagingPackagingmaterial2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -700,7 +701,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<long>("ArticleID");
 
-                    b.Property<int>("Bags");
+                    b.Property<int>("ArticleUnitID");
 
                     b.Property<long>("CompanyID");
 
@@ -714,21 +715,31 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<long>("NewArticleID");
 
+                    b.Property<long>("NewArticleUnitID");
+
+                    b.Property<int>("NewBags");
+
+                    b.Property<long?>("NewPackageID");
+
+                    b.Property<int>("NewPackages");
+
+                    b.Property<long>("NewPackagingMaterialBagID");
+
+                    b.Property<long>("NewPackagingMaterialPackageID");
+
                     b.Property<decimal>("NewQtyExtra");
 
                     b.Property<int>("NewQtyPackages");
 
                     b.Property<decimal>("NewTotalWeight");
 
-                    b.Property<int>("Packages");
+                    b.Property<decimal>("NewWeightPerPackage");
 
-                    b.Property<long>("PackagingMaterialBagID");
-
-                    b.Property<long>("PackagingMaterialPackageID");
+                    b.Property<long?>("NewbagID");
 
                     b.Property<decimal>("PricePerUnit");
 
-                    b.Property<decimal>("QtyExtra");
+                    b.Property<decimal>("QtExtra");
 
                     b.Property<int>("QtyPackages");
 
@@ -746,11 +757,17 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("WeightChange");
 
+                    b.Property<decimal>("WeightPerPackage");
+
                     b.HasKey("ID");
 
                     b.HasIndex("CompanyID");
 
                     b.HasIndex("ManagerID");
+
+                    b.HasIndex("NewPackageID");
+
+                    b.HasIndex("NewbagID");
 
                     b.HasIndex("ArticleID", "Date")
                         .IsUnique();
@@ -1027,6 +1044,14 @@ namespace TomasGreen.Web.Migrations
                         .WithMany()
                         .HasForeignKey("ManagerID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "NewPackage")
+                        .WithMany()
+                        .HasForeignKey("NewPackageID");
+
+                    b.HasOne("TomasGreen.Model.Models.PackagingMaterial", "Newbag")
+                        .WithMany()
+                        .HasForeignKey("NewbagID");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Warehouse", b =>

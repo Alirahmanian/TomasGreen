@@ -30,7 +30,9 @@ namespace TomasGreen.Model.Models
         public decimal CreditReceived { get; set; } = 0;
         [Display(Name = "Credit limit")]
         public decimal CreditLimit { get; set; } = 0;
-        public bool Archive { get; set; }
+        public bool Archive { get; set; } = false;
+        public bool IsOwner { get; set; } = false;
+
 
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<CompanySection> Sections { get; set; }

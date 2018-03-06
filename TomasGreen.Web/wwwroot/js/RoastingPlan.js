@@ -3,10 +3,10 @@ local.Select = "Выбрать";
 //=======================================
 //=======================================
 function getLangPath() {
-    if (window.location.href.indexOf('/en/') != -1) {
+    if (window.location.href.indexOf('/en/') !== -1) {
        return "/en/";
     }
-    if (window.location.href.indexOf('/ru/') != -1) {
+    if (window.location.href.indexOf('/ru/') !== -1) {
       return "/ru/";
     }
     return "/en/";
@@ -14,10 +14,10 @@ function getLangPath() {
 //=======================================
 //=======================================
 function getLang() {
-    if (window.location.href.indexOf('/en/') != -1) {
+    if (window.location.href.indexOf('/en/') !== -1) {
         return "en";
     }
-    if (window.location.href.indexOf('/ru/') != -1) {
+    if (window.location.href.indexOf('/ru/') !== -1) {
         return "ru";
     }
     return "en";
@@ -36,62 +36,51 @@ function getLocal(txt) {
 }
 //=======================================
 //=======================================
-function LoadWarehouses(company) {
-    if ($(Warehouse).val() !== "0" && $(Warehouse).val() !== "Select") {
-        var urlWithLang = getLangPath() + "Roasting/RoastingPlans/GetWarehousesByCompanyId";
-
-        $.ajax({
-            type: "GET",
-            url: urlWithLang,
-            data: { 'warehouseId': $(Warehouse).val() },
-            dataType: "json",
-            success: function (data) {
-                renderArticles($("#CompanyID"), data);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
+function LoadFromAndToWarehousesForCompany(Company) {
+    if ($(Company).val() !== "0" && $(Company).val() !== "Select") {
+        var urlWithLang = getLangPath() + "Roasting/RoastingPlans/";
+        LoadFromWarehouses(Company, urlWithLang + "GetFromWarehousesByCompany", $("#FromWarehouseID"));
+        LoadFromWarehouses(Company, urlWithLang + "GetToWarehousesByCompany", $("#ToWarehouseID"));
+        
     }
-    else {
-        $('#ArticleID').find('option:not(:first)').remove();
-    }
+    //else {
+    //    $('#FromWarehouseID').find('option:not(:first)').remove();
+    //}
 
 }
 //=======================================
 //=======================================
-function LoadCompanies(Warehouse) {
-    if ($(Warehouse).val() !== "0" && $(Warehouse).val() !== "Select") {
-        var urlWithLang = getLangPath() + "Roasting/RoastingPlans/GetCompaniesByWarehouseId";
-
-        $.ajax({
-            type: "GET",
-            url: urlWithLang,
-            data: { 'warehouseId': $(Warehouse).val() },
-            dataType: "json",
-            success: function (data) {
-                renderArticles($("#CompanyID"), data);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    }
-    else {
-        $('#ArticleID').find('option:not(:first)').remove();
-    }
+function LoadFromWarehouses(Company, urlWithLang, target) {
+   
+    $.ajax({
+        type: "GET",
+        url: urlWithLang,
+        data: { 'companyID': $(Company).val() },
+        dataType: "json",
+        success: function (data) {
+            renderWarehouses($(target), data);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+    
+    //else {
+    //    $('#FromWarehouseID').find('option:not(:first)').remove();
+    //}
 
 }
+
 //=======================================
 //=======================================
 function LoadArticles(Warehouse) {
     if ($(Warehouse).val() !== "0" && $(Warehouse).val() !== "Select") {
-        var urlWithLang = getLangPath() + "Roasting/RoastingPlans/GetArticlesByWarehouseId";
+        var urlWithLang = getLangPath() + "Roasting/RoastingPlans/GetArticlesByWarehouse";
         
         $.ajax({
             type: "GET",
-            url:  urlWithLang,
-            data: { 'warehouseId': $(Warehouse).val() },
+            url: urlWithLang,
+            data: { 'warehouseId': $(Warehouse).val(), 'companyID': $("#CompanyID").val() },
             dataType: "json",
             success: function (data) {
                 renderArticles($("#ArticleID"), data);
@@ -101,14 +90,14 @@ function LoadArticles(Warehouse) {
             }
         })
     }
-    else {
-        $('#ArticleID').find('option:not(:first)').remove();
-    }
+    //else {
+    //    $('#ArticleID').find('option:not(:first)').remove();
+    //}
 
 }
 //=======================================
 //=======================================
-function renderCompanies(element, data) {
+function renderWarehouses(element, data) {
     var $ele = $(element);
     $ele.empty();
     $ele.append($('<option/>').val('0').text(getLocal('Select')));
@@ -131,7 +120,7 @@ function renderArticles(element, data) {
      $ele.append($('<option/>').val('0').text(getLocal('Select')));
     $.each(data,
         function (i, val) {
-            $ele.append($('<option/>').val(val.id).text(val.name));
+            $ele.append($('<option/>').val(val.id).text(val.name + val.articlesonhand));
         }
     )
 }

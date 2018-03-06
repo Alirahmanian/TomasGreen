@@ -21,7 +21,7 @@
                 @localizer[@Html.DisplayNameFor(model => model.Date)]
             </th>
             <th>
-                @localizer[@Html.DisplayNameFor(model => model.Article)]
+                @localizer[@Html.DisplayNameFor(model => model.ArticleID)]
             </th>
             <th>
                 @localizer[@Html.DisplayNameFor(model => model.TotalWeight)]
@@ -56,7 +56,7 @@
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Article.Name)
+                    @Html.DisplayFor(modelItem => item.ArticleID)
                 </td>
 
                 <td>

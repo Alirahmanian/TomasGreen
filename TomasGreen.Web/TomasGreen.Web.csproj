@@ -71,11 +71,11 @@
     <Folder Include="Areas\Import\Purchase\Data\" />
     <Folder Include="Areas\Import\Purchase\Models\" />
     <Folder Include="Areas\Roasting\Data\" />
-    <Folder Include="Areas\Roasting\Models\" />
     <Folder Include="Areas\Import\Sales\Data\" />
     <Folder Include="Areas\Import\Stock\Data\" />
     <Folder Include="Areas\Import\Stock\Css\" />
     <Folder Include="Areas\Import\Stock\Services\" />
+    <Folder Include="Areas\Roasting\Models\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

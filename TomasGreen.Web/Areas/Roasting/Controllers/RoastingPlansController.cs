@@ -10,6 +10,7 @@ using Microsoft.Extensions.Localization;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.BaseModels;
 using TomasGreen.Web.Data;
+using TomasGreen.Web.Validations;
 
 namespace TomasGreen.Web.Areas.Roasting.Controllers
 {
@@ -31,7 +32,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         // GET: Roasting/RoastingPlans
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.RoastingPlans.Include(r => r.Article).Include(r => r.Company).Include(r => r.Manager).Include(r => r.Warehouse);
+            var applicationDbContext = _context.RoastingPlans.Include(r => r.Company).Include(r => r.Manager);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -44,10 +45,10 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             }
 
             var roastingPlan = await _context.RoastingPlans
-                .Include(r => r.Article)
+               
                 .Include(r => r.Company)
                 .Include(r => r.Manager)
-                .Include(r => r.Warehouse)
+                
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (roastingPlan == null)
             {
@@ -58,9 +59,20 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         }
 
         // GET: Roasting/RoastingPlans/Create
-        public IActionResult Create()
+        public IActionResult Create(Int64? id)
         {
-            GetRoastingPlanLists();
+            if(id > 0)
+            {
+               var roastingPlan = _context.RoastingPlans.Where( r => r.ID == id)
+              .Include(m => m.Manager)
+              .Include(c => c.Company)
+              .FirstOrDefault();
+               GetRoastingPlanLists(roastingPlan);
+               return View(roastingPlan);
+            }
+
+            var model = new RoastingPlan();
+            GetRoastingPlanLists(model);
             return View();
         }
 
@@ -69,21 +81,53 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("WarehouseID,ArticleID,CompanyID,ManagerID,Date,QtyPackages,QtExtra,ArticleUnitID,WeightPerPackage,TotalWeight,WeightChange,NewArticleID,NewQtyPackages,NewQtyExtra,NewArticleUnitID,NewWeightPerPackage,NewTotalWeight,Salt,NewPackagingMaterialPackageID,NewPackages,NewPackagingMaterialBagID,NewBags,PricePerUnit,TotalPrice")] RoastingPlan roastingPlan)
+        public async Task<IActionResult> Create(RoastingPlan model)
         {
-
+            var skippedErrors = ModelState.Keys.Where(key => key.StartsWith(nameof(model.PackagingMaterialPackageID)) || key.StartsWith(nameof(model.PackagingMaterialBagID)));
+            foreach (var key in skippedErrors)
+            {
+                ModelState.Remove(key);
+            }
             if (ModelState.IsValid)
             {
-                _context.Add(roastingPlan);
+                // Server side validation
+                var customModelValidator = RoastingPlanValidation.RoastingPlanIsValid(_context, "Create", model);
+                if (customModelValidator.Value == false)
+                {
+                    ModelState.AddModelError("", "Could't save, try again.");
+                    ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                    GetRoastingPlanLists(model);
+                    return View(model);
+                }
+                model.TotalWeight = GetTotalWeight(model.ArticleID, model.QtyPackages, model.QtyExtra);
+                model.NewTotalWeight = GetTotalWeight(model.NewArticleID, model.NewQtyPackages, model.NewQtyExtra);
+                model.TotalPrice = model.NewTotalWeight * model.PricePerUnit;
+                if(model.ID > 0)
+                {
+                    _context.Update(model);
+                }
+                else
+                {
+                    _context.Add(model);
+                }
+                
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", roastingPlan.ArticleID);
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", roastingPlan.CompanyID);
-            ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "Email", roastingPlan.ManagerID);
-            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name", roastingPlan.WarehouseID);
-            return View(roastingPlan);
+            else
+            {
+                //foreach(var key in ModelState.Keys)
+                //{
+                //    ModelState.AddModelError(key.ToString(), key.ToString());
+                //}
+                ModelState.AddModelError("", "Could't save, try again.");
+                GetRoastingPlanLists(model);
+            }
+
+            return View(model);
         }
+
+        
 
         // GET: Roasting/RoastingPlans/Edit/5
         public async Task<IActionResult> Edit(long? id)
@@ -93,13 +137,16 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
                 return NotFound();
             }
 
-            var roastingPlan = await _context.RoastingPlans.SingleOrDefaultAsync(m => m.ID == id);
-            if (roastingPlan == null)
+            var model = await _context.RoastingPlans
+                .Include(m => m.Manager)
+                .Include(c => c.Company)
+                .SingleOrDefaultAsync(m => m.ID == id);
+            if (model == null)
             {
                 return NotFound();
             }
-            GetRoastingPlanLists();
-            return View(roastingPlan);
+            GetRoastingPlanLists(model);
+            return View(model);
         }
 
         // POST: Roasting/RoastingPlans/Edit/5
@@ -107,9 +154,9 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("WarehouseID,ArticleID,CompanyID,ManagerID,Date,QtyPackages,QtExtra,ArticleUnitID,WeightPerPackage,TotalWeight,WeightChange,NewArticleID,NewQtyPackages,NewQtyExtra,NewArticleUnitID,NewWeightPerPackage,NewTotalWeight,Salt,SaltLimit,NewPackagingMaterialPackageID,NewPackages,NewPackagingMaterialBagID,NewBags,PricePerUnit,TotalPrice")] RoastingPlan roastingPlan)
+        public async Task<IActionResult> Edit(long id,  RoastingPlan model)
         {
-            if (id != roastingPlan.ID)
+            if (id != model.ID)
             {
                 return NotFound();
             }
@@ -118,12 +165,12 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             {
                 try
                 {
-                    _context.Update(roastingPlan);
+                    _context.Update(model);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RoastingPlanExists(roastingPlan.ID))
+                    if (!RoastingPlanExists(model.ID))
                     {
                         return NotFound();
                     }
@@ -134,8 +181,8 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            GetRoastingPlanLists();
-            return View(roastingPlan);
+            GetRoastingPlanLists(model);
+            return View(model);
         }
 
         // GET: Roasting/RoastingPlans/Delete/5
@@ -147,10 +194,10 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             }
 
             var roastingPlan = await _context.RoastingPlans
-                .Include(r => r.Article)
+               
                 .Include(r => r.Company)
                 .Include(r => r.Manager)
-                .Include(r => r.Warehouse)
+              
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (roastingPlan == null)
             {
@@ -176,45 +223,142 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             return _context.RoastingPlans.Any(e => e.ID == id);
         }
 
-        private void GetRoastingPlanLists()
+        //======================================================================
+        //======================================================================
+        private void GetRoastingPlanLists(RoastingPlan model)
         {
-            // ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
-          //  ViewData["NewArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
-           // ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-          //  ViewData["NewArticleID"] = new SelectList(_context.Articles, "ID", "Name");
-            ViewData["ArticleUnitID"] = new SelectList(_context.ArticleUnits, "ID", "Name");
-            ViewData["NewArticleUnitID"] = new SelectList(_context.ArticleUnits, "ID", "Name");
-            ViewData["NewPackagingMaterialPackageID"] = new SelectList(_context.PackagingMaterials, "ID", "Name");
-            ViewData["NewPackagingMaterialBagID"] = new SelectList(_context.PackagingMaterials, "ID", "Name");
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
-            ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "FullName");
-            ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
+            ViewData["NewArticleID"] = new SelectList(_context.Articles, "ID", "Name", model?.NewArticleID);
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model?.CompanyID);
+            ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "FullName", model?.ManagerID);
+            ViewData["PackagingMaterialPackageID"] = new SelectList(_context.PackagingMaterials, "ID", "Name", model?.PackagingMaterialPackageID);
+            ViewData["PackagingMaterialBagID"] = new SelectList(_context.PackagingMaterials, "ID", "Name", model?.PackagingMaterialBagID);
 
-        }
-        #region Ajax Calls
-        public JsonResult GetCompaniessByWarehouseId(int warehouseID)
-        {
-            List<Company> companies = new List<Company>();
-            if (_context.Warehouses.Any(w => w.ID == warehouseID && w.IsCustomers == true))
+            if (model.CompanyID > 0)
             {
-               // var companies = _context.
+               ViewData["FromWarehouseID"] = new SelectList(GetFromWarehouseList(model.CompanyID), "ID", "Name", model?.FromWarehouseID);
+               ViewData["ToWarehouseID"] = new SelectList(GetToWarehouseList(model.CompanyID), "ID", "Name", model?.ToWarehouseID);
+                if(model.FromWarehouseID > 0)
+                {
+                    ViewData["ArticleID"] = new SelectList(GetArticleList(model.FromWarehouseID, model.CompanyID), "ID", "Name", model?.ArticleID);
+                }
             }
-           
-
-            return new JsonResult(companies.ToList());
         }
-        public JsonResult GetArticlesByWarehouseId(int warehouseID)
+
+        private decimal GetTotalWeight(long articleID, int qtyPackages, decimal qtExtra)
         {
-            //if(_context.Warehouses.Any(w => w.ID == warehouseID && w.IsCustomers == true))
-            //{
+            decimal result = 0;
+            var article = _context.Articles.Include(u => u.ArticleUnit).Where(a => a.ID == articleID).FirstOrDefault();
+            if(article == null)
+            {
+                return result;
+            }
+            if(article.ArticleUnit.MeasuresByKg)
+            {
+                result = (qtyPackages * article.WeightPerPackage) + qtExtra;
+            }
+            else
+            {
+                result = qtyPackages;
+            }
+            
+            return result;
+        }
+        public List<Warehouse> GetFromWarehouseList(Int64 companyID)
+        {
+            var warehouses = (from aw in _context.ArticleWarehouseBalances
+                              where aw.CompanyID == companyID && (aw.QtyPackagesOnhand > 0 || aw.QtyExtraOnhand > 0)
+                              join w in _context.Warehouses on aw.WarehouseID equals w.ID
+                              orderby w.Name
+                              select w
+                             ).GroupBy(g => g.Name).Select(z => z.OrderBy(i => i.Name).First()).ToList();
 
-            //}
-            //else
-            //{
 
-            //}
+            return warehouses;
+        }
+        public List<Warehouse> GetToWarehouseList(Int64 companyID)
+        {
+            List<Warehouse> warehouses = new List<Warehouse>();
+            var company = _context.Companies.Where(c => c.ID == companyID).FirstOrDefault();
+            if (company != null)
+            {
+                if (company.IsOwner)
+                {
+                    var ownerWarehouses = _context.Warehouses.Where(w => w.Archive == false).OrderBy(w => w.Name);
+                    return ownerWarehouses.ToList();
+                }
+                else
+                {
+                    var customerWarehouses = _context.Warehouses.Where(w => w.IsCustomers == true && w.Archive == false).OrderBy(w => w.Name);
+                    return customerWarehouses.ToList();
+                }
+            }
+            return warehouses;
+        }
+        public List<ListItem> GetArticleList(Int64 warehouseID, Int64 companyID)
+        {
+            List<ListItem> listItems = new List<ListItem>();
             var articles = (from aw in _context.ArticleWarehouseBalances
-                            where aw.WarehouseID == warehouseID
+                            where aw.CompanyID == companyID && aw.WarehouseID == warehouseID
+                            join a in _context.Articles on aw.ArticleID equals a.ID
+                            join w in _context.Warehouses on aw.WarehouseID equals w.ID
+                            orderby a.Name
+                            select new
+                            {
+                                Id = a.ID,
+                                Name = a.Name + _localizer["[Package"] + ".:|:. " + aw.QtyPackagesOnhand.ToString() + ", " + _localizer["Extra"] + ": " + aw.QtyExtraOnhand.ToString() + "]"
+                            }
+                           );
+            foreach(var article in articles)
+            {
+                listItems.Add(new ListItem { ID = article.Id, Name = article.Name });
+            }
+            return listItems;
+        }
+        //=======================================================================
+        //=======================================================================
+        #region Ajax Calls
+        public JsonResult GetFromWarehousesByCompany(int companyID)
+        {
+            var warehouses = (from aw in _context.ArticleWarehouseBalances
+                                   where aw.CompanyID == companyID && (aw.QtyPackagesOnhand > 0 || aw.QtyExtraOnhand > 0)
+                                   join w in _context.Warehouses on aw.WarehouseID equals w.ID
+                                   orderby w.Name
+                                   
+                                    select new
+                                    {
+                                        Id = w.ID,
+                                        Name = w.Name,
+                                    }
+                                ).GroupBy(g => g.Name).Select(z => z.OrderBy(i => i.Name).First()).ToList();
+
+
+            return new JsonResult(warehouses);
+        }
+
+        public JsonResult GetToWarehousesByCompany(int companyID)
+        {
+            List<Warehouse> warehouses = new List<Warehouse>();
+            var company = _context.Companies.Where(c => c.ID == companyID).FirstOrDefault();
+            if (company != null)
+            {
+                if (company.IsOwner)
+                {
+                    var ownerWarehouses = _context.Warehouses.Where(w => w.Archive == false).OrderBy(w => w.Name);
+                    return new JsonResult(ownerWarehouses.ToList());
+                }
+                else
+                {
+                    var customerWarehouses = _context.Warehouses.Where(w => w.IsCustomers == true && w.Archive == false).OrderBy(w => w.Name);
+                    return new JsonResult(customerWarehouses);
+                }
+            }
+            return new JsonResult(warehouses);
+        }
+
+        public JsonResult GetArticlesByWarehouse(int warehouseID, int companyID)
+        {
+            var articles = (from aw in _context.ArticleWarehouseBalances
+                            where aw.CompanyID == companyID && aw.WarehouseID == warehouseID
                             join a in _context.Articles on aw.ArticleID equals a.ID
                             join w in _context.Warehouses on aw.WarehouseID equals w.ID
                               orderby a.Name
