@@ -94,7 +94,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SaveOrderViewModel model, string SaveOrder, string AddOrderDetail)
         {
-            var articleBalance = new ArticleBalance(_context);
             if (!string.IsNullOrWhiteSpace(AddOrderDetail))
             {
                 if (model.Order.ID == 0)
@@ -170,8 +169,15 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddOrderLists(model);
                                 return View(model);
                             }
-                            
-                            var result = articleBalance.AddOrderDetailToBalance(model.OrderDetail);
+                            var articleInOut = new ArticleInOut
+                            {
+                                ArticleID = model.OrderDetail.ArticleID,
+                                WarehouseID = model.OrderDetail.WarehouseID,
+                                CompanyID = ArticleBalance.GetWarehouseCompany(_context, model.OrderDetail.Warehouse),
+                                QtyPackagesOut = model.OrderDetail.QtyPackages,
+                                QtyExtraOut = model.OrderDetail.QtyExtra
+                            };
+                            var result = ArticleBalance.Add(_context, articleInOut);
                             if(result.Value == false)
                             {
                                 ModelState.AddModelError("", "Couldn't saved.");
@@ -196,17 +202,13 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             return View(model);
                         }
                     }
-                     
-                   
                 }
-               
             }
             else
             {
                 ModelState.AddModelError("", "Couldn't save.");
                 AddOrderLists(model);
                 return View(model);
-
             }
             AddOrderLists(model);
             return View(model);

@@ -64,10 +64,8 @@
     <Folder Include="Areas\Office\Data\" />
     <Folder Include="Areas\Office\Models\" />
     <Folder Include="Areas\Office\Views\" />
-    <Folder Include="Areas\Packing\Controllers\" />
     <Folder Include="Areas\Packing\Data\" />
     <Folder Include="Areas\Packing\Models\" />
-    <Folder Include="Areas\Packing\Views\" />
     <Folder Include="Areas\Import\Purchase\Data\" />
     <Folder Include="Areas\Import\Purchase\Models\" />
     <Folder Include="Areas\Roasting\Data\" />

@@ -11,6 +11,8 @@ using TomasGreen.Model.Models;
 using TomasGreen.Web.BaseModels;
 using TomasGreen.Web.Data;
 using TomasGreen.Web.Validations;
+using TomasGreen.Web.Balances;
+using TomasGreen.Web.Extensions;
 
 namespace TomasGreen.Web.Areas.Roasting.Controllers
 {
@@ -94,21 +96,44 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
                 var customModelValidator = RoastingPlanValidation.RoastingPlanIsValid(_context, "Create", model);
                 if (customModelValidator.Value == false)
                 {
-                    ModelState.AddModelError("", "Could't save, try again.");
+                    ModelState.AddModelError("", "Could't save, please try again.");
                     ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
                     GetRoastingPlanLists(model);
                     return View(model);
                 }
-                model.TotalWeight = GetTotalWeight(model.ArticleID, model.QtyPackages, model.QtyExtra);
-                model.NewTotalWeight = GetTotalWeight(model.NewArticleID, model.NewQtyPackages, model.NewQtyExtra);
-                model.TotalPrice = model.NewTotalWeight * model.PricePerUnit;
-                if(model.ID > 0)
+                if(model.ID == 0)
                 {
-                    _context.Update(model);
+                    model.TotalWeight = GetTotalWeight(model.ArticleID, model.QtyPackages, model.QtyExtra);
+                    model.NewTotalWeight = GetTotalWeight(model.NewArticleID, model.NewQtyPackages, model.NewQtyExtra);
+                    model.TotalPrice = model.NewTotalWeight * model.PricePerUnit;
+                    
+
+                    var articleInOut = new ArticleInOut
+                    {
+                        ArticleID = model.ArticleID,
+                        WarehouseID = model.FromWarehouseID,
+                        CompanyID = (ArticleBalance.WarehouseIsCoutomers(_context, model.FromWarehouseID) == false)? ArticleBalance.GetWarehouseCompany(_context, model.FromWarehouseID) : model.CompanyID,
+                        QtyPackagesOut = model.QtyPackages,
+                        QtyExtraOut = model.QtyExtra
+                    };
+                    var result = ArticleBalance.Reduce(_context, articleInOut);
+                    if (result.Value == false)
+                    {
+                        ModelState.AddModelError("", "Couldn't saved.");
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                        }
+                        GetRoastingPlanLists(model);
+                        return View(model);
+                    }
+                    _context.Add(model);
                 }
                 else
                 {
-                    _context.Add(model);
+
+
+                    _context.Update(model);
                 }
                 
                 await _context.SaveChangesAsync();
@@ -116,11 +141,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             }
             else
             {
-                //foreach(var key in ModelState.Keys)
-                //{
-                //    ModelState.AddModelError(key.ToString(), key.ToString());
-                //}
-                ModelState.AddModelError("", "Could't save, try again.");
+                ModelState.AddModelError("", "Could't save, please try again.");
                 GetRoastingPlanLists(model);
             }
 

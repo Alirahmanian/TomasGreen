@@ -39,7 +39,10 @@ namespace TomasGreen.Web.Data
         public DbSet<RoastingPlan> RoastingPlans { get; set; }
         public DbSet<PackagingMaterial> PackagingMaterials { get; set; }
         public DbSet<CompanySection> CompanySections { get; set; }
-        
+        public DbSet<PackingPlan> PackingPlans { get; set; }
+        public DbSet<PackingPlanMix> PackingPlanMixs { get; set; }
+        public DbSet<PackingPlanMixArticle> PackingPlanMixArticles { get; set; }
+
         public virtual async Task<int> SaveChangesAsync()
         {
             PutBaseEntityValues();

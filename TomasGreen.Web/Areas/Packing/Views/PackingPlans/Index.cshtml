@@ -1,0 +1,55 @@
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+@model IEnumerable<TomasGreen.Model.Models.PackingPlan>
+
+@{
+    ViewData["Title"] = @localizer["Index"];
+}
+
+<h2>@localizer["Packing plan"]</h2>
+
+<p>
+    <a asp-action="Create">@localizer["Create new"]<span class="glyphicon-save"></span></a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @localizer[@Html.DisplayNameFor(model => model.Date)]
+
+            </th>
+            <th>
+                @localizer[@Html.DisplayNameFor(model => model.ManagerID)]
+
+            </th>
+            <th>
+                @localizer[@Html.DisplayNameFor(model => model.CompanyID)]
+
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                   @Html.DisplayFor(modelItem => item.Date)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ManagerID)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CompanyID)
+
+                </td>
+                <td>
+                    <a asp-action="Create" asp-route-id="@item.ID">@localizer["Edit"]</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">@localizer["Details"]</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">@localizer["Delete"]</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

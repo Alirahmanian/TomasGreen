@@ -104,6 +104,8 @@
                             <select asp-for="PackagingMaterialPackageID" class="form-control" asp-items="ViewBag.PackagingMaterialPackageID">
                                 <option>Select</option>
                             </select>
+                            <span asp-validation-for="PackagingMaterialPackageID" class="text-danger"></span>
+
                         </div>
                         <div class="form-group">
                             <label asp-for="Packages" class="control-label"></label>
@@ -115,6 +117,7 @@
                             <select asp-for="PackagingMaterialBagID" class="form-control" asp-items="ViewBag.PackagingMaterialBagID">
                                 <option>Select</option>
                             </select>
+                            <span asp-validation-for="PackagingMaterialBagID" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Bags" class="control-label"></label>

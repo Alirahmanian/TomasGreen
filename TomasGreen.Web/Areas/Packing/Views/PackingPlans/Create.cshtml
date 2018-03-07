@@ -1,0 +1,67 @@
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+@model TomasGreen.Web.Areas.Packing.ViewModels.PackingPlanViewModel
+
+@{
+    ViewData["Title"] = localizer["Create"];
+}
+
+
+<h4>@localizer["PackingPlan"]</h4>
+<hr />
+<div class="row">
+    <form asp-action="Create">
+        <input asp-for="@Model.PackingPlan.ID" class="form-control" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.PackingPlan.Date" class="control-label"></label>
+                    <input asp-for="@Model.PackingPlan.Date" class="form-control" />
+                    <span asp-validation-for="@Model.PackingPlan.Date" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.PackingPlan.ManagerID" class="control-label"></label>
+                    <input asp-for="@Model.PackingPlan.ManagerID" class="form-control" />
+                    <span asp-validation-for="@Model.PackingPlan.ManagerID" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.PackingPlan.CompanyID" class="control-label"></label>
+                    <input asp-for="@Model.PackingPlan.CompanyID" class="form-control" />
+                    <span asp-validation-for="@Model.PackingPlan.CompanyID" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                 @{
+                    if (Model.PackingPlan.ID == 0)
+                    {
+                           <input type="submit" name="SavePackingPlan" id="SavePackingPlan" value=@localizer["Create"] class="btn btn-primary" onclick="return ValidateOrder()" />
+                    }
+                    else
+                    {
+                          <input type="submit" name="SavePackingPlan" id="SavePackingPlan" value=@localizer["Update"] class="btn btn-primary" onclick="return ValidateOrder()" />
+                    }
+                 }
+                </div>
+            </div>
+        </div>
+
+
+            
+            
+            
+
+
+</form>
+    
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
