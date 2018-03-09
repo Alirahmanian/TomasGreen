@@ -18,7 +18,7 @@ namespace TomasGreen.Model.Models
         public int QtyPackages { get; set; }
         public decimal QtyExtra { get; set; }
         public decimal TotalWeight { get; set; }
-
+        public decimal MixPercent { get; set; }
 
         //nav
         public PackingPlanMix PackingPlanMix { get; set; }

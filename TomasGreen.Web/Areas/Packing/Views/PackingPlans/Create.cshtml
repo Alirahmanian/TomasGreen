@@ -6,13 +6,19 @@
     ViewData["Title"] = localizer["Create"];
 }
 
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   
+
+</head>
 
 <h4>@localizer["PackingPlan"]</h4>
 <hr />
-<div class="row">
-    <form asp-action="Create">
-        <input asp-for="@Model.PackingPlan.ID" class="form-control" />
-        <div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-action="Create">
+    <input asp-for="@Model.PackingPlan.ID" class="form-control" style="display:none;" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="row">
         <div class="col-md-12">
             <div class="col-md-3">
                 <div class="form-group">
@@ -24,44 +30,226 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label asp-for="@Model.PackingPlan.ManagerID" class="control-label"></label>
-                    <input asp-for="@Model.PackingPlan.ManagerID" class="form-control" />
+                    <select asp-for="@Model.PackingPlan.ManagerID" class="form-control" asp-items="ViewBag.ManagerID">
+                        <option>@localizer["Select"]</option>
+                    </select>
                     <span asp-validation-for="@Model.PackingPlan.ManagerID" class="text-danger"></span>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label asp-for="@Model.PackingPlan.CompanyID" class="control-label"></label>
-                    <input asp-for="@Model.PackingPlan.CompanyID" class="form-control" />
+                    <select asp-for="@Model.PackingPlan.CompanyID" id="CompanyID" name="CompanyID" class="form-control" asp-items="ViewBag.CompanyID" onchange="LoadFromAndToWarehousesForCompany(this)">
+                        <option>@localizer["Select"]</option>
+                    </select>
                     <span asp-validation-for="@Model.PackingPlan.CompanyID" class="text-danger"></span>
                 </div>
             </div>
             <div class="col-md-3">
+                <div><p><br /></p></div>
                 <div class="form-group">
-                 @{
-                    if (Model.PackingPlan.ID == 0)
-                    {
-                           <input type="submit" name="SavePackingPlan" id="SavePackingPlan" value=@localizer["Create"] class="btn btn-primary" onclick="return ValidateOrder()" />
+                    @{
+                        if (Model.PackingPlan.ID == 0)
+                        {
+                            <input type="submit" name="SavePackingPlan" id="SavePackingPlan" value=@localizer["Create"] class="btn btn-primary" />
+                        }
+                        else
+                        {
+                            <input type="submit" name="SavePackingPlan" id="SavePackingPlan" value=@localizer["Update"] class="btn btn-primary" />
+                        }
                     }
-                    else
-                    {
-                          <input type="submit" name="SavePackingPlan" id="SavePackingPlan" value=@localizer["Update"] class="btn btn-primary" onclick="return ValidateOrder()" />
-                    }
-                 }
                 </div>
             </div>
         </div>
+        <div id="MixDetails" class="col-md-12 disabled" >
+            <div class="col-md-2">
+                <!--Mix list-->
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <h4 class="text-on-pannel text-primary"><span> @localizer["Mix/Packagings"] </span></h4>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <!--Mix Main go-->
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <h4 class="text-on-pannel text-primary"><span> Mix / Packing details </span></h4>
 
 
-            
-            
-            
+                        <div class="col-md-12">
+                            New article
+                        </div>
+                        <div class="col-md-12 bg-info">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.PackagingMaterialPackageID" class="control-label">@localizer["Package name"]</label>
+                                    <select asp-for="@Model.PackingPlanMix.PackagingMaterialPackageID" class="form-control" asp-items="ViewBag.PackagingMaterialPackageID">
+                                        <option>Select</option>
+                                    </select>
+                                    <span asp-validation-for="@Model.PackingPlanMix.PackagingMaterialPackageID" class="text-danger"></span>
 
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.Packages" class="control-label">@localizer["Packages"]</label>
+                                    <input asp-for="@Model.PackingPlanMix.Packages" class="form-control" />
+                                    <span asp-validation-for="@Model.PackingPlanMix.Packages" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.PackagingMaterialBagID" class="control-label">@localizer["Bag name"]</label>
+                                    <select asp-for="@Model.PackingPlanMix.PackagingMaterialBagID" class="form-control" asp-items="ViewBag.PackagingMaterialBagID">
+                                        <option>Select</option>
+                                    </select>
+                                    <span asp-validation-for="@Model.PackingPlanMix.PackagingMaterialBagID" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.Bags" class="control-label">@localizer["Bags"]</label>
+                                    <input asp-for="@Model.PackingPlanMix.Bags" class="form-control" />
+                                    <span asp-validation-for="@Model.PackingPlanMix.Bags" class="text-danger"></span>
+                                </div>
+                            </div>
 
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.ToWarehouseID" class="control-label">@localizer["Warehouse"]</label>
+                                    <select asp-for="@Model.PackingPlanMix.ToWarehouseID" id="ToWarehouseID" name="ToWarehouseID" class="form-control" asp-items="ViewBag.ToWarehouseID">
+                                        <option>@localizer["Select"]</option>
+                                    </select>
+                                    <span asp-validation-for="@Model.PackingPlanMix.ToWarehouseID" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.NewArticleID" class="control-label">@localizer["Article"]</label>
+                                    <select asp-for="@Model.PackingPlanMix.NewArticleID" id="NewArticleID" name="NewArticleID" class="form-control" asp-items="ViewBag.NewArticleID">
+                                        <option>@localizer["Select"]</option>
+                                    </select>
+                                    <span asp-validation-for="@Model.PackingPlanMix.NewArticleID" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.NewQtyPackages" class="control-label">@localizer["Packages"]</label>
+                                    <input asp-for="@Model.PackingPlanMix.NewQtyPackages" class="form-control" />
+                                    <span asp-validation-for="@Model.PackingPlanMix.NewQtyPackages" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.NewQtyExtra" class="control-label">@localizer["Extra"]</label>
+                                    <input asp-for="@Model.PackingPlanMix.NewQtyExtra" class="form-control" />
+                                    <span asp-validation-for="@Model.PackingPlanMix.NewQtyExtra" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.PricePerUnit" class="control-label">@localizer["Price per unit"]</label>
+                                    <input asp-for="@Model.PackingPlanMix.PricePerUnit" class="form-control" />
+                                    <span asp-validation-for="@Model.PackingPlanMix.PricePerUnit" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PackingPlanMix.TotalPrice" class="control-label">@localizer["Total price"]</label>
+                                    <input asp-for="@Model.PackingPlanMix.TotalPrice" class="form-control" />
+                                    <span asp-validation-for="@Model.PackingPlanMix.TotalPrice" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <input type="submit" name="SavePackingPlanMix" id="SavePackingPlanMix" value=@localizer["Save"] class="btn btn-primary" />
+                                </div>
+                            </div>
+                        </div>
+                        <div><br /></div>
+                        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    
+                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                            Choose articles »»
+                                        </a>
+                                   
+                                </div>
+                                <div id="collapseOne" class="panel-collapse collapse out" role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <div class="col-md-12" style="background-color: beige;">
+                                            <p style="background-color:beige;">Choose articles</p>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label asp-for="@Model.PackingPlanMixArticle.WarehouseID" class="control-label">@localizer["Warehouse"]</label>
+                                                    <select asp-for="@Model.PackingPlanMixArticle.WarehouseID" id="WarehouseID" name="WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onclick="LoadArticles(this)">
+                                                        <option>@localizer["Select"]</option>
+                                                    </select>
+                                                    <span asp-validation-for="@Model.PackingPlanMixArticle.WarehouseID" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label asp-for="@Model.PackingPlanMixArticle.ArticleID" class="control-label">@localizer["Article"]</label>
+                                                    <select asp-for="@Model.PackingPlanMixArticle.ArticleID" id="ArticleID" name="ArticleID" class="form-control" asp-items="ViewBag.ArticleID" onclick="">
+                                                        <option>@localizer["Select"]</option>
+                                                    </select>
+                                                    <span asp-validation-for="@Model.PackingPlanMixArticle.ArticleID" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label asp-for="@Model.PackingPlanMixArticle.QtyPackages" class="control-label">@localizer["Packages"]</label>
+                                                    <input asp-for="@Model.PackingPlanMixArticle.QtyPackages" class="form-control" />
+                                                    <span asp-validation-for="@Model.PackingPlanMixArticle.QtyPackages" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label asp-for="@Model.PackingPlanMixArticle.QtyExtra" class="control-label">@localizer["Extra"]</label>
+                                                    <input asp-for="@Model.PackingPlanMixArticle.QtyExtra" class="form-control" />
+                                                    <span asp-validation-for="@Model.PackingPlanMixArticle.QtyExtra" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label asp-for="@Model.PackingPlanMixArticle.MixPercent" class="control-label">@localizer["Mix"]%</label>
+                                                    <input asp-for="@Model.PackingPlanMixArticle.MixPercent" class="form-control" />
+                                                    <span asp-validation-for="@Model.PackingPlanMixArticle.MixPercent" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="form-group">
+                                                    <div><br /></div>
+                                                    <input type="submit" name="AddMixArticle" id="AddMixArticle" value=@localizer["Add"] class="btn btn-primary" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                   
+                        <div id="MixArticlesList" class="col-md-12">
+                            Article list
+                        </div>
+
+                    </div>
+                </div>
+                    <!--Mix Main stop-->
+                </div>
+            </div>
+
+    </div>
 </form>
-    
-</div>
+
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@localizer["Back to List"]</a>
 </div>
+
+<script src="~/js/PackingPlan.js"></script>
 

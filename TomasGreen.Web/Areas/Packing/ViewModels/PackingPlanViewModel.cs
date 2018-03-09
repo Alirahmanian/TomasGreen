@@ -11,5 +11,6 @@ namespace TomasGreen.Web.Areas.Packing.ViewModels
         public PackingPlan PackingPlan { get; set; }
         public PackingPlanMix PackingPlanMix { get; set; }
         public PackingPlanMixArticle PackingPlanMixArticle { get; set; }
+       // public WarehouseArticleViewModel WarehouseArticle { get; set; }
     }
 }
