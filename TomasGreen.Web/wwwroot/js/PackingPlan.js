@@ -1,5 +1,7 @@
 ﻿var local = {};
 local.Select = "Выбрать";
+local.enPackingPlanConfirmMess = "You have selected different company.This will remove mix and packing details for this packing plan including article and Company balances.Are you sure you will do that ?";
+local.ruPackingPlanConfirmMess = "Вы выбрали другую компанию. Это позволит удалить информацию о смешивании и упаковке для этого плана упаковки, включая товар и балансы компании. Вы уверены, что это сделаете?";
 //=======================================
 //=======================================
 function getLangPath() {
@@ -39,8 +41,8 @@ function getLocal(txt) {
 function LoadFromAndToWarehousesForCompany(Company) {
     if ($(Company).val() !== "0" && $(Company).val() !== getLocal('Select')) {
         var urlWithLang = getLangPath() + "Packing/PackingPlans/";
-        LoadFromWarehouses(Company, urlWithLang + "GetFromWarehousesByCompany", $("#WarehouseID"));
-        LoadFromWarehouses(Company, urlWithLang + "GetToWarehousesByCompany", $("#ToWarehouseID")); 
+        LoadWarehouses(Company, urlWithLang + "GetToWarehousesByCompany", $("#PackingPlanMix_ToWarehouseID")); 
+        LoadWarehouses(Company, urlWithLang + "GetFromWarehousesByCompany", $("#PackingPlanMixArticle_WarehouseID"));
 
     }
     //else {
@@ -50,7 +52,7 @@ function LoadFromAndToWarehousesForCompany(Company) {
 }
 //=======================================
 //=======================================
-function LoadFromWarehouses(Company, urlWithLang, target) {
+function LoadWarehouses(Company, urlWithLang, target) {
 
     $.ajax({
         type: "GET",
@@ -80,10 +82,10 @@ function LoadArticles(Warehouse) {
         $.ajax({
             type: "GET",
             url: urlWithLang,
-            data: { 'warehouseId': $(Warehouse).val(), 'companyID': $("#CompanyID").val() },
+            data: { 'warehouseId': $(Warehouse).val(), 'companyID': $("#PackingPlan_CompanyID").val() },
             dataType: "json",
             success: function (data) {
-                renderArticles($("#ArticleID"), data);
+                renderArticles($("#PackingPlanMixArticle_ArticleID"), data);
             },
             error: function (error) {
                 console.log(error);
@@ -124,6 +126,22 @@ function renderArticles(element, data) {
         }
     )
 }
+
+function ValidateIfCompanyIsChanged() {
+    if ($("#SavedCompanyID").val() !== "") {
+        if ($("#PackingPlan_CompanyID").val() !== $("#SavedCompanyID").val()) {
+            if (confirm((getLang() === "en") ? getLocal("enPackingPlanConfirmMess") : getLocal("ruPackingPlanConfirmMess")) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
 //=======================================
 //=======================================
 $(document).ready(function () {

@@ -16,7 +16,7 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Company")]
         [Required(ErrorMessage = "Please choose a company.")]
         public Int64 CompanyID { get; set; }
-
+        public Guid? Guid { get; set; }
         //nav
         public ICollection<PackingPlanMix> Mixes { get; set; }
 

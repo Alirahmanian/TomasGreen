@@ -24,6 +24,8 @@ namespace TomasGreen.Model.Models
         public decimal NewQtyExtra { get; set; }
         public decimal NewTotalWeight { get; set; }
 
+        public Guid? Guid { get; set; }
+
         //price
         public decimal PricePerUnit { get; set; }
         public decimal TotalPrice { get; set; }

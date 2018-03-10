@@ -95,29 +95,73 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
             {
                 ModelState.Remove(key);
             }
+            if (!string.IsNullOrWhiteSpace(SavePackingPlan))
+            {
+               if(DoSavePackingPlan(model))
+               {
+                  await _context.SaveChangesAsync();
+               }
+               GetPackingPlanLists(model);
+               return View(model);
+            }
             if (!string.IsNullOrWhiteSpace(SavePackingPlanMix))
             {
-                if (model.PackingPlan.ID == 0)
+                if(model.PackingPlan.ID == 0)
                 {
-                    ModelState.AddModelError("", "Please save the Packing header first.");
+                    ModelState.AddModelError("", _localizer["Could't save mix and packing details, please save the packingplan header first."]);
+                    GetPackingPlanLists(model);
                     return View(model);
+                }
+               
+                if (model.PackingPlan.ID != 0)
+                {
+                    model.PackingPlanMix.PackingPlanID = model.PackingPlan.ID;
+                }
+                // Server side validation
+                var customModelValidator = PackingPlanValidation.PackingPlanMixIsValid(_context, "Create", model.PackingPlanMix);
+                if (customModelValidator.Value == false)
+                {
+                    ModelState.AddModelError("", _localizer["Could't save, please try again."]);
+                    ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                    GetPackingPlanLists(model);
+                    return View(model);
+                }
+
+                if(model.PackingPlanMix.ID == 0)
+                {
+                    // is new
+                    model.PackingPlanMix.PackingPlanID = model.PackingPlan.ID;
+                    _context.Add(model.PackingPlanMix);
 
                 }
+                else
+                {
+                    _context.Update(model.PackingPlanMix);
+                }
+                //Save Mix
+               
+                _context.SaveChanges();
+                GetPackingPlanLists(model);
+                return View(model);
 
             }
             if (!string.IsNullOrWhiteSpace(AddMixArticle))
             {
-                if (model.PackingPlanMix.ID == 0)
+                // Server side validation
+                var customModelValidator = PackingPlanValidation.PackingPlanMixArticleIsValid(_context, "Create", model.PackingPlanMixArticle);
+                if (customModelValidator.Value == false)
                 {
-                    ModelState.AddModelError("", "Please save the Mix and packing before adding articles to it.");
+                    ModelState.AddModelError("", "Could't save, please try again.");
+                    ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                    GetPackingPlanLists(model);
                     return View(model);
-
                 }
 
             }
 
             if (ModelState.IsValid)
             {
+
                // _context.Add(packingPlan);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -200,7 +244,7 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
             var packingPlan = await _context.PackingPlans.SingleOrDefaultAsync(m => m.ID == id);
-            _context.PackingPlans.Remove(packingPlan);
+          //  _context.PackingPlans.Remove(packingPlan);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -212,8 +256,66 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
 
         //======================================================================
         //======================================================================
+        private bool DoSavePackingPlan(PackingPlanViewModel model)
+        {
+            // Server side validation
+            var customModelValidator = PackingPlanValidation.PackingPlanIsValid(_context, "Create", model.PackingPlan);
+            if (customModelValidator.Value == false)
+            {
+                ModelState.AddModelError("", "Could't save, please try again.");
+                ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                return false;
+            }
+            else
+            {
+                if (model.PackingPlan.ID == 0)
+                {
+                    var guid = Guid.NewGuid();
+                    model.PackingPlan.Guid = guid;
+                    _context.Add(model.PackingPlan);
+                    _context.SaveChanges();
+                    var savedPackingPlan = _context.PackingPlans.Where(p => p.Date == model.PackingPlan.Date && p.CompanyID == model.PackingPlan.CompanyID && p.Guid == guid).FirstOrDefault();
+                    if (savedPackingPlan != null)
+                    {
+                        model.PackingPlan = savedPackingPlan;
+                        return true;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Could't save packing plan.");
+                        return false;
+                    }
+
+                }
+                else
+                {
+                    var savedPackingPlan = _context.PackingPlans.Where(p => p.ID == model.PackingPlan.ID).AsNoTracking().FirstOrDefault();
+                    if (savedPackingPlan == null)
+                    {
+                        ModelState.AddModelError("", "Could't save packing plan.");
+                        return false;
+                    }
+                    if (savedPackingPlan.CompanyID != model.PackingPlan.ID)
+                    {
+                        // delete details
+
+                    }
+                    _context.Update(model.PackingPlan);
+                    return true;
+
+                }
+
+            }
+            return true;
+        }
+
         private void GetPackingPlanLists(PackingPlanViewModel model)
         {
+            if(model.PackingPlan.ID > 0)
+            {
+                ViewBag.SavedPackingPlanID = model.PackingPlan.ID;
+                ViewBag.SavedCompanyID = model.PackingPlan.CompanyID;
+            }
             ViewData["NewArticleID"] = new SelectList(_context.Articles, "ID", "Name", model?.PackingPlanMix?.NewArticleID);
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model?.PackingPlan?.CompanyID);
             ViewData["ManagerID"] = new SelectList(_context.Employees, "ID", "FullName", model?.PackingPlan?.ManagerID);
