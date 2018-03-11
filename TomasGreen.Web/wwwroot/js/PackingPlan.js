@@ -130,7 +130,8 @@ function renderArticles(element, data) {
 function ValidateIfCompanyIsChanged() {
     if ($("#SavedCompanyID").val() !== "") {
         if ($("#PackingPlan_CompanyID").val() !== $("#SavedCompanyID").val()) {
-            if (confirm((getLang() === "en") ? getLocal("enPackingPlanConfirmMess") : getLocal("ruPackingPlanConfirmMess")) {
+            var message = (getLang() === "en") ? getLocal("enPackingPlanConfirmMess") : getLocal("ruPackingPlanConfirmMess");
+            if (confirm(message)) {
                 return true;
             }
             else {
@@ -145,7 +146,7 @@ function ValidateIfCompanyIsChanged() {
 //=======================================
 //=======================================
 $(document).ready(function () {
-
+    //alert('shaba')
 });
 
   

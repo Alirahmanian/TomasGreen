@@ -54,22 +54,43 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
 
             return View(packingPlan);
         }
+        // GET: Packing/PackingPlans/Details/5
+        public async Task<IActionResult> EditPackingPlanMix(long? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var packingPlanMix = await _context.PackingPlanMixs.SingleOrDefaultAsync(m => m.ID == id);
+            if (packingPlanMix == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction("Create", new { id = packingPlanMix.PackingPlanID, PackingPlanMixId = packingPlanMix.ID });
+        }
 
         // GET: Packing/PackingPlans/Create
-        public IActionResult Create(Int64 id)
+        public IActionResult Create(Int64? id, Int64? PackingPlanMixId)
         {
             var model = new PackingPlanViewModel();
             model.PackingPlanMix = new PackingPlanMix();
             model.PackingPlanMixArticle = new PackingPlanMixArticle();
             if (id > 0)
             {
-                model.PackingPlan = _context.PackingPlans.Where(p => p.ID == id).FirstOrDefault();
-               // model.PackingPlan.Mixes = _context.PackingPlanMixs.Where(m => m.PackingPlanID == model.PackingPlan.ID).ToList();
-                
+                model.PackingPlan = _context.PackingPlans.Include(m => m.Mixes).Where(p => p.ID == id).FirstOrDefault();
+                model.PackingPlan.Mixes = _context.PackingPlanMixs.Include(a => a.NewArticle).Where(m => m.PackingPlanID == model.PackingPlan.ID).ToList();
                 if (model.PackingPlan != null)
                 {
                     model.PackingPlanMix.PackingPlanID = model.PackingPlan.ID;
-
+                    
+                    if(PackingPlanMixId > 0)
+                    {
+                        model.PackingPlanMix = _context.PackingPlanMixs.Include(a => a.NewArticle).Include(w => w.ToWarehouse)
+                            .Where(m => m.ID == PackingPlanMixId).FirstOrDefault();
+                        model.PackingPlanMix.MixArticles = _context.PackingPlanMixArticles.Include(w => w.Warehouse).Include(a => a.Article).Where(a => a.PackingPlanMixID == model.PackingPlanMix.ID).ToList();
+                    }
                 }
             }
             else
@@ -88,12 +109,21 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PackingPlanViewModel model, string SavePackingPlan, string SavePackingPlanMix, string AddMixArticle)
+        public async Task<IActionResult> Create(PackingPlanViewModel model, string SavePackingPlan, string SavePackingPlanMix, string AddMixArticle, string EditPackingPlanMix)
         {
             var skippedErrors = ModelState.Keys;
             foreach (var key in skippedErrors)
             {
                 ModelState.Remove(key);
+            }
+            if (!string.IsNullOrWhiteSpace(EditPackingPlanMix))
+            {
+
+                // This will return the value for the keys.
+                var value1 = Request.Form.Keys.Contains("PackingPlanMixId");
+
+                GetPackingPlanLists(model);
+                return View(model);
             }
             if (!string.IsNullOrWhiteSpace(SavePackingPlan))
             {
@@ -147,6 +177,8 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
             }
             if (!string.IsNullOrWhiteSpace(AddMixArticle))
             {
+                model.PackingPlanMixArticle.PackingPlanMixID = model.PackingPlanMix?.ID ?? 0;
+                
                 // Server side validation
                 var customModelValidator = PackingPlanValidation.PackingPlanMixArticleIsValid(_context, "Create", model.PackingPlanMixArticle);
                 if (customModelValidator.Value == false)
@@ -156,7 +188,11 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
                     GetPackingPlanLists(model);
                     return View(model);
                 }
-
+                
+                _context.Add(model.PackingPlanMixArticle);
+                await _context.SaveChangesAsync();
+                GetPackingPlanLists(model);
+                return View(model);
             }
 
             if (ModelState.IsValid)

@@ -16,8 +16,8 @@
 <hr />
 
 <form asp-action="Create">
-    <input asp-for="@Model.PackingPlan.ID" class="form-control" style="display:block;" />
-    <input id="SavedCompanyID" name="SavedCompanyID" value="@ViewBag.SavedCompanyID" class="form-control" style="display:block;" />
+    <input asp-for="@Model.PackingPlan.ID" class="form-control" style="display:none;" />
+    <input id="SavedCompanyID" name="SavedCompanyID" value="@ViewBag.SavedCompanyID" class="form-control" style="display:none;" />
     
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
@@ -69,22 +69,25 @@
                 <div class="panel panel-primary">
                     <div class="panel-body">
                         <h4 class="text-on-pannel text-primary"><span> @localizer["Mix/Packagings"] </span></h4>
-
+                    </div>
+                    <div>
+                        @{
+                            if (Model.PackingPlan?.ID > 0)
+                            {
+                                @Html.Partial("_PackingPlanMixListPartialView.cshtml", Model.PackingPlan.Mixes)
+                            }
+                        }
                     </div>
                 </div>
             </div>
             <div class="col-md-10">
                 <!--Mix Main go-->
-                <input asp-for="@Model.PackingPlanMix.ID" class="form-control" style="display:block;" />
+                <input asp-for="@Model.PackingPlanMix.ID" class="form-control" style="display:none;" />
 
                 <div class="panel panel-primary">
                     <div class="panel-body">
                         <h4 class="text-on-pannel text-primary"><span> Mix / Packing details </span></h4>
-
-
-                        <div class="col-md-12">
-                            New article
-                        </div>
+                       
                         <div class="col-md-12 bg-info">
                             <div class="col-md-2">
                                 <div class="form-group">
@@ -174,26 +177,22 @@
                         </div>
                         <div>
                             <br />
-                            <input asp-for="@Model.PackingPlanMixArticle.ID" class="form-control" style="display:block;" />
-
+                            <input asp-for="@Model.PackingPlanMixArticle.ID" class="form-control" style="display:none;" />
                         </div>
                         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                             <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" id="headingOne">
-
                                     <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                         Choose articles »»
                                     </a>
-
                                 </div>
                                 <div id="collapseOne" class="panel-collapse collapse out" role="tabpanel" aria-labelledby="headingOne">
                                     <div class="panel-body">
                                         <div class="col-md-12" style="background-color: beige;">
-                                            <p style="background-color:beige;">Choose articles</p>
-                                            <div class="col-md-2">
+                                             <div class="col-md-2">
                                                 <div class="form-group">
                                                     <label asp-for="@Model.PackingPlanMixArticle.WarehouseID" class="control-label">@localizer["Warehouse"]</label>
-                                                    <select asp-for="@Model.PackingPlanMixArticle.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onclick="LoadArticles(this)">
+                                                    <select asp-for="@Model.PackingPlanMixArticle.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onchange="LoadArticles(this)">
                                                         <option>@localizer["Select"]</option>
                                                     </select>
                                                     <span asp-validation-for="@Model.PackingPlanMixArticle.WarehouseID" class="text-danger"></span>
@@ -202,7 +201,7 @@
                                             <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label asp-for="@Model.PackingPlanMixArticle.ArticleID" class="control-label">@localizer["Article"]</label>
-                                                    <select asp-for="@Model.PackingPlanMixArticle.ArticleID" class="form-control" asp-items="ViewBag.ArticleID" onclick="">
+                                                    <select asp-for="@Model.PackingPlanMixArticle.ArticleID" class="form-control" asp-items="ViewBag.ArticleID" >
                                                         <option>@localizer["Select"]</option>
                                                     </select>
                                                     <span asp-validation-for="@Model.PackingPlanMixArticle.ArticleID" class="text-danger"></span>
@@ -222,13 +221,7 @@
                                                     <span asp-validation-for="@Model.PackingPlanMixArticle.QtyExtra" class="text-danger"></span>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <label asp-for="@Model.PackingPlanMixArticle.MixPercent" class="control-label">@localizer["Mix"]%</label>
-                                                    <input asp-for="@Model.PackingPlanMixArticle.MixPercent" class="form-control" />
-                                                    <span asp-validation-for="@Model.PackingPlanMixArticle.MixPercent" class="text-danger"></span>
-                                                </div>
-                                            </div>
+                                           
                                             <div class="col-md-1">
                                                 <div class="form-group">
                                                     <div><br /></div>
@@ -242,7 +235,13 @@
                         </div>
 
                         <div id="MixArticlesList" class="col-md-12">
-                            Article list
+                            @{
+                                if (Model.PackingPlanMix?.ID > 0)
+                                {
+                                     @Html.Partial("_PackingPlanMixArticleListPartialView.cshtml", Model.PackingPlanMix.MixArticles)
+
+                                }
+                            }
                         </div>
 
                     </div>
@@ -256,7 +255,7 @@
 
 
 <div>
-    <a asp-action="Index">@localizer["Back to List"]</a>
+    <a asp-action="Index"> <span class="glyphicon glyphicon-arrow-left"></span> @localizer["Back to List"] </a>
 </div>
 
 <script src="~/js/PackingPlan.js"></script>

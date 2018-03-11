@@ -11,5 +11,7 @@ namespace TomasGreen.Model.Models
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
         public string Name { get; set; }
         public bool MeasuresByKg { get; set; }
+        public bool MeasuresByG { get; set; }
+        public bool MeasuresByTon{ get; set; }
     }
 }

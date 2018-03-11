@@ -1,0 +1,56 @@
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+@model IEnumerable<TomasGreen.Model.Models.PackingPlanMixArticle>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Warehouse.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Article.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyPackages)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyExtra)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalWeight)
+            </th>
+
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Warehouse.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Article.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QtyPackages)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QtyExtra)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalWeight)
+                </td>
+
+                <td>
+                    <a asp-action="EditPackingPlanMixArticle" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit"></span> </a> |
+                    <a asp-action="DeletePackingPlanMixArticle" asp-route-id="@item.ID"><span class="glyphicon glyphicon-trash"></span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

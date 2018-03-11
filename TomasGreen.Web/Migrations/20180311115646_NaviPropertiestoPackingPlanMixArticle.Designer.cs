@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180311115646_NaviPropertiestoPackingPlanMixArticle")]
+    partial class NaviPropertiestoPackingPlanMixArticle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,11 +227,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime>("AddedDate");
 
-                    b.Property<bool>("MeasuresByG");
-
                     b.Property<bool>("MeasuresByKg");
-
-                    b.Property<bool>("MeasuresByTon");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -671,11 +668,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("NewArticleID");
-
                     b.HasIndex("PackingPlanID");
-
-                    b.HasIndex("ToWarehouseID");
 
                     b.ToTable("PackingPlanMixs");
                 });
@@ -1105,19 +1098,9 @@ namespace TomasGreen.Web.Migrations
 
             modelBuilder.Entity("TomasGreen.Model.Models.PackingPlanMix", b =>
                 {
-                    b.HasOne("TomasGreen.Model.Models.Article", "NewArticle")
-                        .WithMany()
-                        .HasForeignKey("NewArticleID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("TomasGreen.Model.Models.PackingPlan")
                         .WithMany("Mixes")
                         .HasForeignKey("PackingPlanID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Warehouse", "ToWarehouse")
-                        .WithMany()
-                        .HasForeignKey("ToWarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

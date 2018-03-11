@@ -22,5 +22,7 @@ namespace TomasGreen.Model.Models
 
         //nav
         public PackingPlanMix PackingPlanMix { get; set; }
+        public Warehouse Warehouse { get; set; }
+        public Article Article { get; set; }
     }
 }

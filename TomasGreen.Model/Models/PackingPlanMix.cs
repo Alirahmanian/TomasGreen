@@ -31,6 +31,8 @@ namespace TomasGreen.Model.Models
         public decimal TotalPrice { get; set; }
         //nav
         public ICollection<PackingPlanMixArticle> MixArticles { get; set; }
+        public Warehouse ToWarehouse { get; set; }
+        public Article NewArticle { get; set; }
 
     }
 }

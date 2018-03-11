@@ -1,0 +1,21 @@
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+@model IEnumerable<TomasGreen.Model.Models.PackingPlanMix>
+
+
+<table class="table">
+    
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NewArticle.Name)
+            </td>
+            <td>
+                <a asp-action="EditPackingPlanMix" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit"></span> </a>  |
+                <a asp-action="DeletePackingPlanMix" asp-route-id="@item.ID"><span class="glyphicon glyphicon-trash"></span></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
