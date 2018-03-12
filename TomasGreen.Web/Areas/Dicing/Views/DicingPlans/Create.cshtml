@@ -1,0 +1,103 @@
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+@model TomasGreen.Web.Areas.Dicing.ViewModels.DicingPlanViewModel
+
+@{
+    ViewData["Title"] = localizer["Create"];
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<h4>@localizer["Dicing plan"]</h4>
+<hr />
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.Date" class="control-label"></label>
+                    <input asp-for="@Model.DicingPlan.Date" class="form-control" />
+                    <span asp-validation-for="@Model.DicingPlan.Date" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.ManagerID" class="control-label">@localizer["Manager"]</label>
+                    <select asp-for="@Model.DicingPlan.ManagerID" class="form-control" asp-items="ViewBag.ManagerID">
+                        <option>Select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.CompanyID" class="control-label">@localizer["Customer"]</label>
+                    <select asp-for="@Model.DicingPlan.CompanyID" class="form-control" asp-items="ViewBag.CompanyID" onchange="LoadFromAndToWarehousesForCompany(this)">
+                        <option>Select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.TotalPrice" class="control-label">@localizer["Total price"]</label>
+                    <input asp-for="@Model.DicingPlan.TotalPrice" class="form-control" disabled />
+                    <span asp-validation-for="@Model.DicingPlan.TotalPrice" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.WarehouseID" class="control-label">@localizer["Warehouse"]</label>
+                    <select asp-for="@Model.DicingPlan.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID" onchange="LoadArticle(this)">
+                        <option>Select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.ArticleID" class="control-label">@localizer["Article"]</label>
+                    <select asp-for="@Model.DicingPlan.ArticleID" class="form-control" asp-items="ViewBag.ArticleID">
+                        <option>Select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.QtyPackages" class="control-label">@localizer["Packages"]</label>
+                    <input asp-for="@Model.DicingPlan.QtyPackages" class="form-control" />
+                    <span asp-validation-for="@Model.DicingPlan.QtyPackages" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.QtyExtra" class="control-label">@localizer["Extra"]</label>
+                    <input asp-for="@Model.DicingPlan.QtyExtra" class="form-control" />
+                    <span asp-validation-for="@Model.DicingPlan.QtyExtra" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label asp-for="@Model.DicingPlan.TotalWeight" class="control-label"></label>
+                    <input asp-for="@Model.DicingPlan.TotalWeight" class="form-control" disabled />
+                    <span asp-validation-for="@Model.DicingPlan.TotalWeight" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <br />
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+        </div>
+
+
+
+
+
+</form>
+
+<div>
+    <a asp-action="Index">@localizer["Back to List"]</a>
+</div>
+<script src="~/js/DicingPlan.js"></script>

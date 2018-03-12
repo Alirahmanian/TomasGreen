@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180312155248_DicingPlans")]
+    partial class DicingPlans
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,23 +413,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("QtyPackages");
 
-                    b.Property<decimal>("TotalPrice");
-
-                    b.Property<decimal>("TotalWeight");
-
                     b.Property<string>("UserName");
 
                     b.Property<long>("WarehouseID");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("ArticleID");
-
-                    b.HasIndex("CompanyID");
-
-                    b.HasIndex("ManagerID");
-
-                    b.HasIndex("WarehouseID");
 
                     b.ToTable("DicingPlans");
                 });
@@ -1130,29 +1119,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany("Sections")
                         .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.DicingPlan", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.Article", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Employee", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
-                        .WithMany()
-                        .HasForeignKey("WarehouseID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

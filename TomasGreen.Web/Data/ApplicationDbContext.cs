@@ -42,6 +42,9 @@ namespace TomasGreen.Web.Data
         public DbSet<PackingPlan> PackingPlans { get; set; }
         public DbSet<PackingPlanMix> PackingPlanMixs { get; set; }
         public DbSet<PackingPlanMixArticle> PackingPlanMixArticles { get; set; }
+        public DbSet<DicingPlan> DicingPlans { get; set; }
+        public DbSet<DicingPlanDetail> DicingPlanDetails { get; set; }
+
 
         public virtual async Task<int> SaveChangesAsync()
         {
@@ -82,9 +85,9 @@ namespace TomasGreen.Web.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Employee>()
-            //.HasIndex(p => new { p.FirstName, p.LastName })
-            //.IsUnique(true);
+            modelBuilder.Entity<DicingPlanDetail>()
+             .HasIndex(p => new{p.DicingPlanID, p.WarehouseID, p.ArticleID })
+             .IsUnique(true);
             modelBuilder.Entity<ArticleCategory>()
              .HasIndex(p => p.Name)
              .IsUnique(true);

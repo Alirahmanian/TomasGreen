@@ -13,10 +13,7 @@ namespace TomasGreen.Web.BaseModels
         public ActionResult RedirectToDefaultLanguage()
         {
             var lang = CurrentLanguage;
-            //if (lang == "en")
-            //{
-            //    lang = "ru";
-            //}
+            
 
             return RedirectToAction("Index", new { lang = lang });
         }
