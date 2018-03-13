@@ -72,7 +72,7 @@ namespace TomasGreen.Web.Areas.Packing.Controllers
         }
 
         // GET: Packing/PackingPlans/Create
-        public IActionResult Create(Int64? id, Int64? PackingPlanMixId)
+        public IActionResult Create(int? id, int? PackingPlanMixId)
         {
             var model = new PackingPlanViewModel();
             model.PackingPlanMix = new PackingPlanMix();

@@ -9,9 +9,9 @@ namespace TomasGreen.Model.Models
     public class PurchasedArticleWarehouse : BaseEntity
     {
         [Required(ErrorMessage = "Please choose an article.")]
-        public Int64 PurchasedArticleID { get; set; }
+        public int PurchasedArticleID { get; set; }
         [Required(ErrorMessage = "Please choose a warehouse.")]
-        public Int64 WarehouseID { get; set; }
+        public int WarehouseID { get; set; }
         [Display(Name = "Packages")]
         [Required(ErrorMessage = "Please put packages.")]
         [Range(0, Int32.MaxValue)]

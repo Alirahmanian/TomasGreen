@@ -16,7 +16,7 @@ namespace TomasGreen.Web.Balances
         {
             return (_contex.Warehouses.Any(w => w.ID == warehouseID && w.IsCustomers == true));
         }
-        public static Int64 GetWarehouseCompany(ApplicationDbContext _contex, Warehouse warehouse)
+        public static int GetWarehouseCompany(ApplicationDbContext _contex, Warehouse warehouse)
         {
             if(warehouse.CompanySectionID != null)
             {
@@ -25,7 +25,7 @@ namespace TomasGreen.Web.Balances
             }
             return 0;
         }
-        public static Int64 GetWarehouseCompany(ApplicationDbContext _contex, Int64 warehouseID)
+        public static int GetWarehouseCompany(ApplicationDbContext _contex, Int64 warehouseID)
         {
             var warehouse = _contex.Warehouses.Where(w => w.ID == warehouseID).FirstOrDefault();
             if(warehouse.CompanySectionID != null)

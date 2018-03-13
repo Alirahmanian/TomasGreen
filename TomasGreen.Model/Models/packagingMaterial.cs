@@ -8,10 +8,10 @@ namespace TomasGreen.Model.Models
     {
         public string Name { get; set; }
         public decimal Dimensions { get; set; }
-        public Int64 ArticleUnitID { get; set; }
+        public int ArticleUnitID { get; set; }
         public decimal Volume { get; set; }
         public string Description { get; set; }
-        public Int64 PackagingCategoryID { get; set; }
+        public int PackagingCategoryID { get; set; }
         public decimal Price { get; set; }
 
         //nav

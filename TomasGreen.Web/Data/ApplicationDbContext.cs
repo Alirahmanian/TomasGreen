@@ -132,19 +132,24 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<PurchasedArticleWarehouse>()
                 .HasOne(p => p.PurchasedArticle)
                 .WithMany(p => p.Warehouses)
-                .HasForeignKey(p => p.PurchasedArticleID);
+                .HasForeignKey(p => p.PurchasedArticleID)
+                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PurchasedArticleWarehouse>()
                 .HasOne(p => p.Warehouse)
                 .WithMany(p => p.PurchasedArticles)
-                .HasForeignKey(p => p.WarehouseID);
+                .HasForeignKey(p => p.WarehouseID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ArticleWarehouseBalance>()
                .HasIndex(p => new { p.ArticleID, p.WarehouseID, p.CompanyID })
                .IsUnique(true);
 
-            
 
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
 
             base.OnModelCreating(modelBuilder);
 

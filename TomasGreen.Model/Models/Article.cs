@@ -9,14 +9,14 @@ namespace TomasGreen.Model.Models
     {
         [Required]
         [Display(Name = "Article category")]
-        public Int64 ArticleCategoryID { get; set; }
+        public int ArticleCategoryID { get; set; }
         [Required]
         [Display(Name = "Unit")]
-        public Int64 ArticleUnitID { get; set; }
+        public int ArticleUnitID { get; set; }
         
         [Required]
         [Display(Name = "Package form")]
-        public Int64 ArticlePackageFormID { get; set; }
+        public int ArticlePackageFormID { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
@@ -31,7 +31,7 @@ namespace TomasGreen.Model.Models
         public decimal WeightPerPackage { get; set; } = 0;
 
         [Display(Name = "Country")]
-        public Int64 CountryID { get; set; }
+        public int CountryID { get; set; }
         public bool Archive { get; set; }
 
 

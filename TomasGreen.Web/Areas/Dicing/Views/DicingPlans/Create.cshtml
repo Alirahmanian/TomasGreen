@@ -85,10 +85,22 @@
             <div class="col-md-2">
                 <br />
                 <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-default" />
+                    @{
+                        if (Model.DicingPlan.ID == 0)
+                        {
+                             <input type="submit" name="SaveDicingPlan" id="SaveDicingPlan" value=@localizer["Create"] class="btn btn-primary" />
+                        }
+                        else
+                        {
+                             <input type="submit" name="SaveDicingPlan" id="SaveDicingPlan" value=@localizer["Update"] class="btn btn-primary" onclick=" return ValidateIfCompanyIsChanged()" />
+                        }
+                    }
                 </div>
             </div>
         </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+            </div>
         </div>
 
 

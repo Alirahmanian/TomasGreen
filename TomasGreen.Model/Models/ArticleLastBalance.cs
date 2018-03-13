@@ -4,9 +4,8 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class ListItem
+    class ArticleBalance :BaseEntity
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
+        public DateTime Date { get; set; }
     }
 }

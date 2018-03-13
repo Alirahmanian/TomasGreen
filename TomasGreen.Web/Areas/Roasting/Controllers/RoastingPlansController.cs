@@ -61,7 +61,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         }
 
         // GET: Roasting/RoastingPlans/Create
-        public IActionResult Create(Int64? id)
+        public IActionResult Create(int? id)
         {
             if(id > 0)
             {

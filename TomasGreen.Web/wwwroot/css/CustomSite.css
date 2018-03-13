@@ -1,1 +1,11 @@
 ﻿
+.nav-bg-green {
+    background-color:lightgreen;
+}
+
+.nav-text-black {
+    color: #9d9d9d;
+    font-weight: bold;
+    font-stretch: wider;
+}
+

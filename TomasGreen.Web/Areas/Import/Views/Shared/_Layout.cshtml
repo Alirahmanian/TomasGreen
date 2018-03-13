@@ -4,11 +4,12 @@
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@localizer[@ViewBag.Title]</title>
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/CustomSite.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -18,7 +19,7 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-full bg-info">
+    <nav class="navbar navbar-inverse navbar-fixed-top nav-bg-green nav-text-black">
         <div class="container">
             <div class="nav-tabs">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -28,21 +29,21 @@
                     <span class="icon-bar"></span>
                 </button>
                 @await Html.PartialAsync("_LanguagePartial")
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">@localizer["TomasGreen"]</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">@localizer["TomasGreen"] </a>
             </div>
-            <div class="navbar-collapse collapse avbar navbar-toggleable-md navbar-dark bg-company-red">
+            <div class="avbar navbar-collapse collapse navbar-toggleable-md nav-text-black">
                 <ul class="nav nav-pills">
                     <li><a asp-area="Import" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Import"]</a></li>
                     <li role="presentation" class="dropdown">
-                        <a class=" dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" >
                             @localizer["Accounting"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="Import" asp-controller="Accounting" asp-action="Index">@localizer["Accounting"]</a></li>
+                            <li><a asp-area="Import" asp-controller="Accounting" asp-action="Index" >@localizer["Accounting"]</a></li>
                         </ul>
                     </li>
                     <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                             @localizer["Management"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -50,7 +51,7 @@
                         </ul>
                     </li>
                     <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                             @localizer["Purchase"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -58,7 +59,7 @@
                         </ul>
                     </li>
                     <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                             @localizer["Stock"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -70,7 +71,7 @@
                         </ul>
                     </li>
                     <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                             @localizer["Sales"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">

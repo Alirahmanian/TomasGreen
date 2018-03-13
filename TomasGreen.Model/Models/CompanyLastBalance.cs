@@ -4,9 +4,7 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class ListItem
+    class CompanyLastBalance
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
     }
 }

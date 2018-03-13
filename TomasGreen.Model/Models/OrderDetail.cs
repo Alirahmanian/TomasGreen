@@ -6,13 +6,13 @@ namespace TomasGreen.Model.Models
     {
         [Display(Name ="Order")]
         [Required(ErrorMessage = "Please choose an order.")]
-        public Int64 OrderID { get; set; }
+        public int OrderID { get; set; }
         [Display(Name = "Article")]
         [Required(ErrorMessage = "Please choose an article.")]
-        public Int64 ArticleID { get; set; }
+        public int ArticleID { get; set; }
         [Display(Name = "Warehouse")]
         [Required(ErrorMessage = "Please choose a warehouse.")]
-        public Int64 WarehouseID { get; set; }
+        public int WarehouseID { get; set; }
         //[DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Please put price")]
         [Range(0, double.MaxValue)]

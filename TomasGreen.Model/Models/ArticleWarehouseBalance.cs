@@ -6,9 +6,9 @@ namespace TomasGreen.Model.Models
 {
     public class ArticleWarehouseBalance : BaseEntity
     {
-        public Int64 ArticleID { get; set; }
-        public Int64 WarehouseID { get; set; }
-        public Int64 CompanyID { get; set; }
+        public int ArticleID { get; set; }
+        public int WarehouseID { get; set; }
+        public int CompanyID { get; set; }
         public int QtyPackagesIn { get; set; }
         public decimal QtyExtraIn { get; set; }
 

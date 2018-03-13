@@ -12,10 +12,10 @@ namespace TomasGreen.Model.Models
         public DateTime Date { get; set; }
         [Display(Name = "Manager")]
         [Required(ErrorMessage = "Please choose a manager.")]
-        public Int64 ManagerID { get; set; }
+        public int ManagerID { get; set; }
         [Display(Name = "Company")]
         [Required(ErrorMessage = "Please choose a company.")]
-        public Int64 CompanyID { get; set; }
+        public int CompanyID { get; set; }
         public Guid? Guid { get; set; }
         //nav
         public ICollection<PackingPlanMix> Mixes { get; set; }

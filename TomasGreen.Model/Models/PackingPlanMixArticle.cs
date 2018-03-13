@@ -7,14 +7,14 @@ namespace TomasGreen.Model.Models
 {
     public class PackingPlanMixArticle : BaseEntity
     {
-        public Int64 PackingPlanMixID { get; set; }
+        public int PackingPlanMixID { get; set; }
         //In
         [Display(Name = "Warehouse")]
         [Required(ErrorMessage = "Please choose a warehouse.")]
-        public Int64 WarehouseID { get; set; }
+        public int WarehouseID { get; set; }
         [Display(Name = "Article")]
         [Required(ErrorMessage = "Please choose an article.")]
-        public Int64 ArticleID { get; set; }
+        public int ArticleID { get; set; }
         public int QtyPackages { get; set; }
         public decimal QtyExtra { get; set; }
         public decimal TotalWeight { get; set; }

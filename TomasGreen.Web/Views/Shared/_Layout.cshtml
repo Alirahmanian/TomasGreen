@@ -9,6 +9,8 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/CustomSite.css" />
+
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -19,7 +21,7 @@
 </head>
 <body>
    
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-full bg-info">
+    <nav class="navbar navbar-inverse navbar-fixed-top nav-bg-green nav-text-black ">
 
         <div class="container">
             <div class="navbar-header">
@@ -34,7 +36,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action=Index>@localizer["Home"]</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index" class="">@localizer["Home"]</a></li>
                     <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">@localizer["Admin"]</a></li>
                     <li><a asp-area="Import" asp-controller="Home" asp-action="Index">@localizer["Import"]</a></li>
                     <li><a asp-area="Export" asp-controller="Home" asp-action="Index">@localizer["Export"]</a></li>

@@ -14,7 +14,7 @@ namespace TomasGreen.Model.Models
         public string ContractNumber { get; set; }
         public string Description { get; set; }
         [Display(Name = "Company")]
-        public Int64 CompanyID { get; set; }
+        public int CompanyID { get; set; }
         public decimal TotalPrice { get; set; }
     }
 }

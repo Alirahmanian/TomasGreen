@@ -12,9 +12,9 @@ namespace TomasGreen.Model.Models
         public DateTime Date { get; set; }
         [Required(ErrorMessage ="Please choose an article.")]
         [Display(Name = "Article")]
-        public Int64 ArticleID { get; set; }
+        public int ArticleID { get; set; }
         [Display(Name = "Company")]
-        public Int64? CompanyID { get; set; }
+        public int? CompanyID { get; set; }
         [Display(Name = "Container")]
         public string ContainerNumber { get; set; }
         [DataType(DataType.MultilineText)]

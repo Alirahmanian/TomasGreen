@@ -7,7 +7,7 @@ namespace TomasGreen.Model.Models
     public class Warehouse : BaseEntity
     {
         [Display(Name ="Section")]
-        public Int64? CompanySectionID { get; set; }
+        public int? CompanySectionID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
         public string Name { get; set; }

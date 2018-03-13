@@ -14,6 +14,7 @@ using TomasGreen.Web.Services;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace TomasGreen.Web
 {
@@ -59,7 +60,7 @@ namespace TomasGreen.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -71,6 +72,9 @@ namespace TomasGreen.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
             app.UseStaticFiles();
             app.UseAuthentication();

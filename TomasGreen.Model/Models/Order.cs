@@ -12,13 +12,13 @@ namespace TomasGreen.Model.Models
         }
         [Display(Name = "Company")]
         [Required(ErrorMessage = "Please choose a company.")]
-        public Int64 CompanyID { get; set; }
+        public int CompanyID { get; set; }
         [Display(Name = "Employee")]
         [Required(ErrorMessage = "Please choose an employee.")]
-        public Int64 EmployeeID { get; set; }
+        public int EmployeeID { get; set; }
         [Display(Name = "Transport")]
         [Required(ErrorMessage = "Please choose a transport type.")]
-        public Int64 OrderTransportID { get; set; }
+        public int OrderTransportID { get; set; }
         public int AmountArticle { get; set; } = 0;
         public int AmountReserve { get; set; } = 0;
        // [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]

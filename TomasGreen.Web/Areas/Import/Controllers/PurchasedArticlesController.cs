@@ -56,7 +56,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             return View(purchasedArticle);
         }
 
-        public IActionResult Create(Int64? id)
+        public IActionResult Create(int? id)
         {
             var model = new SavePurchasedArticleWarehouseViewModel();
             if(id > 0)
@@ -93,7 +93,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 if (customModelValidator.Value == false)
                 {
                     ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
-                    model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse((long)model.PurchasedArticle?.ID);
+                    model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse((int)model.PurchasedArticle?.ID);
                     AddPurchasedArticleLists(model);
                     return View(model);
                 }
@@ -101,7 +101,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse((long)model.PurchasedArticle?.ID);
+                model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse((int)model.PurchasedArticle?.ID);
                 AddPurchasedArticleLists(model);
                 return View(model);
             }
@@ -434,7 +434,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             return resultList;
         }
 
-        private List<PurchasedArticleWarehouse> GetPurchasedArticleWarehouse(Int64 id = 0)
+        private List<PurchasedArticleWarehouse> GetPurchasedArticleWarehouse(int id = 0)
         {
             var result = new List<PurchasedArticleWarehouse>();
             

@@ -9,7 +9,7 @@ namespace TomasGreen.Web.Areas.Import.ViewModels
 {
     public class PurchasedArticleViewModel
     {
-        public Int64 ID { get; set; }
+        public int ID { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }

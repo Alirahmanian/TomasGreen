@@ -66,7 +66,7 @@ namespace TomasGreen.Web.Areas.Dicing.Controllers
         }
 
        
-        public IActionResult Create(Int64? id, Int64? dicingPalnDetailId )
+        public IActionResult Create(int? id, int? dicingPlanDetailId )
         {
             var model = new DicingPlanViewModel();
             model.DicingPlan = new DicingPlan();
@@ -75,9 +75,9 @@ namespace TomasGreen.Web.Areas.Dicing.Controllers
             if (id > 0)
             {
                 model.DicingPlan = _context.DicingPlans.Include(d => d.DicingPlanDetails).Where(p => p.ID == id).FirstOrDefault();
-                if (model.DicingPlan != null && dicingPalnDetailId > 0)
+                if (model.DicingPlan != null && dicingPlanDetailId > 0)
                 {
-                    model.DicingPlanDetail = _context.DicingPlanDetails.Where(d => d.ID == dicingPalnDetailId).FirstOrDefault();
+                    model.DicingPlanDetail = _context.DicingPlanDetails.Where(d => d.ID == dicingPlanDetailId).FirstOrDefault();
                 }
             }
            

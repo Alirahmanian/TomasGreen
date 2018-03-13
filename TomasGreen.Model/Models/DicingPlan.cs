@@ -12,16 +12,16 @@ namespace TomasGreen.Model.Models
         public DateTime Date { get; set; }
         [Display(Name = "Manager")]
         [Required(ErrorMessage = "Please choose a manager.")]
-        public Int64 ManagerID { get; set; }
+        public int ManagerID { get; set; }
         [Display(Name = "Company")]
         [Required(ErrorMessage = "Please choose a company.")]
-        public Int64 CompanyID { get; set; }
+        public int CompanyID { get; set; }
         [Display(Name = "Warehouse")]
         [Required(ErrorMessage = "Please choose a warehouse.")]
-        public Int64 WarehouseID { get; set; }
+        public int WarehouseID { get; set; }
         [Display(Name = "Article")]
         [Required(ErrorMessage = "Please choose an article.")]
-        public Int64 ArticleID { get; set; }
+        public int ArticleID { get; set; }
         [Required(ErrorMessage = "Please put packages.")]
         [Range(0, Int32.MaxValue)]
         public int QtyPackages { get; set; } = 0;

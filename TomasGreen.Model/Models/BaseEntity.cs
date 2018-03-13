@@ -9,7 +9,7 @@ namespace TomasGreen.Model.Models
    public class BaseEntity
     {
         [ScaffoldColumn(false)]
-        public Int64 ID { get; set; }
+        public int ID { get; set; }
         [ScaffoldColumn(false)]
         [DisplayName("Created by")]
         public DateTime AddedDate { get; set; } = DateTime.Now;

@@ -62,7 +62,6 @@
     <Folder Include="Areas\Import\Stock\Css\" />
     <Folder Include="Areas\Import\Stock\Services\" />
     <Folder Include="Areas\Roasting\ViewModels\" />
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

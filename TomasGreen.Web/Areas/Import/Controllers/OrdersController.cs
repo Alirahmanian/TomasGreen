@@ -57,7 +57,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Sales/Orders/Create
-        public IActionResult Create(Int64? id)
+        public IActionResult Create(int? id)
         {
             var model = new SaveOrderViewModel();
             model.OrderDetail = new OrderDetail();
