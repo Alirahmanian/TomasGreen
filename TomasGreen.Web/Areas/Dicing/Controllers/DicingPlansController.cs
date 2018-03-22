@@ -43,7 +43,7 @@ namespace TomasGreen.Web.Areas.Dicing.Controllers
                             .ToListAsync());
         }
         
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.Data;
 
@@ -14,10 +17,13 @@ namespace TomasGreen.Web.Areas.Import.Controllers
     public class ArticlesController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public ArticlesController(ApplicationDbContext context)
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IStringLocalizer<ArticlesController> _localizer;
+        public ArticlesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<ArticlesController> localizer)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
+            _localizer = localizer;
         }
 
         // GET: Stock/Articles
@@ -28,7 +34,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Stock/Articles/Details/5
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -59,20 +65,20 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,MinimumPricePerUSD,WeightPerPackage,ArticleCategoryID,CountryID,ArticleUnitID,ArticlePackageFormID")] Article article)
+        public async Task<IActionResult> Create(Article article)
         {
             if (ModelState.IsValid)
             {
                 if (VerifyUniqueArticle(article))
                 {
-                    ModelState.AddModelError(nameof(article.Name), "There is already an article with the same name and unit.");
+                    ModelState.AddModelError(nameof(article.Name), _localizer["There is already an article with the same name and unit."]);
                     GetArticleSaveLists(article);
                     return View(article);
                 }
                
                 if (!VerifyUnitAndWeightPerPackage(article))
                 {
-                    ModelState.AddModelError(nameof(article.WeightPerPackage), "The choosen unit requires a value more than zero for this field.");
+                    ModelState.AddModelError(nameof(article.WeightPerPackage), _localizer["The choosen unit requires a value more than zero for this field."]);
                     GetArticleSaveLists(article);
                     return View(article);
 
@@ -90,7 +96,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Stock/Articles/Edit/5
-        public async Task<IActionResult> Edit(long? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -111,7 +117,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,AddedDate,Name,Description,MinimumPricePerUSD,WeightPerPackage,ArticleCategoryID,CountryID,ArticleUnitID,ArticlePackageFormID")] Article article)
+        public async Task<IActionResult> Edit(int id, Article article)
         {
             if (id != article.ID)
             {
@@ -124,14 +130,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 {
                     if(VerifyUniqueArticle(article))
                     {
-                        ModelState.AddModelError(nameof(article.Name), "There is already an article with the same name and unit.");
+                        ModelState.AddModelError(nameof(article.Name), _localizer["There is already an article with the same name and unit."]);
                         GetArticleSaveLists(article);
                         return View(article);
                         
                     }
                     if (!VerifyUnitAndWeightPerPackage(article))
                     {
-                        ModelState.AddModelError(nameof(article.WeightPerPackage), "The choosen unit requires a value more than zero for this field.");
+                        ModelState.AddModelError(nameof(article.WeightPerPackage), _localizer["The choosen unit requires a value more than zero for this field."]);
                         GetArticleSaveLists(article);
                         return View(article);
 
@@ -158,7 +164,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Stock/Articles/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -180,15 +186,20 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // POST: Stock/Articles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var article = await _context.Articles.SingleOrDefaultAsync(m => m.ID == id);
+            if (IsRelated(article))
+            {
+                ModelState.AddModelError("", _localizer["Couldn't delete. The post is already related to other entities."]);
+                return View(article);
+            }
             _context.Articles.Remove(article);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ArticleExists(long id)
+        private bool ArticleExists(int id)
         {
             return _context.Articles.Any(e => e.ID == id);
         }
@@ -222,6 +233,11 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             ViewData["ArticleUNitID"] = new SelectList(_context.ArticleUnits, "ID", "Name", model.ArticleUnitID);
             ViewData["ArticlePackageFormID"] = new SelectList(_context.ArticlePakageForms, "ID", "Name", model.ArticlePackageFormID);
         }
+        private bool IsRelated(Article model)
+        {
+            return Dependencies.CheckRelatedRecords(_context, "Articles", "ArticleID", model.ID);
+        }
+
         #endregion
     }
 }

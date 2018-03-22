@@ -88,6 +88,13 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<DicingPlanDetail>()
              .HasIndex(p => new{p.DicingPlanID, p.WarehouseID, p.ArticleID })
              .IsUnique(true);
+            modelBuilder.Entity<ArticlePackageForm>()
+             .HasIndex(p => p.Name)
+             .IsUnique(true);
+            modelBuilder.Entity<ArticleUnit>()
+             .HasIndex(p => p.Name)
+             .IsUnique(true);
+          
             modelBuilder.Entity<ArticleCategory>()
              .HasIndex(p => p.Name)
              .IsUnique(true);
@@ -150,11 +157,11 @@ namespace TomasGreen.Web.Data
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
-
+           
             base.OnModelCreating(modelBuilder);
 
         }
 
-        
+       
     }
 }

@@ -63,11 +63,13 @@
                             @localizer["Stock"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="Import" asp-controller="Articles" asp-action="Index" >@localizer["Article"]</a></li>
-                            <li><a asp-area="Import" asp-controller="ArticleCategories" asp-action="Index" >@localizer["Article category"]</a></li>
-                            <li><a asp-area="Import" asp-controller="Countries" asp-action="Index" >@localizer["Article"] country</a></li>
-                            <li><a asp-area="Import" asp-controller="Warehouses" asp-action="Index" >@localizer["Warehouse"]</a></li>
-                            <li><a asp-area="Import" asp-controller="ArrivedArticles" asp-action="Index" >@localizer["Comming articles"]</a></li>
+                            <li><a asp-area="Import" asp-controller="Articles" asp-action="Index">@localizer["Article"]</a></li>
+                            <li><a asp-area="Import" asp-controller="ArticleCategories" asp-action="Index">@localizer["Article category"]</a></li>
+                            <li><a asp-area="Import" asp-controller="Countries" asp-action="Index">@localizer["Country"] </a></li>
+                            <li><a asp-area="Import" asp-controller="ArticleUnits" asp-action="Index">@localizer["Article unit"] </a></li>
+                            <li><a asp-area="Import" asp-controller="ArticlePackageForms" asp-action="Index">@localizer["Article package form"] </a></li>
+                            <li><a asp-area="Import" asp-controller="Warehouses" asp-action="Index">@localizer["Warehouse"]</a></li>
+                            <li><a asp-area="Import" asp-controller="ArrivedArticles" asp-action="Index">@localizer["Comming articles"]</a></li>
                         </ul>
                     </li>
                     <li role="presentation" class="dropdown">
@@ -79,10 +81,6 @@
                             <li><a asp-area="Import" asp-controller="Orders" asp-action="Index" >@localizer["Order"]</a></li>
                         </ul>
                     </li>
-
-
-
-
                 </ul>
 
             </div>

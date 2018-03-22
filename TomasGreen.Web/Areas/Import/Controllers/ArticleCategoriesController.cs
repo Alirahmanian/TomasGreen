@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using TomasGreen.Model.Models;
 using TomasGreen.Web.Data;
 
@@ -14,20 +16,24 @@ namespace TomasGreen.Web.Areas.Import.Controllers
     public class ArticleCategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public ArticleCategoriesController(ApplicationDbContext context)
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IStringLocalizer<ArticleCategoriesController> _localizer;
+        public ArticleCategoriesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<ArticleCategoriesController> localizer)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
+            _localizer = localizer;
         }
 
         // GET: Stock/ArticleCategories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ArticleCategories.ToListAsync());
+            
+            return View(await _context.ArticleCategories.Include(a => a.Articles).ToListAsync());
         }
 
         // GET: Stock/ArticleCategories/Details/5
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -67,7 +73,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(nameof(articleCategory.Name), "Name is already taken.");
+                    ModelState.AddModelError(nameof(articleCategory.Name), _localizer["Name is already taken."]);
                 }
                     
             }
@@ -75,7 +81,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Stock/ArticleCategories/Edit/5
-        public async Task<IActionResult> Edit(long? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -95,7 +101,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,AddedDate,Name")] ArticleCategory articleCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,AddedDate,Name")] ArticleCategory articleCategory)
         {
             if (id != articleCategory.ID)
             {
@@ -113,7 +119,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError(nameof(articleCategory.Name), "Name is already taken.");
+                        ModelState.AddModelError(nameof(articleCategory.Name), _localizer["Name is already taken."]);
                         return View(articleCategory);
 
                     }
@@ -136,7 +142,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Stock/ArticleCategories/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -149,22 +155,27 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.Error = "";
             return View(articleCategory);
         }
 
         // POST: Stock/ArticleCategories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var articleCategory = await _context.ArticleCategories.SingleOrDefaultAsync(m => m.ID == id);
+            if (IsRelated(articleCategory))
+            {
+                ViewBag.Error = _localizer["Couldn't delete. The Post is already related to other entities."];
+                return View(articleCategory);
+            }
             _context.ArticleCategories.Remove(articleCategory);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ArticleCategoryExists(long id)
+        private bool ArticleCategoryExists(int id)
         {
             return _context.ArticleCategories.Any(e => e.ID == id);
         }
@@ -172,7 +183,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         #region Validations
         public bool VerifyUniqueName(string name, int id)
         {
-
             var articleCategory = _context.ArticleCategories.Where(a => a.Name == name).AsNoTracking().FirstOrDefault();
             if (articleCategory != null)
             {
@@ -188,6 +198,11 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             }
 
             return true;
+        }
+        private bool IsRelated(ArticleCategory model)
+        {
+            return Dependencies.CheckRelatedRecords(_context, "ArticleCategories", "ArticleCategoryID", model.ID);
+            // return _context.Articles.Any(a => a.ArticleCategoryID == model.ID);
         }
         #endregion
     }

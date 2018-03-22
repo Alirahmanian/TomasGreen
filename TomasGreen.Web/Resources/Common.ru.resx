@@ -150,6 +150,12 @@
   <data name="Contacts" xml:space="preserve">
     <value>Контакты</value>
   </data>
+  <data name="Couldn't delete. The post is already related to other entities." xml:space="preserve">
+    <value>Не удалось удалить. Сообщение уже связано с другими объектами.</value>
+  </data>
+  <data name="Couldn't save." xml:space="preserve">
+    <value>Не удалось сохранить.</value>
+  </data>
   <data name="Country" xml:space="preserve">
     <value>Страна</value>
   </data>

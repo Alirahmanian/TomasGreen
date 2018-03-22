@@ -22,11 +22,12 @@ namespace TomasGreen.Web.Areas.Import.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
-
-        public PurchasedArticlesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+        private readonly IStringLocalizer<PurchasedArticlesController> _localizer;
+        public PurchasedArticlesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<PurchasedArticlesController> localizer)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _localizer = localizer;
         }
 
         // GET: Stock/PurchasedArticles
@@ -37,7 +38,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Stock/PurchasedArticles/Details/5
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -118,7 +119,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 var savedPurchasedArticle = _context.PurchasedArticles.Where(r => r.Date == model.PurchasedArticle.Date && r.ArticleID == model.PurchasedArticle.ArticleID && r.Guid == guid).FirstOrDefault();
                 if(savedPurchasedArticle == null)
                 {
-                    ModelState.AddModelError("", "Couldn't saved.");
+                    ModelState.AddModelError("", "Couldn't save.");
                     model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
                     AddPurchasedArticleLists(model);
                     return View(model);
@@ -126,7 +127,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
                 if (onThewayWarehouse == null)
                 {
-                    ModelState.AddModelError("", "Couldn't saved.");
+                    ModelState.AddModelError("", "Couldn't save.");
                     model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
                     AddPurchasedArticleLists(model);
                     return View(model);
@@ -158,7 +159,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                // var result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
                 if (result.Value == false)
                 {
-                    ModelState.AddModelError("", "Couldn't saved.");
+                    ModelState.AddModelError("", "Couldn't save.");
                     if (_hostingEnvironment.IsDevelopment())
                     {
                         ModelState.AddModelError("", JSonHelper.ToJSon(result));
@@ -179,7 +180,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 if (savedPurchasedArticle != null)
                 {
                     //rollback old values from article balance
-                    var errors = new List<PropertyValidatedMessage>();
+                    var errors = new List<PropertyValidation>();
                    
                     var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
                     var tempPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
@@ -208,7 +209,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                    // var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasedArticleWarehouse);
                     if (result.Value == false)
                     {
-                        ModelState.AddModelError("", "Couldn't saved.");
+                        ModelState.AddModelError("", "Couldn't save.");
                         if (_hostingEnvironment.IsDevelopment())
                         {
                             ModelState.AddModelError("", JSonHelper.ToJSon(result));
@@ -250,7 +251,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                    // result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
                     if (result.Value == false)
                     {
-                        ModelState.AddModelError("", "Couldn't saved.");
+                        ModelState.AddModelError("", "Couldn't save.");
                         if (_hostingEnvironment.IsDevelopment())
                         {
                             ModelState.AddModelError("", JSonHelper.ToJSon(result));
@@ -273,7 +274,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Couldn't saved.");
+                    ModelState.AddModelError("", "Couldn't save.");
                     model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
                     AddPurchasedArticleLists(model);
                     return View(model);
@@ -292,7 +293,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
 
      
         // GET: Stock/PurchasedArticles/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -314,7 +315,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // POST: Stock/PurchasedArticles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var savedPurchasedArticle = await _context.PurchasedArticles.Include(w => w.Warehouses).SingleOrDefaultAsync(m => m.ID == id);
             //rollback old values from article balance
@@ -348,7 +349,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                // var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasedArticleWarehouse);
                 if (result.Value == false)
                 {
-                    ModelState.AddModelError("", "Couldn't saved.");
+                    ModelState.AddModelError("", "Couldn't save.");
                     if (_hostingEnvironment.IsDevelopment())
                     {
                         ModelState.AddModelError("", JSonHelper.ToJSon(result));
@@ -362,7 +363,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PurchasedArticleExists(long id)
+        private bool PurchasedArticleExists(int id)
         {
             return _context.PurchasedArticles.Any(e => e.ID == id);
         }

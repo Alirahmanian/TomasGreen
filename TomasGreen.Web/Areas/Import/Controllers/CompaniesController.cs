@@ -28,7 +28,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Sales/Companies/Details/5
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -68,7 +68,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Sales/Companies/Edit/5
-        public async Task<IActionResult> Edit(long? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -88,7 +88,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,AddedDate,Name,Balance,Ruble,Discount,Purchases,SouldToUs,Paid,Received,LastBalance,LastBalanceDate,Locked,CreditReceived,CreditLimit")] Company company)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,AddedDate,Name,Balance,Ruble,Discount,Purchases,SouldToUs,Paid,Received,LastBalance,LastBalanceDate,Locked,CreditReceived,CreditLimit")] Company company)
         {
             if (id != company.ID)
             {
@@ -119,7 +119,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Sales/Companies/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -139,7 +139,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // POST: Sales/Companies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var company = await _context.Companies.SingleOrDefaultAsync(m => m.ID == id);
             _context.Companies.Remove(company);
@@ -147,7 +147,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CompanyExists(long id)
+        private bool CompanyExists(int id)
         {
             return _context.Companies.Any(e => e.ID == id);
         }

@@ -3,15 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 using TomasGreen.Web.Data;
 
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180321190857_ChangingArticleUnit")]
+    partial class ChangingArticleUnit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,14 +230,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime>("AddedDate");
 
-                    b.Property<decimal>("MeasurePerKg")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("MeasurePerKg");
 
                     b.Property<bool>("MeasuresByG");
 
                     b.Property<bool>("MeasuresByKg");
-
-                    b.Property<bool>("MeasuresByPiece");
 
                     b.Property<bool>("MeasuresByTon");
 

@@ -39,7 +39,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         }
 
         // GET: Roasting/RoastingPlans/Details/5
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -119,7 +119,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
                     var result = ArticleBalance.Reduce(_context, articleInOut);
                     if (result.Value == false)
                     {
-                        ModelState.AddModelError("", "Couldn't saved.");
+                        ModelState.AddModelError("", "Couldn't save.");
                         if (_hostingEnvironment.IsDevelopment())
                         {
                             ModelState.AddModelError("", JSonHelper.ToJSon(result));
@@ -151,7 +151,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         
 
         // GET: Roasting/RoastingPlans/Edit/5
-        public async Task<IActionResult> Edit(long? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -175,7 +175,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id,  RoastingPlan model)
+        public async Task<IActionResult> Edit(int id,  RoastingPlan model)
         {
             if (id != model.ID)
             {
@@ -207,7 +207,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         }
 
         // GET: Roasting/RoastingPlans/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -231,7 +231,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         // POST: Roasting/RoastingPlans/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var roastingPlan = await _context.RoastingPlans.SingleOrDefaultAsync(m => m.ID == id);
             _context.RoastingPlans.Remove(roastingPlan);
@@ -239,7 +239,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RoastingPlanExists(long id)
+        private bool RoastingPlanExists(int id)
         {
             return _context.RoastingPlans.Any(e => e.ID == id);
         }
@@ -265,7 +265,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             }
         }
 
-        private decimal GetTotalWeight(long articleID, int qtyPackages, decimal qtExtra)
+        private decimal GetTotalWeight(int articleID, int qtyPackages, decimal qtExtra)
         {
             decimal result = 0;
             var article = _context.Articles.Include(u => u.ArticleUnit).Where(a => a.ID == articleID).FirstOrDefault();
@@ -284,7 +284,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             
             return result;
         }
-        public List<Warehouse> GetFromWarehouseList(Int64 companyID)
+        public List<Warehouse> GetFromWarehouseList(int companyID)
         {
             var warehouses = (from aw in _context.ArticleWarehouseBalances
                               where aw.CompanyID == companyID && (aw.QtyPackagesOnhand > 0 || aw.QtyExtraOnhand > 0)
@@ -296,7 +296,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
 
             return warehouses;
         }
-        public List<Warehouse> GetToWarehouseList(Int64 companyID)
+        public List<Warehouse> GetToWarehouseList(int companyID)
         {
             List<Warehouse> warehouses = new List<Warehouse>();
             var company = _context.Companies.Where(c => c.ID == companyID).FirstOrDefault();
@@ -315,7 +315,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
             }
             return warehouses;
         }
-        public List<ListItem> GetArticleList(Int64 warehouseID, Int64 companyID)
+        public List<ListItem> GetArticleList(int warehouseID, int companyID)
         {
             List<ListItem> listItems = new List<ListItem>();
             var articles = (from aw in _context.ArticleWarehouseBalances

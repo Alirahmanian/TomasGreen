@@ -16,7 +16,7 @@ namespace TomasGreen.Web.Areas.Import.Components
         {
             _context = context;
         }
-        public IViewComponentResult Invoke(Int64 articleId,  Int64 warehouseId)
+        public IViewComponentResult Invoke(int articleId,  int warehouseId)
         {
             var articleWarehouseBalance = new ArticleWarehouseBalance();
             if (articleId > 0 && warehouseId > 0)

@@ -12,7 +12,7 @@ namespace TomasGreen.Web.Balances
     public static class ArticleBalance
     {
 
-        public static bool WarehouseIsCoutomers(ApplicationDbContext _contex, Int64 warehouseID)
+        public static bool WarehouseIsCoutomers(ApplicationDbContext _contex, int warehouseID)
         {
             return (_contex.Warehouses.Any(w => w.ID == warehouseID && w.IsCustomers == true));
         }
@@ -25,7 +25,7 @@ namespace TomasGreen.Web.Balances
             }
             return 0;
         }
-        public static int GetWarehouseCompany(ApplicationDbContext _contex, Int64 warehouseID)
+        public static int GetWarehouseCompany(ApplicationDbContext _contex, int warehouseID)
         {
             var warehouse = _contex.Warehouses.Where(w => w.ID == warehouseID).FirstOrDefault();
             if(warehouse.CompanySectionID != null)
@@ -36,9 +36,9 @@ namespace TomasGreen.Web.Balances
 
             return 0;
         }
-        public static PropertyValidatedMessage ValidateArticleInOut(ArticleInOut model)
+        public static PropertyValidation ValidateArticleInOut(ArticleInOut model)
         {
-            var result = new PropertyValidatedMessage(true, "ValidateArticleInOut", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "ValidateArticleInOut", "ArticleWarehouseBalance", "", "");
             if(model.ArticleID == 0)
             {
                 result.Value = false; result.Property = nameof(model.ArticleID); result.Message = "Article undefined.";
@@ -63,7 +63,7 @@ namespace TomasGreen.Web.Balances
 
             return result;
         }
-        public static PropertyValidatedMessage Add(ApplicationDbContext _context, ArticleInOut model)
+        public static PropertyValidation Add(ApplicationDbContext _context, ArticleInOut model)
         {
             var result = ValidateArticleInOut(model);
             try
@@ -127,9 +127,9 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        public static PropertyValidatedMessage Undo_Add(ApplicationDbContext _context, ArticleInOut model)
+        public static PropertyValidation Undo_Add(ApplicationDbContext _context, ArticleInOut model)
         {
-            var result = new PropertyValidatedMessage(true, "Undo_Add", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "Undo_Add", "ArticleWarehouseBalance", "", "");
             try
             {
                
@@ -184,9 +184,9 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        public static PropertyValidatedMessage Reduce(ApplicationDbContext _context,  ArticleInOut model)
+        public static PropertyValidation Reduce(ApplicationDbContext _context,  ArticleInOut model)
         {
-            var result = new PropertyValidatedMessage(true, "Undo_Add", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "Undo_Add", "ArticleWarehouseBalance", "", "");
             try
             {
                 var article = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault();
@@ -226,9 +226,9 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        public static PropertyValidatedMessage Undo_Reduce(ApplicationDbContext _context, ArticleInOut model)
+        public static PropertyValidation Undo_Reduce(ApplicationDbContext _context, ArticleInOut model)
         {
-            var result = new PropertyValidatedMessage(true, "RemoveOrderDetailFromBalance", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "RemoveOrderDetailFromBalance", "ArticleWarehouseBalance", "", "");
             try
             {
                 var article = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault();
@@ -271,9 +271,9 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        //public PropertyValidatedMessage AddPurchasedArticleToBalance(PurchasedArticleWarehouse model)
+        //public PropertyValidation AddPurchasedArticleToBalance(PurchasedArticleWarehouse model)
         //{
-        //    var result = new PropertyValidatedMessage(true, "AddPurchasedArticleToBalance", "ArticleWarehouseBalance", "", "");
+        //    var result = new PropertyValidation(true, "AddPurchasedArticleToBalance", "ArticleWarehouseBalance", "", "");
         //    try
         //    {
         //        var articleWarehouseBalance = new ArticleWarehouseBalance();
@@ -317,9 +317,9 @@ namespace TomasGreen.Web.Balances
         //    return result;
         //}
 
-        //public  PropertyValidatedMessage RemovePurchasedArticleFromBalance(PurchasedArticleWarehouse model)
+        //public  PropertyValidation RemovePurchasedArticleFromBalance(PurchasedArticleWarehouse model)
         //{
-        //    var result = new PropertyValidatedMessage(true, "RemovePurchasedArticleFromBalance", "ArticleWarehouseBalance", "", "");
+        //    var result = new PropertyValidation(true, "RemovePurchasedArticleFromBalance", "ArticleWarehouseBalance", "", "");
         //    try
         //    {
         //        var articleWarehouseBalance = new ArticleWarehouseBalance();
@@ -363,9 +363,9 @@ namespace TomasGreen.Web.Balances
         //    return result;
         //}
 
-        //public PropertyValidatedMessage AddOrderDetailToBalance(OrderDetail model)
+        //public PropertyValidation AddOrderDetailToBalance(OrderDetail model)
         //{
-        //    var result = new PropertyValidatedMessage(true, "AddOrderDetailToBalance", "ArticleWarehouseBalance", "", "");
+        //    var result = new PropertyValidation(true, "AddOrderDetailToBalance", "ArticleWarehouseBalance", "", "");
         //    try
         //    {
         //        var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();
@@ -400,9 +400,9 @@ namespace TomasGreen.Web.Balances
         //    return result;
         //}
 
-        //public PropertyValidatedMessage RemoveOrderDetailFromBalance(OrderDetail model)
+        //public PropertyValidation RemoveOrderDetailFromBalance(OrderDetail model)
         //{
-        //    var result = new PropertyValidatedMessage(true, "RemoveOrderDetailFromBalance", "ArticleWarehouseBalance", "", "");
+        //    var result = new PropertyValidation(true, "RemoveOrderDetailFromBalance", "ArticleWarehouseBalance", "", "");
         //    try
         //    {
         //        var articleWarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ArticleID && b.WarehouseID == model.WarehouseID).FirstOrDefault();

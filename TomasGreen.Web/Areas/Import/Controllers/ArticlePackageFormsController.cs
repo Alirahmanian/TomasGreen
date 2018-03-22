@@ -13,25 +13,25 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Areas.Import.Controllers
 {
     [Area("Import")]
-    public class CountriesController : Controller
+    public class ArticlePackageFormsController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IStringLocalizer<CountriesController> _localizer;
-        public CountriesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<CountriesController> localizer)
+        private readonly IStringLocalizer<ArticlePackageFormsController> _localizer;
+        public ArticlePackageFormsController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<ArticlePackageFormsController> localizer)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             _localizer = localizer;
         }
 
-        // GET: Stock/Countries
+        // GET: Import/ArticlePackageForms
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Countries.Include(a => a.Articles).ToListAsync());
+            return View(await _context.ArticlePakageForms.Include(a => a.Articles).ToListAsync());
         }
 
-        // GET: Stock/Countries/Details/5
+        // GET: Import/ArticlePackageForms/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,44 +39,44 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 return NotFound();
             }
 
-            var country = await _context.Countries
+            var articlePackageForm = await _context.ArticlePakageForms
                 .SingleOrDefaultAsync(m => m.ID == id);
-            if (country == null)
+            if (articlePackageForm == null)
             {
                 return NotFound();
             }
 
-            return View(country);
+            return View(articlePackageForm);
         }
 
-        // GET: Stock/Countries/Create
+        // GET: Import/ArticlePackageForms/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Stock/Countries/Create
+        // POST: Import/ArticlePackageForms/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name")] Country country)
+        public async Task<IActionResult> Create([Bind("ID, Name")] ArticlePackageForm articlePackageForm)
         {
             if (ModelState.IsValid)
             {
-                if (NameAlreadyTaken(country))
+                if (NameAlreadyTaken(articlePackageForm))
                 {
-                    ModelState.AddModelError(nameof(country.Name), _localizer["Name is already taken."]);
-                    return View(country);
+                    ModelState.AddModelError(nameof(articlePackageForm.Name), _localizer["Name is already taken."]);
+                    return View(articlePackageForm);
                 }
-                _context.Add(country);
+                _context.Add(articlePackageForm);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(country);
+            return View(articlePackageForm);
         }
 
-        // GET: Stock/Countries/Edit/5
+        // GET: Import/ArticlePackageForms/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,22 +84,22 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 return NotFound();
             }
 
-            var country = await _context.Countries.SingleOrDefaultAsync(m => m.ID == id);
-            if (country == null)
+            var articlePackageForm = await _context.ArticlePakageForms.SingleOrDefaultAsync(m => m.ID == id);
+            if (articlePackageForm == null)
             {
                 return NotFound();
             }
-            return View(country);
+            return View(articlePackageForm);
         }
 
-        // POST: Stock/Countries/Edit/5
+        // POST: Import/ArticlePackageForms/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name")] Country country)
+        public async Task<IActionResult> Edit(int id, [Bind("ID, Name")] ArticlePackageForm articlePackageForm)
         {
-            if (id != country.ID)
+            if (id != articlePackageForm.ID)
             {
                 return NotFound();
             }
@@ -108,18 +108,17 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 try
                 {
-                    if (NameAlreadyTaken(country))
+                    if(NameAlreadyTaken(articlePackageForm))
                     {
-                        ModelState.AddModelError(nameof(country.Name), _localizer["Name is already taken."]);
-                        return View(country);
+                        ModelState.AddModelError(nameof(articlePackageForm.Name), _localizer["Name is already taken."]);
+                        return View(articlePackageForm);
                     }
-                    _context.Update(country);
+                    _context.Update(articlePackageForm);
                     await _context.SaveChangesAsync();
-
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CountryExists(country.ID))
+                    if (!ArticlePackageFormExists(articlePackageForm.ID))
                     {
                         return NotFound();
                     }
@@ -130,10 +129,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(country);
+            return View(articlePackageForm);
         }
 
-        // GET: Stock/Countries/Delete/5
+        // GET: Import/ArticlePackageForms/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,46 +140,45 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 return NotFound();
             }
 
-            var country = await _context.Countries
+            var articlePackageForm = await _context.ArticlePakageForms
                 .SingleOrDefaultAsync(m => m.ID == id);
-            if (country == null)
+            if (articlePackageForm == null)
             {
                 return NotFound();
             }
 
-            return View(country);
+            return View(articlePackageForm);
         }
 
-        // POST: Stock/Countries/Delete/5
+        // POST: Import/ArticlePackageForms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var country = await _context.Countries.SingleOrDefaultAsync(m => m.ID == id);
-            if (IsRelated(country))
+            var articlePackageForm = await _context.ArticlePakageForms.SingleOrDefaultAsync(m => m.ID == id);
+            if (IsRelated(articlePackageForm))
             {
                 ModelState.AddModelError("", _localizer["Couldn't delete. The Post is already related to other entities."]);
-                return View(country);
+                return View(articlePackageForm);
             }
-            _context.Countries.Remove(country);
+            _context.ArticlePakageForms.Remove(articlePackageForm);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CountryExists(int id)
+        private bool ArticlePackageFormExists(int id)
         {
-            return _context.Countries.Any(e => e.ID == id);
+            return _context.ArticlePakageForms.Any(e => e.ID == id);
         }
-
         #region
-        private bool NameAlreadyTaken(Country model)
+        private bool NameAlreadyTaken(ArticlePackageForm model)
         {
-            return _context.Countries.Any(f => f.Name == model.Name && f.ID != model.ID);
+            return _context.ArticlePakageForms.Any(f => f.Name == model.Name && f.ID != model.ID);
         }
 
-        private bool IsRelated(Country model)
+        private bool IsRelated(ArticlePackageForm model)
         {
-            return _context.Articles.Any(a => a.CountryID == model.ID);
+            return _context.Articles.Any(a => a.ArticlePackageFormID == model.ID);
         }
         #endregion
     }

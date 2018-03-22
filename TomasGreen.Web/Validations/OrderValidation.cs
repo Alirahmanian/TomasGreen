@@ -9,22 +9,22 @@ namespace TomasGreen.Web.Validations
 {
     public static class OrderValidation
     {
-        public static PropertyValidatedMessage OrderIsValid(ApplicationDbContext _context, Order model)
+        public static PropertyValidation OrderIsValid(ApplicationDbContext _context, Order model)
         {
             if (model.CompanyID == 0)
             {
-                return (new PropertyValidatedMessage(false, "OrderIsValid", "Order", nameof(model.CompanyID), "Please choose a customer."));
+                return (new PropertyValidation(false, "OrderIsValid", "Order", nameof(model.CompanyID), "Please choose a customer."));
             }
             if (model.OrderDate == null)
             {
-                return (new PropertyValidatedMessage(false, "ReceivArticleIsValid", "ReceiveArticle", nameof(model.OrderDate), "Please choose an date for order."));
+                return (new PropertyValidation(false, "ReceivArticleIsValid", "ReceiveArticle", nameof(model.OrderDate), "Please choose an date for order."));
             }
 
-            return (new PropertyValidatedMessage(true, "", "", "", ""));
+            return (new PropertyValidation(true, "", "", "", ""));
         }
-        public static PropertyValidatedMessage OrderDetailIsValid(ApplicationDbContext _context, OrderDetail model)
+        public static PropertyValidation OrderDetailIsValid(ApplicationDbContext _context, OrderDetail model)
         {
-            var result = new PropertyValidatedMessage(true, "OrderDetailIsValid", "OrderDetail", "", "");
+            var result = new PropertyValidation(true, "OrderDetailIsValid", "OrderDetail", "", "");
             if (model.OrderID == 0)
             {
                 result.Value = false; result.Property = nameof(model.OrderID); result.Message = "Order id is missing.";
@@ -74,10 +74,10 @@ namespace TomasGreen.Web.Validations
 
             }
 
-            return (new PropertyValidatedMessage(true, "", "", "", ""));
+            return (new PropertyValidation(true, "", "", "", ""));
         }
 
-        public static PropertyValidatedMessage OrderDetailIsUnique(ApplicationDbContext _context, OrderDetail model)
+        public static PropertyValidation OrderDetailIsUnique(ApplicationDbContext _context, OrderDetail model)
         {
             var orderDetails = _context.OrderDetails.Where(d => d.OrderID == model.OrderID);
             foreach(var orderDetail in orderDetails)
@@ -86,11 +86,11 @@ namespace TomasGreen.Web.Validations
                 {
                     if(orderDetail.ArticleID == model.ArticleID && orderDetail.WarehouseID == model.WarehouseID && orderDetail.Price == model.Price)
                     {
-                        return (new PropertyValidatedMessage(false, "OrderDetailIsUnique", "OrderDetail", "", "There is already an order row with the same article, warehouse and price."));
+                        return (new PropertyValidation(false, "OrderDetailIsUnique", "OrderDetail", "", "There is already an order row with the same article, warehouse and price."));
                     }
                 }
             }
-            return (new PropertyValidatedMessage(true, "", "", "", ""));
+            return (new PropertyValidation(true, "", "", "", ""));
         }
 
         public static ArticleUnit GetArticleUnitByArticle(ApplicationDbContext _context, Article article)

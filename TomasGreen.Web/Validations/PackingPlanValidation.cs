@@ -9,9 +9,9 @@ namespace TomasGreen.Web.Validations
 {
     public static class PackingPlanValidation
     {
-        public static PropertyValidatedMessage PackingPlanIsValid(ApplicationDbContext _context, string callingAction, PackingPlan model)
+        public static PropertyValidation PackingPlanIsValid(ApplicationDbContext _context, string callingAction, PackingPlan model)
         {
-            var result = new PropertyValidatedMessage(true, callingAction, "PackingPlan", "", "");
+            var result = new PropertyValidation(true, callingAction, "PackingPlan", "", "");
             if (model.Date == null)
             {
                 result.Value = false; result.Property = nameof(model.Date); result.Message = "Please choose a date.";
@@ -31,9 +31,9 @@ namespace TomasGreen.Web.Validations
             return result;
         }
 
-        public static PropertyValidatedMessage PackingPlanMixIsValid(ApplicationDbContext _context, string callingAction, PackingPlanMix model)
+        public static PropertyValidation PackingPlanMixIsValid(ApplicationDbContext _context, string callingAction, PackingPlanMix model)
         {
-            var result = new PropertyValidatedMessage(true, callingAction, "PackingPlanMix", "", "");
+            var result = new PropertyValidation(true, callingAction, "PackingPlanMix", "", "");
             if (model.ID != 0 && model.PackingPlanID == 0)
             {
                 result.Value = false; result.Property = nameof(model.PackingPlanID); result.Message = "Please save the packingplan header first.";
@@ -73,9 +73,9 @@ namespace TomasGreen.Web.Validations
             return result;
         }
 
-        public static PropertyValidatedMessage PackingPlanMixArticleIsValid(ApplicationDbContext _context, string callingAction, PackingPlanMixArticle model)
+        public static PropertyValidation PackingPlanMixArticleIsValid(ApplicationDbContext _context, string callingAction, PackingPlanMixArticle model)
         {
-            var result = new PropertyValidatedMessage(true, callingAction, "PackingPlanMixArticle", "", "");
+            var result = new PropertyValidation(true, callingAction, "PackingPlanMixArticle", "", "");
             if (model.PackingPlanMixID == 0)
             {
                 result.Value = false; result.Property = nameof(model.PackingPlanMixID); result.Message = "Please save the packingplanMix header first.";

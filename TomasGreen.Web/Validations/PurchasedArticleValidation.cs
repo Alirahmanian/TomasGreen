@@ -9,9 +9,9 @@ namespace TomasGreen.Web.Validations
 {
     public static class PurchasedArticleValidation 
     {
-        public static PropertyValidatedMessage PurchasedArticleIsValid(ApplicationDbContext _context, PurchasedArticle model)
+        public static PropertyValidation PurchasedArticleIsValid(ApplicationDbContext _context, PurchasedArticle model)
         {
-            var result = new PropertyValidatedMessage(true, "AddPurchasedArticleToBalance", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "AddPurchasedArticleToBalance", "ArticleWarehouseBalance", "", "");
             if (model.Date == null)
             {
                 result.Value = false; result.Property = nameof(model.Date); result.Message = "Please choose a date.";

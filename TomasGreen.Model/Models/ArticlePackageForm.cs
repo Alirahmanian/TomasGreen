@@ -10,5 +10,8 @@ namespace TomasGreen.Model.Models
         [Required(ErrorMessage = "Name is required")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
         public string Name { get; set; }
+
+        //nav.
+        public ICollection<Article> Articles { get; set; }
     }
 }

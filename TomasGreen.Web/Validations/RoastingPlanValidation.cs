@@ -9,9 +9,9 @@ namespace TomasGreen.Web.Validations
 {
     public static class RoastingPlanValidation
     {
-        public static PropertyValidatedMessage RoastingPlanIsValid(ApplicationDbContext _context, string callingAction, RoastingPlan model)
+        public static PropertyValidation RoastingPlanIsValid(ApplicationDbContext _context, string callingAction, RoastingPlan model)
         {
-            var result = new PropertyValidatedMessage(true, callingAction, "RoastingPlan", "", "");
+            var result = new PropertyValidation(true, callingAction, "RoastingPlan", "", "");
             if (model.Date == null)
             {
                 result.Value = false; result.Property = nameof(model.Date); result.Message = "Please choose a date.";
