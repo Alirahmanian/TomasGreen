@@ -15,7 +15,7 @@ namespace TomasGreen.Web.Balances
 
         public static List<PurchasedArticleWarehouse> GetOnthewayArticles(ApplicationDbContext _context)
         {
-            var list = _context.PurchasedArticleWarehouses.Where(a => a.ArrivedDate == null).Include(p => p.PurchasedArticle).ThenInclude(pa => pa.Article).OrderBy(a => a.PurchasedArticle.Date).ThenBy(a => a.PurchasedArticle.Article).ToList();
+            var list = _context.PurchasedArticleWarehouses.Where(a => a.ArrivedDate == null).Include(p => p.PurchasedArticle).ThenInclude(pa => pa.Article).Include(w => w.Warehouse).OrderBy(a => a.PurchasedArticle.Date).ThenBy(a => a.PurchasedArticle.Article).ToList();
             return list;
             
         }

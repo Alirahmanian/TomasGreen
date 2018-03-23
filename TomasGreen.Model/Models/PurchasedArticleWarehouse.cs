@@ -30,6 +30,8 @@ namespace TomasGreen.Model.Models
         [Range(0, Int32.MaxValue)]
         public decimal QtyExtraArrived { get; set; } = 0;
 
+        public int? ArrivedAtWarehouseID { get; set; }
+        public string Notes { get; set; }
 
         //nav
         public virtual PurchasedArticle PurchasedArticle { get; set; }

@@ -2,31 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using TomasGreen.Model.Models;
+using TomasGreen.Web.Areas.Import.ViewModels;
 using TomasGreen.Web.Data;
 
 namespace TomasGreen.Web.Areas.Import.Controllers
 {
     [Area("Import")]
-    [MiddlewareFilter(typeof(LocalizationPipeline))]
+   // [MiddlewareFilter(typeof(LocalizationPipeline))]
     public class WarehousesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IStringLocalizer<WarehousesController> _localizer;
-        public WarehousesController(ApplicationDbContext context, IStringLocalizer<WarehousesController> localizer)
+        public WarehousesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<WarehousesController> localizer)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
             _localizer = localizer;
         }
 
         // GET: Stock/Warehouses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Warehouses.Include(s => s.Section).ToListAsync());
+            //.Any(b => b.QtyExtraOnhand > 0 || b.QtyPackagesOnhand > 0)
+            return View(await _context.Warehouses.Include(a => a.ArticleWarehouseBalances).Include(s => s.Section).ToListAsync());
         }
 
         // GET: Stock/Warehouses/Details/5
@@ -43,8 +48,11 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
-
-            return View(warehouse);
+            var warehouseDetailsViewModel = new WarehouseDetailsViewModel();
+            warehouseDetailsViewModel.Warehouse = warehouse;
+            warehouseDetailsViewModel.Articles = _context.ArticleWarehouseBalances.Include(a => a.Article).Include(c => c.Company)
+                .Where(b => b.WarehouseID == warehouse.ID && (b.QtyExtraOnhand > 0 || b.QtyPackagesOnhand > 0)).ToList();
+            return View(warehouseDetailsViewModel);
         }
 
         // GET: Stock/Warehouses/Create

@@ -1,107 +1,49 @@
-﻿@model IEnumerable<TomasGreen.Model.Models.Company>
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+@model IEnumerable<TomasGreen.Model.Models.Company>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = @localizer["Index"];
 }
 
 <h2>Index</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">@localizer["Create New"]</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Balance)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Ruble)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Discount)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Purchases)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SouldToUs)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Paid)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Received)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LastBalance)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LastBalanceDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Locked)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreditReceived)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreditLimit)
-                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastBalance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastBalanceDate)
+            </th>
+           
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Balance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ruble)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Discount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Purchases)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SouldToUs)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Paid)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Received)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastBalance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastBalanceDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Locked)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreditReceived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreditLimit)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastBalance)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastBalanceDate)
+                </td>
+               
+                <td>
+                    @await Html.PartialAsync("~/Views/Shared/_IndexLinks.cshtml", item.ID)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

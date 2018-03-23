@@ -168,7 +168,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             var articleUnit = await _context.ArticleUnits.SingleOrDefaultAsync(m => m.ID == id);
             if(IsRelated(articleUnit))
             {
-                ModelState.AddModelError("", _localizer["Couldn't delete. The post is already related to other entities."]);
+                ViewBag.Error = _localizer["Couldn't delete. The Post is already related to other entities."];
                 return View(articleUnit);
             }
             _context.ArticleUnits.Remove(articleUnit);

@@ -371,7 +371,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         private void AddPurchasedArticleLists(SavePurchasedArticleWarehouseViewModel model)
         {
             ViewData["ArticleID"] = new SelectList(_context.Articles.Include(u => u.ArticleUnit).Include(f => f.ArticlePackageForm), "ID", "Name", model.PurchasedArticle?.ArticleID);
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.PurchasedArticle?.CompanyID);
+            ViewData["CompanyID"] = new SelectList(_context.Companies.Where(c => c.IsOwner == false), "ID", "Name", model.PurchasedArticle?.CompanyID);
            
         }
 
@@ -439,7 +439,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         {
             var result = new List<PurchasedArticleWarehouse>();
             
-            foreach(var warehouse in _context.Warehouses.Where(w => w.IsOnTheWay == false).OrderBy(w => w.Name))
+            foreach(var warehouse in _context.Warehouses.Where(w => w.IsOnTheWay == true).OrderBy(w => w.Name))
                 {
                     var tempPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
                     if (id != 0)

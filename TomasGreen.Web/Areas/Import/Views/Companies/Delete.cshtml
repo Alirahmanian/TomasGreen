@@ -1,5 +1,5 @@
-﻿@model TomasGreen.Model.Models.Company
-
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+@model TomasGreen.Model.Models.Company
 @{
     ViewData["Title"] = "Delete";
 }
@@ -90,7 +90,7 @@
             @Html.DisplayFor(model => model.CreditLimit)
         </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="submit" value="Delete" class="btn btn-default" /> |

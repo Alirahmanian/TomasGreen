@@ -54,9 +54,7 @@
                 </td>
 
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    @await Html.PartialAsync("~/Views/Shared/_IndexLinks.cshtml", item.ID)
                 </td>
             </tr>
         }

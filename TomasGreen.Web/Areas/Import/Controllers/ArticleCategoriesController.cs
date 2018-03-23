@@ -181,7 +181,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         #region Validations
-        public bool VerifyUniqueName(string name, int id)
+        private bool VerifyUniqueName(string name, int id)
         {
             var articleCategory = _context.ArticleCategories.Where(a => a.Name == name).AsNoTracking().FirstOrDefault();
             if (articleCategory != null)
@@ -201,8 +201,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
         private bool IsRelated(ArticleCategory model)
         {
-            return Dependencies.CheckRelatedRecords(_context, "ArticleCategories", "ArticleCategoryID", model.ID);
-            // return _context.Articles.Any(a => a.ArticleCategoryID == model.ID);
+            //return Dependencies.CheckRelatedRecords(_context, "ArticleCategories", "ArticleCategoryID", model.ID);
+             return _context.Articles.Any(a => a.ArticleCategoryID == model.ID);
         }
         #endregion
     }

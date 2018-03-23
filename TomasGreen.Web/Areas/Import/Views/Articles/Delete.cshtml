@@ -1,4 +1,5 @@
-﻿@model TomasGreen.Model.Models.Article
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+@model TomasGreen.Model.Models.Article
 
 @{
     ViewData["Title"] = "Delete";
@@ -48,7 +49,7 @@
             @Html.DisplayFor(model => model.Country.Name)
         </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="submit" value="Delete" class="btn btn-default" /> |

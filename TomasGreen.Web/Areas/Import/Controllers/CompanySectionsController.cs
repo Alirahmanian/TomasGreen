@@ -13,25 +13,28 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Areas.Import.Controllers
 {
     [Area("Import")]
-    public class CountriesController : Controller
+    public class CompanySectionsController : Controller
     {
+
         private readonly ApplicationDbContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IStringLocalizer<CountriesController> _localizer;
-        public CountriesController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<CountriesController> localizer)
+        private readonly IStringLocalizer<CompanySectionsController> _localizer;
+        public CompanySectionsController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<CompanySectionsController> localizer)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             _localizer = localizer;
         }
 
-        // GET: Stock/Countries
+
+        // GET: Import/CompanySections
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Countries.Include(a => a.Articles).ToListAsync());
+            var applicationDbContext = _context.CompanySections.Include(c => c.Company);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Stock/Countries/Details/5
+        // GET: Import/CompanySections/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,44 +42,42 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 return NotFound();
             }
 
-            var country = await _context.Countries
+            var companySection = await _context.CompanySections
+                .Include(c => c.Company)
                 .SingleOrDefaultAsync(m => m.ID == id);
-            if (country == null)
+            if (companySection == null)
             {
                 return NotFound();
             }
 
-            return View(country);
+            return View(companySection);
         }
 
-        // GET: Stock/Countries/Create
+        // GET: Import/CompanySections/Create
         public IActionResult Create()
         {
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
             return View();
         }
 
-        // POST: Stock/Countries/Create
+        // POST: Import/CompanySections/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name")] Country country)
+        public async Task<IActionResult> Create([Bind("CompanyID,Name")] CompanySection companySection)
         {
             if (ModelState.IsValid)
             {
-                if (NameAlreadyTaken(country))
-                {
-                    ModelState.AddModelError(nameof(country.Name), _localizer["Name is already taken."]);
-                    return View(country);
-                }
-                _context.Add(country);
+                _context.Add(companySection);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(country);
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", companySection.CompanyID);
+            return View(companySection);
         }
 
-        // GET: Stock/Countries/Edit/5
+        // GET: Import/CompanySections/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,22 +85,23 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 return NotFound();
             }
 
-            var country = await _context.Countries.SingleOrDefaultAsync(m => m.ID == id);
-            if (country == null)
+            var companySection = await _context.CompanySections.SingleOrDefaultAsync(m => m.ID == id);
+            if (companySection == null)
             {
                 return NotFound();
             }
-            return View(country);
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", companySection.CompanyID);
+            return View(companySection);
         }
 
-        // POST: Stock/Countries/Edit/5
+        // POST: Import/CompanySections/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name")] Country country)
+        public async Task<IActionResult> Edit(int id, [Bind("CompanyID,Name")] CompanySection companySection)
         {
-            if (id != country.ID)
+            if (id != companySection.ID)
             {
                 return NotFound();
             }
@@ -108,18 +110,12 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 try
                 {
-                    if (NameAlreadyTaken(country))
-                    {
-                        ModelState.AddModelError(nameof(country.Name), _localizer["Name is already taken."]);
-                        return View(country);
-                    }
-                    _context.Update(country);
+                    _context.Update(companySection);
                     await _context.SaveChangesAsync();
-
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CountryExists(country.ID))
+                    if (!CompanySectionExists(companySection.ID))
                     {
                         return NotFound();
                     }
@@ -130,10 +126,11 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(country);
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", companySection.CompanyID);
+            return View(companySection);
         }
 
-        // GET: Stock/Countries/Delete/5
+        // GET: Import/CompanySections/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,47 +138,31 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 return NotFound();
             }
 
-            var country = await _context.Countries
+            var companySection = await _context.CompanySections
+                .Include(c => c.Company)
                 .SingleOrDefaultAsync(m => m.ID == id);
-            if (country == null)
+            if (companySection == null)
             {
                 return NotFound();
             }
 
-            return View(country);
+            return View(companySection);
         }
 
-        // POST: Stock/Countries/Delete/5
+        // POST: Import/CompanySections/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var country = await _context.Countries.SingleOrDefaultAsync(m => m.ID == id);
-            if (IsRelated(country))
-            {
-                ViewBag.Error = _localizer["Couldn't delete. The Post is already related to other entities."];
-                return View(country);
-            }
-            _context.Countries.Remove(country);
+            var companySection = await _context.CompanySections.SingleOrDefaultAsync(m => m.ID == id);
+            _context.CompanySections.Remove(companySection);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CountryExists(int id)
+        private bool CompanySectionExists(int id)
         {
-            return _context.Countries.Any(e => e.ID == id);
+            return _context.CompanySections.Any(e => e.ID == id);
         }
-
-        #region
-        private bool NameAlreadyTaken(Country model)
-        {
-            return _context.Countries.Any(f => f.Name == model.Name && f.ID != model.ID);
-        }
-
-        private bool IsRelated(Country model)
-        {
-            return _context.Articles.Any(a => a.CountryID == model.ID);
-        }
-        #endregion
     }
 }

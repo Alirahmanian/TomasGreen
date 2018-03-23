@@ -1,0 +1,67 @@
+﻿@model IEnumerable<TomasGreen.Model.Models.ArticleWarehouseBalance>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.Article)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Company)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyPackagesIn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyExtraIn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyPackagesOut)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyExtraOut)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyPackagesOnhand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtyExtraOnhand)
+            </th>   
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Article.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Company.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyPackagesIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyExtraIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyPackagesOut)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyExtraOut)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyPackagesOnhand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtyExtraOnhand)
+            </td>
+
+
+        </tr>
+}
+    </tbody>
+</table>

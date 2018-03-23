@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180323181940_PurchasedArticleWarehouseNotes")]
+    partial class PurchasedArticleWarehouseNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -865,7 +866,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime>("AddedDate");
 
-                    b.Property<int?>("ArrivedAtWarehouseID");
+                    b.Property<int>("ArrivedAtWarehouseID");
 
                     b.Property<DateTime?>("ArrivedDate");
 
@@ -1001,41 +1002,6 @@ namespace TomasGreen.Web.Migrations
                         .IsUnique();
 
                     b.ToTable("Warehouses");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.WarehouseToWarehouse", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<int>("ArticleID");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<decimal>("QtyExtra");
-
-                    b.Property<int>("QtyPackages");
-
-                    b.Property<int>("RecipientCompanyID");
-
-                    b.Property<int>("RecipientWarehouseID");
-
-                    b.Property<int>("SenderCompanyID");
-
-                    b.Property<int>("SenderWarehouseID");
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Date", "SenderWarehouseID", "RecipientWarehouseID", "ArticleID")
-                        .IsUnique();
-
-                    b.ToTable("WarehouseToWarehouses");
                 });
 
             modelBuilder.Entity("TomasGreen.Web.Models.ApplicationUser", b =>

@@ -191,7 +191,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             var article = await _context.Articles.SingleOrDefaultAsync(m => m.ID == id);
             if (IsRelated(article))
             {
-                ModelState.AddModelError("", _localizer["Couldn't delete. The post is already related to other entities."]);
+                ViewBag.Error = _localizer["Couldn't delete. The Post is already related to other entities."];
                 return View(article);
             }
             _context.Articles.Remove(article);
@@ -235,7 +235,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
         private bool IsRelated(Article model)
         {
-            return Dependencies.CheckRelatedRecords(_context, "Articles", "ArticleID", model.ID);
+            //return Dependencies.CheckRelatedRecords(_context, "Articles", "ArticleID", model.ID);
+            return _context.ArticleWarehouseBalances.Any(a => a.ArticleID == model.ID);
         }
 
         #endregion
