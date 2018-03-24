@@ -98,11 +98,9 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 if (model.Order.ID == 0)
                 {
-                    ModelState.AddModelError("", "Please save the order header before adding articles to it.");
+                    ModelState.AddModelError("", _localizer["Please save the order header before adding articles to it."]);
                     return View(model);
-
                 }
-                
             }
             if (!ModelState.IsValid)
             {
@@ -169,6 +167,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddOrderLists(model);
                                 return View(model);
                             }
+                            model.OrderDetail.Warehouse = _context.Warehouses.Where(w => w.ID == model.OrderDetail.WarehouseID).FirstOrDefault();
                             var articleInOut = new ArticleInOut
                             {
                                 ArticleID = model.OrderDetail.ArticleID,
@@ -180,7 +179,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             var result = ArticleBalance.Add(_context, articleInOut);
                             if(result.Value == false)
                             {
-                                ModelState.AddModelError("", "Couldn't save.");
+                                ModelState.AddModelError("", _localizer["Couldn't save."]);
                                 if (_hostingEnvironment.IsDevelopment())
                                 {
                                     ModelState.AddModelError("", JSonHelper.ToJSon(result));
@@ -206,7 +205,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "Couldn't save.");
+                ModelState.AddModelError("", _localizer["Couldn't save."]);
                 AddOrderLists(model);
                 return View(model);
             }

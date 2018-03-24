@@ -38,6 +38,8 @@ namespace TomasGreen.Model.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? ExpectedToArrive { get; set; }
+        public bool HasIssue { get; set; }
+        public bool Arrived { get; set; }
 
         public virtual Article Article { get; set; }
         public virtual Company Company { get; set; }

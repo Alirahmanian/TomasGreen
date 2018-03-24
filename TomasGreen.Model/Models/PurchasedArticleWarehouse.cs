@@ -36,5 +36,13 @@ namespace TomasGreen.Model.Models
         //nav
         public virtual PurchasedArticle PurchasedArticle { get; set; }
         public virtual Warehouse Warehouse { get; set; }
+
+        //
+        public bool HasIssue()
+        {
+            if (QtyPackages > QtyPackagesArrived || QtyExtra > QtyExtraArrived)
+                return true;
+            return false;
+        }
     }
 }

@@ -67,7 +67,7 @@ function LoadArticles(ArticleCategory) {
         })
     }
     else {
-        $('#OrderDetail_ArticleID').find('option:not(:first)').remove();
+       // $('#OrderDetail_ArticleID').find('option:not(:first)').remove();
         $('#OrderDetail_WarehouseID').find('option:not(:first)').remove();
     }
     
@@ -83,6 +83,8 @@ function renderArticles(element, data) {
             $ele.append($('<option/>').val(val.id).text(val.name));
         }
     )
+    if ($("#preview").text($("#input1 option").length ===1))
+        LoadWarehouses($ele);
 }
 //=======================================
 //=======================================

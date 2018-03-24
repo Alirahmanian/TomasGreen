@@ -11,7 +11,9 @@ namespace TomasGreen.Model.Models
         [Required(ErrorMessage ="Name is requierd")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]
         public string Name { get; set; }
-        public Order Orders { get; set; }
         public bool Archive { get; set; }
+        //nav.
+        public Order Orders { get; set; }
+        
     }
 }
