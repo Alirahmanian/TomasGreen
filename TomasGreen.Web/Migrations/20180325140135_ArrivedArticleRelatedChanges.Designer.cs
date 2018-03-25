@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180325140135_ArrivedArticleRelatedChanges")]
+    partial class ArrivedArticleRelatedChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -558,8 +559,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("OrderPaid");
 
-                    b.Property<int?>("OrderTransportID")
-                        .IsRequired();
+                    b.Property<int>("OrderTransportID");
 
                     b.Property<string>("OrderdBy");
 
@@ -577,7 +577,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("EmployeeID");
 
-                    b.HasIndex("OrderTransportID");
+                    b.HasIndex("OrderTransportID")
+                        .IsUnique();
 
                     b.ToTable("Orders");
                 });
@@ -1245,8 +1246,8 @@ namespace TomasGreen.Web.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TomasGreen.Model.Models.OrderTransport", "OrderTransport")
-                        .WithMany()
-                        .HasForeignKey("OrderTransportID")
+                        .WithOne("Orders")
+                        .HasForeignKey("TomasGreen.Model.Models.Order", "OrderTransportID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

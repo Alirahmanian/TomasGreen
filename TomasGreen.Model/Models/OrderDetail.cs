@@ -26,6 +26,8 @@ namespace TomasGreen.Model.Models
         [Range(0, Int32.MaxValue)]
         public decimal QtyExtra { get; set; } = 0;
 
+        public string Notes { get; set; }
+
         //nav.
         public Order Order { get; set; }
         public Article Article { get; set; }

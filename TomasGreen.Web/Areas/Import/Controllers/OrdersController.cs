@@ -168,6 +168,34 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 return View(model);
                             }
                             model.OrderDetail.Warehouse = _context.Warehouses.Where(w => w.ID == model.OrderDetail.WarehouseID).FirstOrDefault();
+                            if (model.OrderDetail.ID > 0)
+                            {
+                                //Old OrderDetail has to be added back first
+                                var savedOrderDetail = _context.OrderDetails.Where(d => d.ID == model.OrderDetail.ID).FirstOrDefault();
+                                if(savedOrderDetail != null)
+                                {
+                                    savedOrderDetail.Warehouse = _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).FirstOrDefault();
+                                    var articlsInOutForAdd = new ArticleInOut
+                                    {
+                                        ArticleID = savedOrderDetail.ArticleID,
+                                        WarehouseID = savedOrderDetail.WarehouseID,
+                                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, savedOrderDetail.Warehouse),
+                                        QtyPackagesIn = savedOrderDetail.QtyPackages,
+                                        QtyExtraIn = savedOrderDetail.QtyExtra
+                                    };
+                                    var AddResult = ArticleBalance.Add(_context, articlsInOutForAdd);
+                                    if (AddResult.Value == false)
+                                    {
+                                        ModelState.AddModelError("", _localizer["Couldn't save."]);
+                                        if (_hostingEnvironment.IsDevelopment())
+                                        {
+                                            ModelState.AddModelError("", JSonHelper.ToJSon(AddResult));
+                                        }
+                                        AddOrderLists(model);
+                                        return View(model);
+                                    }
+                                }
+                            }
                             var articleInOut = new ArticleInOut
                             {
                                 ArticleID = model.OrderDetail.ArticleID,
@@ -176,7 +204,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 QtyPackagesOut = model.OrderDetail.QtyPackages,
                                 QtyExtraOut = model.OrderDetail.QtyExtra
                             };
-                            var result = ArticleBalance.Add(_context, articleInOut);
+                            var result = ArticleBalance.Reduce(_context, articleInOut);
                             if(result.Value == false)
                             {
                                 ModelState.AddModelError("", _localizer["Couldn't save."]);

@@ -13,7 +13,7 @@ namespace TomasGreen.Model.Models
         public string Name { get; set; }
         public bool Archive { get; set; }
         //nav.
-        public Order Orders { get; set; }
+        //public Order Orders { get; set; }
         
     }
 }

@@ -18,7 +18,7 @@ using Microsoft.Extensions.Localization;
 namespace TomasGreen.Web.Areas.Import.Controllers
 {
     [Area("Import")]
-    public class ArrivedArticlesController :BaseController
+    public class ArrivedArticlesController : BaseController
     {
 
         private readonly ApplicationDbContext _context;
@@ -109,56 +109,21 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             SavedPurchasedArticleWarehouse.QtyExtraArrived = model.QtyExtraArrived;
             SavedPurchasedArticleWarehouse.Notes = model.Notes;
             SavedPurchasedArticleWarehouse.Warehouse = _context.Warehouses.Where(w => w.ID == SavedPurchasedArticleWarehouse.WarehouseID).FirstOrDefault();
-            var purchasedArticle = _context.PurchasedArticles.Where(p => p.ID == SavedPurchasedArticleWarehouse.PurchasedArticleID).FirstOrDefault();
-            if(purchasedArticle != null)
-            {
-                purchasedArticle.HasIssue = SavedPurchasedArticleWarehouse.HasIssue();
-                purchasedArticle.Arrived = true;
-                _context.Update(purchasedArticle);
-            }
-            var articleInOutForReduce = new ArticleInOut
-            {
-                ArticleID = SavedPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
-                WarehouseID = SavedPurchasedArticleWarehouse.WarehouseID,
-                CompanyID = ArticleBalance.GetWarehouseCompany(_context, SavedPurchasedArticleWarehouse.Warehouse),
-                QtyPackagesOut = SavedPurchasedArticleWarehouse.QtyPackages,
-                QtyExtraOut = SavedPurchasedArticleWarehouse.QtyExtra
-            };
-            var reducedResult = ArticleBalance.Reduce(_context, articleInOutForReduce);
-            if (result.Value == false)
-            {
-                ModelState.AddModelError("", "Couldn't save.");
-                if (_hostingEnvironment.IsDevelopment())
-                {
-                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
-                }
-                return View(model);
-
-            }
-            var arrivedWarehouse = _context.Warehouses.Where(w => w.ID == SavedPurchasedArticleWarehouse.ArrivedAtWarehouseID).FirstOrDefault();
-            var articleInOut = new ArticleInOut
-            {
-                ArticleID = SavedPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
-                WarehouseID = (int)SavedPurchasedArticleWarehouse.ArrivedAtWarehouseID,
-                CompanyID = ArticleBalance.GetWarehouseCompany(_context, arrivedWarehouse),
-                QtyPackagesIn = SavedPurchasedArticleWarehouse.QtyPackagesArrived,
-                QtyExtraIn = SavedPurchasedArticleWarehouse.QtyExtraArrived
-            };
-            var addedResult = ArticleBalance.Add(_context, articleInOut);
-            if (result.Value == false)
-            {
-                ModelState.AddModelError("", "Couldn't save.");
-                if (_hostingEnvironment.IsDevelopment())
-                {
-                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
-                }
-                return View(model);
-
-            }
+           
+           
             //Shift order's Warehouse 
             var shiftWarehouseResult = ShiftOrdersWarehouse(SavedPurchasedArticleWarehouse);
-            _context.Update(SavedPurchasedArticleWarehouse);
-            await _context.SaveChangesAsync();
+            if(!shiftWarehouseResult.Value)
+            {
+                ModelState.AddModelError("", _localizer["Couldn't save."]);
+                if (_hostingEnvironment.IsDevelopment())
+                {
+                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                }
+                return View(model);
+            }
+           // _context.Update(SavedPurchasedArticleWarehouse);
+           // await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -175,27 +140,164 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             var result = new PropertyValidation { Value = true, Action = "ArrivedArticles|ShiftOrdersWarehouse", Model = "PurchasedArticleWarehouse", Property = "", Message = "" };
             try
             {
-                var purchasedArticle = _context.PurchasedArticles.Where(p => p.ID == purchasedArticleWarehouse.PurchasedArticleID).FirstOrDefault();
-                var orderDetails = _context.OrderDetails.Include(d => d.Order).Where(o => o.Order.LoadedDate == null)
-                    .Where(o => o.Order.OrderDate >= purchasedArticle.Date && o.Order.OrderDate <= purchasedArticleWarehouse.AddedDate)
-                    .Where(d => d.ArticleID == purchasedArticle.ArticleID && d.WarehouseID == purchasedArticleWarehouse.WarehouseID);
-                var totalQtyPackages = 0;
-                decimal totalQtyExtra = 0;
-                foreach (var item in orderDetails)
+                var isOnthewayWarehouse = _context.Warehouses.Any(w => w.IsOnTheWay == true && w.ID == purchasedArticleWarehouse.WarehouseID);
+                if(!isOnthewayWarehouse)
                 {
-                    totalQtyPackages += item.QtyPackages;
-                    totalQtyExtra += item.QtyExtra;
-                }
-                if(totalQtyPackages > purchasedArticleWarehouse.QtyPackagesArrived || totalQtyExtra > purchasedArticleWarehouse.QtyExtraArrived)
-                {
-                    result.Value = false; result.Property = "QtyPackagesArrived"; result.Message = "Arrived article is less than Orderd.";
+                    result.Value = true;
                     return result;
                 }
-                foreach (var item in orderDetails)
+               
+               
+                var purchasedArticle = _context.PurchasedArticles.Where(p => p.ID == purchasedArticleWarehouse.PurchasedArticleID).FirstOrDefault();
+                var orderDetails = _context.OrderDetails.Include(d => d.Order).Where(o => o.Order.LoadedDate == null)
+                    .Where(o => o.Order.OrderDate >= purchasedArticle.Date && o.Order.OrderDate <= purchasedArticleWarehouse.ArrivedDate)
+                    .Where(d => d.ArticleID == purchasedArticle.ArticleID && d.WarehouseID == purchasedArticleWarehouse.WarehouseID)
+                    .OrderBy(d => d.Order.OrderDate).ToList();
+                var QtyPackagesArrived = purchasedArticleWarehouse.QtyPackagesArrived;
+                decimal QtyExtraArrived = purchasedArticleWarehouse.QtyExtraArrived;
+                // var totalQtyPackagesToBeShifted = 0;
+                // decimal totalQtyExtraToBeShifted = 0;
+                //foreach (var item in orderDetails)
+                //{
+                //    totalQtyPackages += item.QtyPackages;
+                //    totalQtyExtra += item.QtyExtra;
+                //}
+                //if(totalQtyPackages > purchasedArticleWarehouse.QtyPackagesArrived || totalQtyExtra > purchasedArticleWarehouse.QtyExtraArrived)
+                //{
+                //    result.Value = false; result.Property = "QtyPackagesArrived"; result.Message = "Arrived article is less than Orderd.";
+                //    return result;
+                //}
+                using (var dbContextTransaction = _context.Database.BeginTransaction())
                 {
-                    item.WarehouseID = (int)purchasedArticleWarehouse.ArrivedAtWarehouseID;
-                    _context.Update(item);
+                    foreach (var orderDetail in orderDetails)
+                    {
+                        if (QtyPackagesArrived > 0 || QtyExtraArrived > 0)
+                        {
+                            if ((QtyPackagesArrived - orderDetail.QtyPackages) >= 0 && (QtyExtraArrived - orderDetail.QtyExtra) >= 0)
+                            {
+                                // no issue
+                                QtyPackagesArrived -= orderDetail.QtyPackages;
+                                QtyExtraArrived -= orderDetail.QtyExtra;
+                                orderDetail.WarehouseID = (int)purchasedArticleWarehouse.ArrivedAtWarehouseID;
+                                _context.Update(orderDetail);
+                            }
+                            else
+                            {
+                                orderDetail.Notes = $"Arrived article doesn't cover this row with orderd packages:{orderDetail.QtyPackages} and Extra: {orderDetail.QtyExtra} .";
+                                var order = _context.Orders.Where(o => o.ID == orderDetail.OrderID).FirstOrDefault();
+                                if (order != null)
+                                {
+                                    order.HasIssue = true;
+                                    if (orderDetail.QtyPackages > 0)
+                                    {
+                                        if((QtyPackagesArrived - orderDetail.QtyPackages) >= 0)
+                                        {
+                                            QtyPackagesArrived -= orderDetail.QtyPackages;
+                                        }
+                                        else
+                                        {
+                                            orderDetail.QtyPackages = QtyPackagesArrived;
+                                            QtyPackagesArrived = 0;
+                                        }
+                                    }
+                                    if (orderDetail.QtyExtra > 0)
+                                    {
+                                        if((QtyExtraArrived - orderDetail.QtyExtra) >= 0)
+                                        {
+                                            QtyExtraArrived -= orderDetail.QtyExtra;
+                                        }
+                                        else
+                                        {
+                                            orderDetail.QtyExtra = QtyExtraArrived;
+                                            QtyExtraArrived = 0;
+                                        }
+                                       
+                                    }
+                                    orderDetail.WarehouseID = (int)purchasedArticleWarehouse.ArrivedAtWarehouseID;
+                                    var totalWeightOrPackage = OrderValidation.OrderDetailTotalWeightOrPackage(_context, orderDetail);
+                                    orderDetail.Extended_Price = orderDetail.Price * totalWeightOrPackage;
+                                    _context.Update(orderDetail);
+                                    _context.Update(order);
+                                }
+                            }
+                        }
+                    }
+                    purchasedArticle.HasIssue = purchasedArticleWarehouse.HasIssue();
+                    purchasedArticle.Arrived = true;
+                    _context.Update(purchasedArticle);
+                    
+                    //Adjust On the way warehouse
+                    var onthewayWarehouse = _context.Warehouses.Where(w => w.ID == purchasedArticleWarehouse.WarehouseID).FirstOrDefault();
+                    var articleInOutForUndoReduce = new ArticleInOut
+                    {
+                        ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
+                        WarehouseID = (int)purchasedArticleWarehouse.WarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, onthewayWarehouse),
+                        QtyPackagesOut = (purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
+                        QtyExtraOut = (purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
+                    };
+                    var UndoReduceResult = ArticleBalance.UndoReduce(_context, articleInOutForUndoReduce);
+                    if (!UndoReduceResult.Value)
+                    {
+                        result.Value = false; result.Property = UndoReduceResult.Property; result.Message = UndoReduceResult.Message;
+                        return result;
+                    }
+                    _context.SaveChanges();
+                    var articleInOutForUndoAdd = new ArticleInOut
+                    {
+                        ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
+                        WarehouseID = (int)purchasedArticleWarehouse.WarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, onthewayWarehouse),
+                        QtyPackagesIn = purchasedArticleWarehouse.QtyPackages,
+                        QtyExtraIn = purchasedArticleWarehouse.QtyExtra
+                    };
+                    var UndoAddResult = ArticleBalance.UndoAdd(_context, articleInOutForUndoAdd);
+                    if (!UndoAddResult.Value)
+                    {
+                        result.Value = false; result.Property = UndoAddResult.Property; result.Message = UndoAddResult.Message;
+                        return result;
+                    }
+                    _context.SaveChanges();
+                    //Add or update Arrived warehouse
+                    var arrivedWarehouse = _context.Warehouses.Where(w => w.ID == purchasedArticleWarehouse.ArrivedAtWarehouseID).FirstOrDefault();
+                    var articleInOutForAdd = new ArticleInOut
+                    {
+                        ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
+                        WarehouseID = (int)purchasedArticleWarehouse.ArrivedAtWarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, arrivedWarehouse),
+                        QtyPackagesIn = purchasedArticleWarehouse.QtyPackagesArrived,
+                        QtyExtraIn = purchasedArticleWarehouse.QtyExtraArrived
+                    };
+                    var AddResult = ArticleBalance.Add(_context, articleInOutForAdd);
+                    if (!AddResult.Value)
+                    {
+                        result.Value = false; result.Property = AddResult.Property; result.Message = AddResult.Message;
+                        return result;
+                    }
+                    _context.SaveChanges();
+                    var articleInOutForReduce = new ArticleInOut
+                    {
+                        ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
+                        WarehouseID = (int)purchasedArticleWarehouse.ArrivedAtWarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, arrivedWarehouse),
+                        QtyPackagesOut = (purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
+                        QtyExtraOut = (purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
+                    };
+                    var ReduceResult = ArticleBalance.Reduce(_context, articleInOutForReduce);
+                    if (!ReduceResult.Value)
+                    {
+                        result.Value = false; result.Property = ReduceResult.Property; result.Message = ReduceResult.Message;
+                        return result;
+                    }
+                    _context.SaveChanges();
+                    //if (QtyPackagesArrived > 0 || QtyExtraArrived > 0)
+                    //{
+
+                    //}
+                    dbContextTransaction.Commit();
                 }
+
+
 
             }
             catch (Exception exception)

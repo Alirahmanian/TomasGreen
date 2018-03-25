@@ -127,9 +127,9 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        public static PropertyValidation Undo_Add(ApplicationDbContext _context, ArticleInOut model)
+        public static PropertyValidation UndoAdd(ApplicationDbContext _context, ArticleInOut model)
         {
-            var result = new PropertyValidation(true, "Undo_Add", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "UndoAdd", "ArticleWarehouseBalance", "", "");
             try
             {
                
@@ -186,7 +186,7 @@ namespace TomasGreen.Web.Balances
 
         public static PropertyValidation Reduce(ApplicationDbContext _context,  ArticleInOut model)
         {
-            var result = new PropertyValidation(true, "Undo_Add", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "UndoAdd", "ArticleWarehouseBalance", "", "");
             try
             {
                 var article = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault();
@@ -226,9 +226,9 @@ namespace TomasGreen.Web.Balances
             return result;
         }
 
-        public static PropertyValidation Undo_Reduce(ApplicationDbContext _context, ArticleInOut model)
+        public static PropertyValidation UndoReduce(ApplicationDbContext _context, ArticleInOut model)
         {
-            var result = new PropertyValidation(true, "RemoveOrderDetailFromBalance", "ArticleWarehouseBalance", "", "");
+            var result = new PropertyValidation(true, "UndoReduce", "ArticleWarehouseBalance", "", "");
             try
             {
                 var article = _context.Articles.Where(a => a.ID == model.ArticleID).FirstOrDefault();

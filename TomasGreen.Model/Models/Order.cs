@@ -18,7 +18,7 @@ namespace TomasGreen.Model.Models
         public int EmployeeID { get; set; }
         [Display(Name = "Transport")]
         [Required(ErrorMessage = "Please choose a transport type.")]
-        public int OrderTransportID { get; set; }
+        public int? OrderTransportID { get; set; }
         public int AmountArticle { get; set; } = 0;
         public int AmountReserve { get; set; } = 0;
        // [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
@@ -59,8 +59,10 @@ namespace TomasGreen.Model.Models
         public bool Confirmed { get; set; } = false;
         public bool Archive { get; set; } = false;
         public Guid? Guid { get; set; }
+        public bool HasIssue { get; set; }
+       
 
-
+        //nav.
         public Company Company { get; set; }
         public Employee Employee { get; set; }
         public OrderTransport OrderTransport { get; set; }
