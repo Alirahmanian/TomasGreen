@@ -9,58 +9,40 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PurchasedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Warehouse)
-            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.Article.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Company.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ContainerNumber)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ExpectedToArrive)
+                @Html.DisplayNameFor(model => model.Company.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PurchasedArticleWarehouse.QtyPackages)
+                @Html.DisplayNameFor(model => model.ExpectedToArrive)
             </th>
-
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PurchasedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Warehouse.Name)
-            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Article.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Company.Name)
             </td>
             <th>
                 @Html.DisplayFor(model => item.ContainerNumber)
             </th>
             <td>
+                @Html.DisplayFor(modelItem => item.Company.Name)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.ExpectedToArrive)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PurchasedArticleWarehouse.QtyPackages)
-            </td>
-
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PurchasedArticleWarehouse.ID">Edit</a> |
+                <a asp-action="Edit" asp-route-id="@item.PurchasedArticleWarehouse.ID">Receive</a> 
             </td>
         </tr>
 }

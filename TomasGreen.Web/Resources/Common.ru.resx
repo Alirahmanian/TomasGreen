@@ -252,6 +252,9 @@
   <data name="Purchase" xml:space="preserve">
     <value>покупка</value>
   </data>
+  <data name="Receive" xml:space="preserve">
+    <value>получить</value>
+  </data>
   <data name="Return to list" xml:space="preserve">
     <value>вернуться к списку</value>
   </data>

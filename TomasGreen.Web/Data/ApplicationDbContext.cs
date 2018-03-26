@@ -29,7 +29,6 @@ namespace TomasGreen.Web.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<OrderTransport> OrderTranports { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<PurchasedArticle> PurchasedArticles { get; set; }
         public DbSet<PurchasedArticleWarehouse> PurchasedArticleWarehouses { get; set; }
@@ -121,9 +120,6 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Warehouse>()
            .HasIndex(p => p.Name)
            .IsUnique(true);
-            modelBuilder.Entity<OrderTransport>()
-            .HasIndex(p => p.Name)
-            .IsUnique(true);
             modelBuilder.Entity<RoastingPlan>()
              .HasIndex(p => new { p.ArticleID, p.Date })
              .IsUnique(true);

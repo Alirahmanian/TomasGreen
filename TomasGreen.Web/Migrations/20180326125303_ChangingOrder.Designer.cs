@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180326125303_ChangingOrder")]
+    partial class ChangingOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -524,7 +525,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime>("AddedDate");
 
+                    b.Property<int>("AmountArticle");
+
                     b.Property<decimal?>("AmountPaid");
+
+                    b.Property<int>("AmountReserve");
 
                     b.Property<bool>("Archive");
 
@@ -538,17 +543,24 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("EmployeeID");
 
+                    b.Property<bool>("ForcedPaid");
+
                     b.Property<Guid?>("Guid");
 
                     b.Property<bool>("HasIssue");
 
                     b.Property<DateTime?>("LoadedDate");
 
+                    b.Property<DateTime?>("LoadingDate");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<DateTime>("OrderDate");
 
                     b.Property<bool>("OrderPaid");
+
+                    b.Property<int?>("OrderTransportID")
+                        .IsRequired();
 
                     b.Property<string>("OrderdBy");
 
@@ -560,8 +572,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal?>("TotalPrice");
 
-                    b.Property<decimal?>("TransportFee");
-
                     b.Property<string>("UserName");
 
                     b.HasKey("ID");
@@ -569,6 +579,8 @@ namespace TomasGreen.Web.Migrations
                     b.HasIndex("CompanyID");
 
                     b.HasIndex("EmployeeID");
+
+                    b.HasIndex("OrderTransportID");
 
                     b.ToTable("Orders");
                 });
@@ -610,6 +622,31 @@ namespace TomasGreen.Web.Migrations
                         .IsUnique();
 
                     b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("TomasGreen.Model.Models.OrderTransport", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddedDate");
+
+                    b.Property<bool>("Archive");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("UserName");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("OrderTranports");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.PackagingCategory", b =>
@@ -1208,6 +1245,11 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Employee", "Employee")
                         .WithMany("Orders")
                         .HasForeignKey("EmployeeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.OrderTransport", "OrderTransport")
+                        .WithMany()
+                        .HasForeignKey("OrderTransportID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

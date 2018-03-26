@@ -126,6 +126,7 @@ function renderWarehouses(element, data) {
             $ele.append($('<option/>').val(val.id).text(val.name + val.articlesonhand));
         }
     )
+    LoadArticleWarehoseBalance($("#ArticleWarehouseBalance"))
 }
 //=======================================
 //=======================================

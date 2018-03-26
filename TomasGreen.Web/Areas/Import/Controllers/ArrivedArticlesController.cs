@@ -155,8 +155,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     .OrderBy(d => d.Order.OrderDate).ToList();
                 var QtyPackagesArrived = purchasedArticleWarehouse.QtyPackagesArrived;
                 decimal QtyExtraArrived = purchasedArticleWarehouse.QtyExtraArrived;
-                // var totalQtyPackagesToBeShifted = 0;
-                // decimal totalQtyExtraToBeShifted = 0;
+                 var totalQtyPackagesToBeShifted = 0;
+                 decimal totalQtyExtraToBeShifted = 0;
                 //foreach (var item in orderDetails)
                 //{
                 //    totalQtyPackages += item.QtyPackages;
@@ -173,6 +173,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     {
                         if (QtyPackagesArrived > 0 || QtyExtraArrived > 0)
                         {
+                            totalQtyPackagesToBeShifted += orderDetail.QtyPackages;
+                            totalQtyExtraToBeShifted += orderDetail.QtyExtra;
                             if ((QtyPackagesArrived - orderDetail.QtyPackages) >= 0 && (QtyExtraArrived - orderDetail.QtyExtra) >= 0)
                             {
                                 // no issue
@@ -183,14 +185,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             }
                             else
                             {
-                                orderDetail.Notes = $"Arrived article doesn't cover this row with orderd packages:{orderDetail.QtyPackages} and Extra: {orderDetail.QtyExtra} .";
+                                orderDetail.Notes = $"Arrived article doesn't cover this row with ordered packages:{orderDetail.QtyPackages} and Extra: {orderDetail.QtyExtra} .";
                                 var order = _context.Orders.Where(o => o.ID == orderDetail.OrderID).FirstOrDefault();
                                 if (order != null)
                                 {
                                     order.HasIssue = true;
                                     if (orderDetail.QtyPackages > 0)
                                     {
-                                        if((QtyPackagesArrived - orderDetail.QtyPackages) >= 0)
+                                        if ((QtyPackagesArrived - orderDetail.QtyPackages) >= 0)
                                         {
                                             QtyPackagesArrived -= orderDetail.QtyPackages;
                                         }
@@ -233,8 +235,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
                         WarehouseID = (int)purchasedArticleWarehouse.WarehouseID,
                         CompanyID = ArticleBalance.GetWarehouseCompany(_context, onthewayWarehouse),
-                        QtyPackagesOut = (purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
-                        QtyExtraOut = (purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
+                        QtyPackagesOut = totalQtyPackagesToBeShifted, //(purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
+                        QtyExtraOut = totalQtyExtraToBeShifted //(purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
                     };
                     var UndoReduceResult = ArticleBalance.UndoReduce(_context, articleInOutForUndoReduce);
                     if (!UndoReduceResult.Value)

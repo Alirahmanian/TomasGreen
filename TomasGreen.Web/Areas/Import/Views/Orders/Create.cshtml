@@ -18,6 +18,7 @@
     <form asp-action="Create">
         <input asp-for="@Model.Order.ID" class="form-control" style="display:none;"/>
         <div asp-validation-summary="All" class="text-danger"></div>
+        <div>@ViewBag.ErrorMessage</div>
         <div class="col-md-12">
             <div class="col-md-3">
                 <div class="form-group">
@@ -76,14 +77,11 @@
                     <div><br /></div>
                     <div id="OrdedDetail_Mess"></div>
                     <div>
-                        @{
+                       @{
                             @if (Model.Order.ID > 0 && Model.Order.OrderDetails.Count > 0)
                             {
-                                @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Import.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail.ArticleID, warehousId = Model.OrderDetail.WarehouseID })
-
-
+                                @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Import.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail?.ArticleID, warehousId = Model.OrderDetail?.WarehouseID })
                             }
-
                         }
                     </div>
                     <div id="ArticleWarehouseBalance"></div>
@@ -159,21 +157,21 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.Order.PaidDate" class="control-label"></label>
-                                <input asp-for="@Model.Order.PaidDate" class="form-control" />
+                                <input asp-for="@Model.Order.PaidDate" class="form-control" disabled />
                                 <span asp-validation-for="@Model.Order.PaidDate" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.Order.AmountPaid" class="control-label"></label>
-                                <input asp-for="@Model.Order.AmountPaid" class="form-control" />
+                                <input asp-for="@Model.Order.AmountPaid" class="form-control" disabled />
                                 <span asp-validation-for="@Model.Order.AmountPaid" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.Order.PaymentWarning" class="control-label"></label>
-                                <input asp-for="@Model.Order.PaymentWarning" class="form-control" />
+                                <textarea asp-for="@Model.Order.PaymentWarning" class="form-control"></textarea>
                                 <span asp-validation-for="@Model.Order.PaymentWarning" class="text-danger"></span>
                             </div>
                         </div>
@@ -185,15 +183,6 @@
                                 <div class="checkbox">
                                     <label>
                                         <input asp-for="@Model.Order.OrderPaid" /> @Html.DisplayNameFor(model => model.Order.OrderPaid)
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="checkbox">
-                                    <label>
-                                        <input asp-for="@Model.Order.ForcedPaid" /> @Html.DisplayNameFor(model => model.Order.ForcedPaid)
                                     </label>
                                 </div>
                             </div>
@@ -217,21 +206,7 @@
                 <div class="tab-pane fade in " id="Section3" role="tabpanel">
                     <div><br /></div>
                     <div class="col-md-12">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.OrderTransportID" class="control-label"></label>
-                                <select asp-for="@Model.Order.OrderTransportID" class="form-control" asp-items="ViewBag.OrderTransportID">
-                                    <option>Select</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.LoadingDate" class="control-label"></label>
-                                <input asp-for="@Model.Order.LoadingDate" class="form-control" />
-                                <span asp-validation-for="@Model.Order.LoadingDate" class="text-danger"></span>
-                            </div>
-                        </div>
+                       
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.Order.LoadedDate" class="control-label"></label>
@@ -257,7 +232,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label asp-for="@Model.Order.EmployeeID" class="control-label"></label>
+                                <label asp-for="@Model.Order.EmployeeID" class="control-label">Manager</label>
                                 <select asp-for="@Model.Order.EmployeeID" class="form-control" asp-items="ViewBag.EmployeeID">
                                     <option>Select</option>
                                 </select>
@@ -267,30 +242,18 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.Order.Coments" class="control-label"></label>
-                                <input asp-for="@Model.Order.Coments" class="form-control" />
+                                <textarea asp-for="@Model.Order.Coments" class="form-control"></textarea>
                                 <span asp-validation-for="@Model.Order.Coments" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.AmountArticle" class="control-label"></label>
-                                <input asp-for="@Model.Order.AmountArticle" class="form-control" />
-                                <span asp-validation-for="@Model.Order.AmountArticle" class="text-danger"></span>
-                            </div>
-                        </div>
+                        
                     </div>
                     <div class="col-md-12">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.AmountReserve" class="control-label"></label>
-                                <input asp-for="@Model.Order.AmountReserve" class="form-control" />
-                                <span asp-validation-for="@Model.Order.AmountReserve" class="text-danger"></span>
-                            </div>
-                        </div>
+                        
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.Order.TotalPrice" class="control-label"></label>
-                                <input asp-for="@Model.Order.TotalPrice" class="form-control" />
+                                <input asp-for="@Model.Order.TotalPrice" class="form-control" disabled />
                                 <span asp-validation-for="@Model.Order.TotalPrice" class="text-danger"></span>
                             </div>
                         </div>

@@ -16,14 +16,12 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Employee")]
         [Required(ErrorMessage = "Please choose an employee.")]
         public int EmployeeID { get; set; }
-        [Display(Name = "Transport")]
-        [Required(ErrorMessage = "Please choose a transport type.")]
-        public int? OrderTransportID { get; set; }
-        public int AmountArticle { get; set; } = 0;
-        public int AmountReserve { get; set; } = 0;
-       // [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Transport fee")]
+        public decimal? TransportFee { get; set; } = 0;
+      
+        // [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total price")]
-        public decimal? TotalPrice { get { return GetTotalPrice(); } } 
+        public decimal? TotalPrice { get; set; } = 0;
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Order date")]
@@ -36,10 +34,7 @@ namespace TomasGreen.Model.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Paid date")]
         public DateTime? PaidDate { get; set; }
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Loading date")]
-        public DateTime? LoadingDate { get; set; }
+        
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Loaded date")]
@@ -51,8 +46,7 @@ namespace TomasGreen.Model.Models
         public string OrderdBy { get; set; }
         [Display(Name = "payment notes")]
         public string PaymentWarning { get; set; }
-        [Display(Name = "Forced date")]
-        public bool ForcedPaid { get; set; } = false;
+       
         [Display(Name = "Order is paid")]
         public bool OrderPaid { get; set; } = false;
         public bool Cash { get; set; } = false;
@@ -60,17 +54,13 @@ namespace TomasGreen.Model.Models
         public bool Archive { get; set; } = false;
         public Guid? Guid { get; set; }
         public bool HasIssue { get; set; }
-       
 
         //nav.
         public Company Company { get; set; }
         public Employee Employee { get; set; }
-        public OrderTransport OrderTransport { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
 
-        
-
-        private decimal GetTotalPrice()
+        public decimal GetTotalPrice()
         {
             decimal result = 0;
             foreach(var orderdetail in OrderDetails)

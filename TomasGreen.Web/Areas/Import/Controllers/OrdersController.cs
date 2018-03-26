@@ -68,19 +68,16 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 if(model.Order != null)
                 {
                     model.OrderDetail.OrderID = model.Order.ID;
-                    
                 }
             }
             else
             {
                 model.Order = new Order();
                 model.Order.OrderDate = DateTime.Today;
-                
             }
            
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
             ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
             ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
            // ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name");
            // ViewData["WarehouseID"] = new SelectList(_context.Warehouses, "ID", "Name");
@@ -94,7 +91,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SaveOrderViewModel model, string SaveOrder, string AddOrderDetail)
         {
-            if (!string.IsNullOrWhiteSpace(AddOrderDetail))
+            if (!string.IsNullOrWhiteSpace(AddOrderDetail) )
             {
                 if (model.Order.ID == 0)
                 {
@@ -102,6 +99,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     return View(model);
                 }
             }
+            
             if (!ModelState.IsValid)
             {
                 AddOrderLists(model);
@@ -149,7 +147,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         {
                             //var articlePackageWeight = _context.Articles.Where(a => a.ID == model.OrderDetail.ArticleID).FirstOrDefault()?.PackageWeight ?? 0;
                             //var totalWeight = (model.OrderDetail.QtyBoxes * articlePackageWeight) + (model.OrderDetail.QtyReserveBoxes * articlePackageWeight) + model.OrderDetail.QtyKg;
-                            
+
                             var totalWeightOrPackage = OrderValidation.OrderDetailTotalWeightOrPackage(_context, model.OrderDetail);
                             model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeightOrPackage;
                             if(model.OrderDetail.OrderID == 0)
@@ -174,7 +172,9 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 var savedOrderDetail = _context.OrderDetails.Where(d => d.ID == model.OrderDetail.ID).FirstOrDefault();
                                 if(savedOrderDetail != null)
                                 {
+                                    model.Order.TotalPrice -= (model.Order.TotalPrice - model.OrderDetail.Extended_Price) > 0 ? model.OrderDetail.Extended_Price : 0;
                                     savedOrderDetail.Warehouse = _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).FirstOrDefault();
+                                    
                                     var articlsInOutForAdd = new ArticleInOut
                                     {
                                         ArticleID = savedOrderDetail.ArticleID,
@@ -215,7 +215,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddOrderLists(model);
                                 return View(model);
                             }
+
                             _context.OrderDetails.Add(model.OrderDetail);
+                            model.Order.TotalPrice += model.OrderDetail.Extended_Price;
+                            _context.Update(model.Order);
                             await _context.SaveChangesAsync();
 
                             AddOrderLists(model);
@@ -242,7 +245,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: Sales/Orders/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditRow(int? id)
         {
             if (id == null)
             {
@@ -258,59 +261,44 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             return View(order);
         }
 
-        // POST: Sales/Orders/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,AddedDate,CompanyID,EmpoyeeID,AmountArticle,AmountReserve,TotalPrice,OrderDate,PaymentDate,PaidDate,LoadingDate,LoadedDate,AmountPaid,Coments,OrderdBy,PaymentWarning,ForcedPaid,OrderPaid,Cash")] Order order)
-        {
-            if (id != order.ID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrderExists(order.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", order.CompanyID);
-            return View(order);
-        }
-
         // GET: Sales/Orders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeleteRow(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.Company)
-                .SingleOrDefaultAsync(m => m.ID == id);
-            if (order == null)
+            var orderDetail = await _context.OrderDetails.Include(o => o.Order).SingleOrDefaultAsync(m => m.ID == id);
+            if (orderDetail == null)
             {
                 return NotFound();
             }
-
-            return View(order);
+            var orderId = orderDetail.OrderID;
+            orderDetail.Order.TotalPrice -= (orderDetail.Order.TotalPrice - orderDetail.Extended_Price) > 0 ? orderDetail.Extended_Price : 0;
+            var articleInOutForUndoReduce = new ArticleInOut
+            {
+                ArticleID = orderDetail.ArticleID,
+                WarehouseID = orderDetail.WarehouseID,
+                CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == orderDetail.WarehouseID).FirstOrDefault()),
+                QtyPackagesOut = orderDetail.QtyPackages,
+                QtyExtraOut = orderDetail.QtyExtra
+            };
+            var UndoReduceResult = ArticleBalance.UndoReduce(_context, articleInOutForUndoReduce);
+            if (!UndoReduceResult.Value)
+            {
+                ModelState.AddModelError("", _localizer["Couldn't delete."]);
+                if (_hostingEnvironment.IsDevelopment())
+                {
+                    ModelState.AddModelError("", JSonHelper.ToJSon(UndoReduceResult));
+                }
+                ViewBag.ErrorMessage = _localizer["Couldn't delete."];
+                return RedirectToAction("Create", orderId);
+            }
+            _context.Update(orderDetail.Order);
+            _context.Remove(orderDetail);
+            _context.SaveChanges();
+            return RedirectToAction("Create", orderId);
         }
 
         // POST: Sales/Orders/Delete/5
@@ -333,7 +321,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         {
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
             ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-            ViewData["OrderTransportID"] = new SelectList(_context.OrderTranports, "ID", "Name");
             if(model.Order.ID > 0)
             {
                 if (model.ArticleCategory != null)
@@ -380,7 +367,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
         public JsonResult GetWarehousesByArticleID(int articleId)
         {
-            var warehouses= (from aw in _context.ArticleWarehouseBalances where aw.ArticleID == articleId
+            var warehouses= (from aw in _context.ArticleWarehouseBalances where aw.ArticleID == articleId && (aw.QtyExtraOnhand > 0 || aw.QtyPackagesOnhand > 0)
                                  join a in _context.Articles on aw.ArticleID equals a.ID
                                  join w in _context.Warehouses on aw.WarehouseID equals w.ID
                                  orderby w.Name
