@@ -1,7 +1,9 @@
-﻿@model TomasGreen.Model.Models.Company
+﻿@inject TomasGreen.Web.CustomLocalizer localizer
+
+@model TomasGreen.Model.Models.Company
 
 <div>
-    <h4>Company</h4>
+    <h4>@localizer["Customer"]</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -23,52 +25,16 @@
             @Html.DisplayFor(model => model.Ruble)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Discount)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Discount)
-        </dd>
-        <dt>
             @Html.DisplayNameFor(model => model.Purchases)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Purchases)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.SouldToUs)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.SouldToUs)
-        </dd>
-        <dt>
             @Html.DisplayNameFor(model => model.Paid)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Paid)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Received)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Received)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.LastBalance)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.LastBalance)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.LastBalanceDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.LastBalanceDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Locked)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Locked)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.CreditReceived)

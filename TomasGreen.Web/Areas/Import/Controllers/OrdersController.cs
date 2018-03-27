@@ -93,9 +93,11 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         {
             if (!string.IsNullOrWhiteSpace(AddOrderDetail) )
             {
+                
                 if (model.Order.ID == 0)
                 {
                     ModelState.AddModelError("", _localizer["Please save the order header before adding articles to it."]);
+                    AddOrderLists(model);
                     return View(model);
                 }
             }
@@ -127,6 +129,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     {
                         model.Order = savedOrder;
                         AddOrderLists(model);
+                        ViewBag.OrderID = model.Order.ID;//savedOrder.ID;
                         return View(model);
                     }
                     else
@@ -319,13 +322,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
 
         private void AddOrderLists(SaveOrderViewModel model)
         {
-            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order.CompanyID);
-            ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-            if(model.Order.ID > 0)
+            ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order?.CompanyID);
+            ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName", model.Order?.EmployeeID);
+            ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name", model.ArticleCategory?.ID);
+            if (model.Order.ID > 0)
             {
                 if (model.ArticleCategory != null)
                 {
-                    ViewData["ArticleID"] = new SelectList(_context.Articles.Where(a => a.ArticleCategoryID == model.ArticleCategory.ID), "ID", "Name");
+                    ViewData["ArticleID"] = new SelectList(_context.Articles.Where(a => a.ArticleCategoryID == model.ArticleCategory.ID), "ID", "Name", model.OrderDetail?.ArticleID);
                 }
                 if (model.OrderDetail != null && model.OrderDetail.ArticleID != 0)
                 {
@@ -340,7 +344,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                                                   Name = w.Name,
                                                                   Articlesonhand = _localizer["[Package"] + ":" + aw.QtyPackagesOnhand.ToString() + ", " + _localizer["Extra"] + ": " + aw.QtyExtraOnhand.ToString() + "]"
                                                               }
-                                    ), "ID", "Name");
+                                    ), "ID", "Name", model.OrderDetail.WarehouseID);
                 }
             }
             

@@ -20,7 +20,7 @@
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top nav-bg-green nav-text-black">
-        <div class="container">
+        <div class="container leftMargin">
             <div class="nav-tabs">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -90,7 +90,7 @@
     
 
 
-    <div class="container body-content">
+    <div class="container leftMargin body-content">
         @RenderBody()
 
 
@@ -115,5 +115,6 @@
             <script src="~/js/site.min.js" asp-append-version="true"></script>
         </environment>
         @RenderSection("scripts", required: false)
+   </div>
 </body>
 </html>

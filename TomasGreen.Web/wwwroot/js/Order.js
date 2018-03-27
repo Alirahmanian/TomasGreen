@@ -2,6 +2,7 @@
 //=======================================
 //=======================================
 function LoadArticleCategories(element) {
+    $("#ArticleWarehouseBalance").text('');
     if (ArticleCategories.length === 0) {
         var urlWithLang = "Import/Orders/GetArticleCategories";
         if (window.location.href.indexOf('/en/') !== -1) {
@@ -31,6 +32,7 @@ function LoadArticleCategories(element) {
 //=======================================
 //=======================================
 function renderArticleCategories(element) {
+    $("#ArticleWarehouseBalance").text('');
     var $ele = $(element);
     $ele.empty();
    // $ele.append($('<option/>').val('0').text('Select'));
@@ -43,6 +45,7 @@ function renderArticleCategories(element) {
 //=======================================
 //=======================================
 function LoadArticles(ArticleCategory) {
+    $("#ArticleWarehouseBalance").text('');
     if ($(ArticleCategory).val() !== "0" && $(ArticleCategory).val() !== "Select") {
         var urlWithLang = "Import/Orders/GetArticlesByCategoryId";
         if (window.location.href.indexOf('/en/') !== -1) {
@@ -111,28 +114,35 @@ function LoadWarehouses(Article) {
     }
     else {
 
-        $('#OrderDetail_WarehouseID').find('option:not(:first)').remove();
+       // $('#OrderDetail_WarehouseID').find('option:not(:first)').remove();
     }
-   
 }
 //=======================================
 //=======================================
 function renderWarehouses(element, data) {
     var $ele = $(element);
     $ele.empty();
-   // $ele.append($('<option/>').val('0').text('Select'));
+    //$ele.append($('<option/>').val('0').text('Select'));
     $.each(data,
         function (i, val) {
-            $ele.append($('<option/>').val(val.id).text(val.name + val.articlesonhand));
+            $ele.append($('<option/>').val(val.id).text(val.name));// + val.articlesonhand));
         }
     )
-    LoadArticleWarehoseBalance($("#ArticleWarehouseBalance"))
+    if ($("#preview").text($("#input1 option").length === 1))
+        LoadArticleWarehoseBalance($(element))
 }
 //=======================================
 //=======================================
 function LoadCustomerInfo(customer) {
     if ($(customer).val() !== "0" && $(customer).val() !== "Select") {
-        $("#CustomerInfoPlaceHolder").load("GetCompanyInfoForOrder",
+        var urlWithLang = "Import/Orders/GetCompanyInfoForOrder";
+        if (window.location.href.indexOf('/en/') !== -1) {
+            urlWithLang = "/en/" + urlWithLang;
+        }
+        if (window.location.href.indexOf('/ru/') !== -1) {
+            urlWithLang = "/ru/" + urlWithLang;
+        }
+        $("#CustomerInfoPlaceHolder").load(urlWithLang,
             { customerId: $(customer).val() });
     }
     else {
@@ -179,7 +189,7 @@ function LoadArticleWarehoseBalance(warehouse) {
 //=======================================
 //=======================================
 function EnableDisableOrderDetails() {
-    if ($("#Order_ID").val() === "" || $("#Order_ID").val() === "0") {
+    if ($("#ID").val() === "" || $("#ID").val() === "0") {
         $("#Section1").find(":input").prop("disabled", true);
         //$("#OrderDetail_Tab").removeClass("active");
         //$("#OrderDetail_Tab").addClass("active");
@@ -270,7 +280,8 @@ function ValidateOrderDetails() {
 //=======================================
 $(document).ready(
     EnableDisableOrderDetails(),
-    LoadArticleWarehoseBalance($("#ArticleWarehouseBalance"))
+    LoadArticleWarehoseBalance($("#ArticleWarehouseBalance")),
+    LoadCustomerInfo($('#Order_CompanyID'))
    // LoadOrderDetails(),
    // LoadItemGroups($('#ArticleCategories'))
  

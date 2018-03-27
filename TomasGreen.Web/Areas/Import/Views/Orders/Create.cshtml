@@ -16,60 +16,134 @@
 <div class="row">
 
     <form asp-action="Create">
-        <input asp-for="@Model.Order.ID" class="form-control" style="display:none;"/>
+        <input asp-for="@Model.Order.ID" id="ID", name="ID" class="form-control" style="display:block;" />
+        <input asp-for="@Model.Order.ID" class="form-control" style="display:block;" />
+        <input asp-for="@Model.Order.ID" id="OrderID" name="OrderID" class="form-control" style="display:block;" />
         <div asp-validation-summary="All" class="text-danger"></div>
         <div>@ViewBag.ErrorMessage</div>
-        <div class="col-md-12">
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label asp-for="@Model.Order.CompanyID" class="control-label">@localizer["Customer"]</label>
-                    <select asp-for="@Model.Order.CompanyID" class="form-control" asp-items="ViewBag.CompanyID" onchange=" LoadCustomerInfo(this)">
-                        <option>@localizer["Select"]</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label asp-for="@Model.Order.OrderDate" class="control-label">@localizer["Date"]</label>
-                    <input asp-for="@Model.Order.OrderDate" class="form-control" />
-                    <span asp-validation-for="@Model.Order.OrderDate" class="text-danger"></span>
-                </div>
-            </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-8" style="border-color:cornsilk;">
+                    <div class="row">
 
-            <div class="col-md-3">
-                <div class="form-group">
-                    <br />
-                    @{
-                        if (Model.Order.ID == 0)
-                        {
-                            <input type="submit" name="SaveOrder" id="SaveOrder" value=@localizer["Create"] class="btn btn-primary" onclick="return ValidateOrder()" />
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.OrderDate" class="control-label">@localizer["Date"]</label>
+                                <input asp-for="@Model.Order.OrderDate" class="form-control" />
+                                <span asp-validation-for="@Model.Order.OrderDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.EmployeeID" class="control-label">@localizer["Manager"]</label>
+                                <select asp-for="@Model.Order.EmployeeID" class="form-control" asp-items="ViewBag.EmployeeID">
+                                    <option>Select</option>
+                                </select>
+                                <span asp-validation-for="@Model.Order.EmployeeID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.CompanyID" class="control-label">@localizer["Customer"]</label>
+                                <select asp-for="@Model.Order.CompanyID" class="form-control" asp-items="ViewBag.CompanyID" onchange=" LoadCustomerInfo(this)">
+                                    <option>@localizer["Select"]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.OrderdBy" class="control-label"></label>
+                                <input asp-for="@Model.Order.OrderdBy" class="form-control" />
+                                <span asp-validation-for="@Model.Order.OrderdBy" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.PaymentDate" class="control-label">@localizer["Pay. date"]</label>
+                                <input asp-for="@Model.Order.PaymentDate" class="form-control" />
+                                <span asp-validation-for="@Model.Order.PaymentDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="@Model.Order.Coments" class="control-label"></label>
+                                <textarea asp-for="@Model.Order.Coments" class="form-control"></textarea>
+                                <span asp-validation-for="@Model.Order.Coments" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="@Model.Order.Cash" /> @Html.DisplayNameFor(model => model.Order.Cash)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
 
+                            </div>
+
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="@Model.Order.Confirmed" /> @Html.DisplayNameFor(model => model.Order.Confirmed)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @{
+                                if (Model.Order.ID == 0)
+                                {
+                                    <input type="submit" name="SaveOrder" id="SaveOrder" value=@localizer["Create"] class="btn btn-primary" onclick="return ValidateOrder()" />
+                            }
+                            else
+                            {
+                                <input type="submit" name="SaveOrder" id="SaveOrder" value=@localizer["Update"] class="btn btn-primary" onclick="return ValidateOrder()" />
                         }
-                        else
-                        {
-                            <input type="submit" name="SaveOrder" id="SaveOrder" value=@localizer["Update"] class="btn btn-primary" onclick="return ValidateOrder()" />
+                                }
 
-                        }
-                    }
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="col-md-4" style="background-color:ghostwhite;">
+                    <div class="row ">
+                        <div class="bg-warning"><b>Filled by system</b></div>
+                        <div class="col-md-6">
+                            <span>Tot. price: </span><span>@Model.Order.TotalPrice</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span>Paid: </span><span>@Model.Order.PaidDate</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span>Amn. paid: </span><span>@Model.Order.AmountPaid</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span>Loaded: </span><span>@Model.Order.LoadedDate</span>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="checkbox" value="@Model.Order.HasIssue" disabled />
+                            <span>Has issue</span>
+
+                        </div>
+
+
+                    </div>
                 </div>
             </div>
-
-
-
         </div>
-        <div>
-            <br />&nbsp;
-        </div>
+
+        <!-- collaps go -->
+        <!--Collap stop-->
         <!--Tab go -->
         <div class="tab" role="tabpanel">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
                 <li id="OrderDetail_Tab" class="active" role="presentation"><a role="tab" aria-controls="home" href="#Section1" data-toggle="tab"> @localizer["Articles"] &nbsp;<img style="width:25px; height:25px;" src="~/images/inviceRows.png" /></a></li>
-                <li id="OrderDetail_Tab" role="presentation"><a role="tab" aria-controls="Parment" href="#Section2" data-toggle="tab"> @localizer["Payment"] </a></li>
-                <li id="Loading_Tab" role="presentation"><a role="tab" aria-controls="Loading" href="#Section3" data-toggle="tab"> @localizer["Loading"] </a></li>
-                <li id="MoreInfo_Tab" role="presentation"><a role="tab" aria-controls="More info." href="#Section4" data-toggle="tab"> @localizer["More inf."] </a></li>
-                <li id="Customer_Tab" role="presentation"><a role="tab" aria-controls="Customer info." href="#Section5" data-toggle="tab"> @localizer["Customer info."] </a></li>
+                <li id="Customer_Tab" role="presentation"><a role="tab" aria-controls="Customer" href="#Section2" data-toggle="tab"> @localizer["Customer"] &nbsp;<img style="width:25px; height:25px;" src="~/images/Info.png" /></a></li>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content tabs">
@@ -77,12 +151,12 @@
                     <div><br /></div>
                     <div id="OrdedDetail_Mess"></div>
                     <div>
-                       @{
-                            @if (Model.Order.ID > 0 && Model.Order.OrderDetails.Count > 0)
+                        @*@{
+                                @if (Model.Order.ID > 0 && Model.Order.OrderDetails.Count > 0)
                             {
                                 @await Component.InvokeAsync(nameof(TomasGreen.Web.Areas.Import.Components.ArticleWarehouseAvailability), new { articleId = Model.OrderDetail?.ArticleID, warehousId = Model.OrderDetail?.WarehouseID })
-                            }
                         }
+                            }*@
                     </div>
                     <div id="ArticleWarehouseBalance"></div>
                     <div class="col-md-12">
@@ -145,122 +219,7 @@
                     </div>
                 </div>
                 <div class="tab-pane fade in " id="Section2" role="tabpanel">
-                    <div><br /></div>
-                    <div class="col-md-12">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.PaymentDate" class="control-label"></label>
-                                <input asp-for="@Model.Order.PaymentDate" class="form-control" />
-                                <span asp-validation-for="@Model.Order.PaymentDate" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.PaidDate" class="control-label"></label>
-                                <input asp-for="@Model.Order.PaidDate" class="form-control" disabled />
-                                <span asp-validation-for="@Model.Order.PaidDate" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.AmountPaid" class="control-label"></label>
-                                <input asp-for="@Model.Order.AmountPaid" class="form-control" disabled />
-                                <span asp-validation-for="@Model.Order.AmountPaid" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.PaymentWarning" class="control-label"></label>
-                                <textarea asp-for="@Model.Order.PaymentWarning" class="form-control"></textarea>
-                                <span asp-validation-for="@Model.Order.PaymentWarning" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-md-12">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="checkbox">
-                                    <label>
-                                        <input asp-for="@Model.Order.OrderPaid" /> @Html.DisplayNameFor(model => model.Order.OrderPaid)
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="checkbox">
-                                    <label>
-                                        <input asp-for="@Model.Order.Cash" /> @Html.DisplayNameFor(model => model.Order.Cash)
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-
-                        </div>
-                    </div>
-
-
-                </div>
-                <div class="tab-pane fade in " id="Section3" role="tabpanel">
-                    <div><br /></div>
-                    <div class="col-md-12">
-                       
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.LoadedDate" class="control-label"></label>
-                                <input asp-for="@Model.Order.LoadedDate" class="form-control" />
-                                <span asp-validation-for="@Model.Order.LoadedDate" class="text-danger"></span>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-                <div class="tab-pane fade in " id="Section4" role="tabpanel">
-                    <div><br /></div>
-                    <div class="col-md-12">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.OrderdBy" class="control-label"></label>
-                                <input asp-for="@Model.Order.OrderdBy" class="form-control" />
-                                <span asp-validation-for="@Model.Order.OrderdBy" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.EmployeeID" class="control-label">Manager</label>
-                                <select asp-for="@Model.Order.EmployeeID" class="form-control" asp-items="ViewBag.EmployeeID">
-                                    <option>Select</option>
-                                </select>
-                                <span asp-validation-for="@Model.Order.EmployeeID" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.Coments" class="control-label"></label>
-                                <textarea asp-for="@Model.Order.Coments" class="form-control"></textarea>
-                                <span asp-validation-for="@Model.Order.Coments" class="text-danger"></span>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div class="col-md-12">
-                        
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="@Model.Order.TotalPrice" class="control-label"></label>
-                                <input asp-for="@Model.Order.TotalPrice" class="form-control" disabled />
-                                <span asp-validation-for="@Model.Order.TotalPrice" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade in " id="Section5" role="tabpanel">
-                    <div id="CustomerInfoPlaceHolder">some customer info here...</div>
+                    <div id="CustomerInfoPlaceHolder">customer info here...</div>
                 </div>
             </div>
         </div>

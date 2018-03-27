@@ -1,55 +1,27 @@
 ﻿@model TomasGreen.Model.Models.ArticleWarehouseBalance
+<div>
+   
+    <div class="row alert alert-warning" role="alert">
+        <div class="col-md-12">
+            <div class="col-md-2">
+              <label>Onnhands »»</label>
+            </div>
+            <div class="col-md-2">
+                <span>@Model.Article.Name</span>
+            </div>
+            <div class="col-md-2">
+                <span>@Model.Warehouse.Name</span>
+            </div>
+            <div class="col-md-2">
+                <span>Packages </span>
+                <span class="badge">@Model.QtyPackagesOnhand</span>
+                <span></span>
+            </div>
+            <div class="col-md-2">
+                <span>Extra </span>
+                <span class="badge">@Model.QtyExtraOnhand</span>
+            </div>
+        </div>
+    </div>
 
-<div>
-    <h4>ArticleWarehouseBalance</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        
-        <dt>
-            @Html.DisplayNameFor(model => model.QtyExtraIn)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.QtyExtraIn)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.QtyPackagesOut)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.QtyPackagesOut)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.QtyExtraOut)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.QtyExtraOut)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.QtyPackagesOnhand)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.QtyPackagesOnhand)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.QtyExtraOnhand)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.QtyExtraOnhand)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Article)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Article.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Warehouse)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Warehouse.Name)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
 </div>

@@ -8,4 +8,10 @@
     font-weight: bold;
     font-stretch: wider;
 }
+.leftMargin {
+    margin-left: 10px !important;
+}
+.rightMargin {
+    margin-right: 10px !important;
+}
 

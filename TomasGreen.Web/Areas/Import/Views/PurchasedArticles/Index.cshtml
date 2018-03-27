@@ -57,7 +57,9 @@
                 @Html.DisplayFor(modelItem => item.TotalPerUnit)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ExpectedToArrive)
+                @(item.ExpectedToArrive.HasValue ? item.ExpectedToArrive.Value.ToString("yyyy-MM-dd") : "")
+               
+
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Received)
