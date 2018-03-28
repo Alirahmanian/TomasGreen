@@ -79,17 +79,23 @@ namespace TomasGreen.Web.Validations
 
         public static PropertyValidation OrderDetailIsUnique(ApplicationDbContext _context, OrderDetail model)
         {
-            var orderDetails = _context.OrderDetails.Where(d => d.OrderID == model.OrderID);
-            foreach(var orderDetail in orderDetails)
+            var orderDetails = _context.OrderDetails.Any(d => d.OrderID == model.OrderID && d.ArticleID == model.ArticleID
+                                                         && d.WarehouseID == model.WarehouseID && d.ID != model.ID);
+            if (orderDetails)
             {
-                if(orderDetail.ID != model.ID)
-                {
-                    if(orderDetail.ArticleID == model.ArticleID && orderDetail.WarehouseID == model.WarehouseID && orderDetail.Price == model.Price)
-                    {
-                        return (new PropertyValidation(false, "OrderDetailIsUnique", "OrderDetail", "", "There is already an order row with the same article, warehouse and price."));
-                    }
-                }
+                return (new PropertyValidation(false, "OrderDetailIsUnique", "OrderDetail", "", "There is already an order row with the same article, warehouse and price."));
             }
+            //var orderDetails = _context.OrderDetails.Where(d => d.OrderID == model.OrderID);
+            //foreach(var orderDetail in orderDetails)
+            //{
+            //    if(orderDetail.ID != model.ID)
+            //    {
+            //        if(orderDetail.ArticleID == model.ArticleID && orderDetail.WarehouseID == model.WarehouseID && orderDetail.Price == model.Price)
+            //        {
+            //            return (new PropertyValidation(false, "OrderDetailIsUnique", "OrderDetail", "", "There is already an order row with the same article, warehouse and price."));
+            //        }
+            //    }
+            //}
             return (new PropertyValidation(true, "", "", "", ""));
         }
 

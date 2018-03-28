@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<TomasGreen.Model.Models.OrderDetail>
 
 
-<table class="table table-responsive table-striped, table-condensed">
+<table class="table table-responsive table-hover table-striped">
     <thead>     
     <tr>
-           <td></td>
+          
             <td>
                 <label>Article</label>
             </td>
@@ -29,9 +29,7 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
-            </td>
+           
             <td>
                 @Html.DisplayFor(modelItem => item.Article.Name)
             </td>
@@ -51,8 +49,8 @@
                  @item.Extended_Price.ToString("C")
             </td>
             <td>
-                <a asp-action="EditRow" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="DeleteRow" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure you want to delete this post?')">Delete</a>
+                <a asp-action="EditRow" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit alert-warning"></span></a> |
+                <a asp-action="DeleteRow" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure you want to delete this post?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
             </td>
         </tr>
 }

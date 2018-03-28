@@ -133,6 +133,51 @@ function renderWarehouses(element, data) {
 }
 //=======================================
 //=======================================
+function LoadOrderDetails() {
+    if ($("#Order_ID").val() !== "" && $("#Order_ID").val() !== "0") {
+        var urlWithLang = "Import/Orders/GetOrderDetails";
+        if (window.location.href.indexOf('/en/') !== -1) {
+            urlWithLang = "/en/" + urlWithLang;
+        }
+        if (window.location.href.indexOf('/ru/') !== -1) {
+            urlWithLang = "/ru/" + urlWithLang;
+        }
+        $.ajax({
+            type: "GET",
+            url: urlWithLang,
+            data: { 'orderId': $("#Order_ID").val() },
+            dataType: "html",
+            success: function (response) {
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+        
+}
+LoadOrderPickList
+//=======================================
+//=======================================
+function LoadOrderPickList(order) {
+    if ($(order).val() !== "0" && $(order).val() !== "Select") {
+        var urlWithLang = "Import/Orders/GetOrderForPickList";
+        if (window.location.href.indexOf('/en/') !== -1) {
+            urlWithLang = "/en/" + urlWithLang;
+        }
+        if (window.location.href.indexOf('/ru/') !== -1) {
+            urlWithLang = "/ru/" + urlWithLang;
+        }
+        $("#PickListPlaceHolder").load(urlWithLang,
+            { orderId: $(order).val() });
+    }
+    else {
+        $("#PickListPlaceHolder").text('');
+    }
+}
+//=======================================
+//=======================================
 function LoadCustomerInfo(customer) {
     if ($(customer).val() !== "0" && $(customer).val() !== "Select") {
         var urlWithLang = "Import/Orders/GetCompanyInfoForOrder";
@@ -189,7 +234,7 @@ function LoadArticleWarehoseBalance(warehouse) {
 //=======================================
 //=======================================
 function EnableDisableOrderDetails() {
-    if ($("#ID").val() === "" || $("#ID").val() === "0") {
+    if ($("#Order_ID").val() === "" || $("#Order_ID").val() === "0") {
         $("#Section1").find(":input").prop("disabled", true);
         //$("#OrderDetail_Tab").removeClass("active");
         //$("#OrderDetail_Tab").addClass("active");
@@ -250,13 +295,7 @@ function ValidateOrderDetails() {
             $('#Boxes').siblings('span.error').css('visibility', 'hidden');
         }
 
-        if ($('#ReserveBoxes').val() !== "" && !$.isNumeric($('#ReserveBoxes').val())) {
-            isAllValid = false;
-            $('#ReserveBoxes').siblings('span.error').css('visibility', 'visible');
-        }
-        else {
-            $('#ReserveBoxes').siblings('span.error').css('visibility', 'hidden');
-        }
+        
         if ($('#ExtraKg').val() !== "" && !$.isNumeric($('#ReserveBoxes').val())) {
             isAllValid = false;
             $('#ExtraKg').siblings('span.error').css('visibility', 'visible');
@@ -280,9 +319,10 @@ function ValidateOrderDetails() {
 //=======================================
 $(document).ready(
     EnableDisableOrderDetails(),
-    LoadArticleWarehoseBalance($("#ArticleWarehouseBalance")),
-    LoadCustomerInfo($('#Order_CompanyID'))
-   // LoadOrderDetails(),
+    LoadArticleWarehoseBalance($("#OrderDetail_WarehouseID"))
+    , LoadCustomerInfo($('#Order_CompanyID'))
+    , LoadOrderPickList($('#Order_ID'))
+    //LoadOrderDetails()
    // LoadItemGroups($('#ArticleCategories'))
  
 
