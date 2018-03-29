@@ -17,7 +17,7 @@ namespace TomasGreen.Web.Validations
             }
             if (model.OrderDate == null)
             {
-                return (new PropertyValidation(false, "ReceivArticleIsValid", "ReceiveArticle", nameof(model.OrderDate), "Please choose an date for order."));
+                return (new PropertyValidation(false, "ReceivArticleIsValid", "ReceiveArticle", nameof(model.OrderDate), "Please choose a date for order."));
             }
 
             return (new PropertyValidation(true, "", "", "", ""));

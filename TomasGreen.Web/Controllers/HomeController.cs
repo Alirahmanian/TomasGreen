@@ -11,6 +11,10 @@ using TomasGreen.Web.BaseModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using TomasGreen.Web.Data;
+using System.Net.Http;
+using Newtonsoft.Json;
+using TomasGreen.Web.Services;
+using TomasGreen.Model.Models;
 
 namespace TomasGreen.Web.Controllers
 {
@@ -24,36 +28,33 @@ namespace TomasGreen.Web.Controllers
         private ILoggerFactory _loggerFactory;
         public HomeController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment, IStringLocalizer<HomeController> localizer, ILoggerFactory loggerFactory)
         {
+            _context = context;
             _localizer = localizer;
             _loggerFactory = loggerFactory;
+            _hostingEnvironment = hostingEnvironment;
         }
         public IActionResult Index()
         {
-            try
+            var jSonCurrency = CurrencyRates.GetRates();
+            if(jSonCurrency != null)
             {
-                string actionName = this.ControllerContext.RouteData.Values["action"].ToString();
-                string controllerName = this.ControllerContext.RouteData.Values["controller"].ToString();
-                var logger = _loggerFactory.CreateLogger("LoggerCategory");
-                logger.LogInformation(".:. " + actionName);
-                logger.LogInformation(".:. " + controllerName);
+                List<Currency> Currencies = new List<Currency>();
+                foreach(var rate in jSonCurrency.Rates)
+                {
+                    var currency = new Currency
+                    {
+                        Rate = rate.Value, Code = rate.Key,
+                        Date = CurrencyRates.ConvertFromUnixTimestamp(double.Parse(jSonCurrency.Timestamp))
+                    };
+                    Currencies.Add(currency);
+                }
 
-                ViewData["Message"] = _localizer["HelloWorld"];
-            }
-            catch(Exception err)
-            {
-                var logger = _loggerFactory.CreateLogger("LoggerCategory");
-                logger.LogError(err.GetType().FullName);
-               
-            }
-            finally
-            {
 
             }
 
-          
             return View();
         }
-
+       
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";

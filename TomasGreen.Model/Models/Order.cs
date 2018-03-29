@@ -55,6 +55,7 @@ namespace TomasGreen.Model.Models
         public Guid? Guid { get; set; }
         public bool HasIssue { get; set; }
 
+
         //nav.
         public Company Company { get; set; }
         public Employee Employee { get; set; }

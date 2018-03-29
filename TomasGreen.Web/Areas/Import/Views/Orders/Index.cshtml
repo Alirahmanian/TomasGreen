@@ -47,7 +47,7 @@
                     @Html.DisplayFor(modelItem => item.OrderDate)
                 </td>
                 <td>
-                    @item.TotalPrice?.ToString("C")
+                    @item.GetTotalPrice().ToString("C")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.OrderPaid)
@@ -55,9 +55,8 @@
 
 
                 <td>
-                    <a asp-action="Create" asp-route-id="@item.ID">@localizer["Edit"]</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">@localizer["Details"]</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">@localizer["Delete"]</a>
+                    <a asp-action="Create" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit btn btn-primary"></span></a> 
+                   
                 </td>
             </tr>
         }

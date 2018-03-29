@@ -33,7 +33,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // GET: Sales/Orders
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Orders.Include(o => o.Company);
+            var applicationDbContext = _context.Orders.Include(o => o.Company).Include(d => d.OrderDetails);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -95,31 +95,15 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SaveOrderViewModel model, string SaveOrder, string SaveOrderDetail)
+        public async Task<IActionResult> Create(SaveOrderViewModel model, string SaveOrder, string SaveOrderDetail, string DeleteOrder)
         {
-            if (!string.IsNullOrWhiteSpace(SaveOrderDetail) )
-            {
-                if (model.Order.ID == 0)
-                {
-                    ModelState.AddModelError("", _localizer["Please save the order header before adding articles to it."]);
-                    if (model.Order?.ID > 0)
-                    {
-                        model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                    }
-                    AddOrderLists(model);
-                    return View(model);
-                }
-            }
-            if(!string.IsNullOrWhiteSpace(SaveOrder))
+            //Save order
+            if (!string.IsNullOrWhiteSpace(SaveOrder))
             {
                 var customModelValidator = OrderValidation.OrderIsValid(_context, model.Order);
                 if (customModelValidator.Value == false)
                 {
                     ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
-                    if (model.Order?.ID > 0)
-                    {
-                        model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                    }
                     AddOrderLists(model);
                     return View(model);
                 }
@@ -128,9 +112,67 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 {
                     ModelState.Remove(key);
                 }
-                
+                if (model.Order.ID == 0)
+                {
+                    //new order
+                    var guid = Guid.NewGuid();
+                    model.Order.Guid = guid;
+                    _context.Add(model.Order);
+                    await _context.SaveChangesAsync();
+                    var savedOrder = _context.Orders.Where(o => o.OrderDate == model.Order.OrderDate && o.CompanyID == model.Order.CompanyID && o.Guid == guid).FirstOrDefault();
+                    if (savedOrder != null)
+                    {
+                        model.Order = savedOrder;
+                        AddOrderLists(model);
+                        return RedirectToAction(nameof(Create), new { id = model.Order.ID });
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Could't save Order.");
+                        AddOrderLists(model);
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    //update
+                    var savedOrder = _context.Orders.AsNoTracking().Where(o => o.ID == model.Order.ID).FirstOrDefault();
+                    if (savedOrder == null)
+                    {
+                        ModelState.AddModelError("", "Could't find Order.");
+                        AddOrderLists(model);
+                        return View(model);
+                    }
+                    if (savedOrder.CompanyID != model.Order.CompanyID)
+                    {
+                        var orderDetails = _context.OrderDetails.Any(d => d.OrderID == savedOrder.ID);
+                        if (orderDetails)
+                        {
+                            ModelState.AddModelError("", "Could't save. Order has order rows with different company. Please remove rows first or delete the order. ");
+                            AddOrderLists(model);
+                            return View(model);
+                        }
+                    }
+                    //Adjust previous customer balance
+                    //Adjust current customer balance
+                    savedOrder.Cash = model.Order.Cash;
+                    savedOrder.Coments = model.Order.Coments;
+                    savedOrder.CompanyID = model.Order.CompanyID;
+                    savedOrder.Confirmed = model.Order.Confirmed;
+                    savedOrder.EmployeeID = model.Order.EmployeeID;
+                    savedOrder.OrderDate = model.Order.OrderDate;
+                    savedOrder.PaymentWarning = model.Order.PaymentWarning;
+                    savedOrder.TransportFee = model.Order.TransportFee;
+                    savedOrder.OrderdBy = model.Order.OrderdBy;
+                    _context.Update(savedOrder);
+                    await _context.SaveChangesAsync();
+                    AddOrderLists(model);
+                    return View(model);
+                }
+
             }
-            if (!string.IsNullOrWhiteSpace(SaveOrderDetail))
+            //Delete order
+            if (!string.IsNullOrWhiteSpace(DeleteOrder))
             {
                 if (model.Order.ID == 0)
                 {
@@ -138,218 +180,164 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     AddOrderLists(model);
                     return View(model);
                 }
-
-            }
-            if(model.Order.ID == 0)
-            {
-                //new order
-                var guid = Guid.NewGuid();
-                model.Order.Guid = guid;
-                _context.Add(model.Order);
-                await _context.SaveChangesAsync();
-                var savedOrder = _context.Orders.Where(o => o.OrderDate == model.Order.OrderDate && o.CompanyID == model.Order.CompanyID && o.Guid == guid).FirstOrDefault();
-                if (savedOrder != null)
-                {
-                    model.Order = savedOrder;
-                    if (model.Order?.ID > 0)
-                    {
-                        model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                    }
-                    AddOrderLists(model);
-                    ViewBag.OrderID = model.Order.ID;//savedOrder.ID;
-                    return RedirectToAction(nameof(Create), new { id = model.Order.ID });
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Could't save Order.");
-                    if (model.Order?.ID > 0)
-                    {
-                        model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                    }
-                    AddOrderLists(model);
-                    return View(model);
-                }
-                   
-            }
-            else
-            {
-                //update
-                var savedOrder = _context.Orders.AsNoTracking().Where(o => o.ID == model.Order.ID).FirstOrDefault();
-                if(savedOrder == null)
+                var orderToBeDeleted = _context.Orders.Include(d => d.OrderDetails).AsNoTracking().Where(o => o.ID == model.Order.ID).FirstOrDefault();
+                if (orderToBeDeleted == null)
                 {
                     ModelState.AddModelError("", "Could't find Order.");
-                    if (model.Order.ID > 0)
-                    {
-                        model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                    }
                     AddOrderLists(model);
                     return View(model);
                 }
-                if(savedOrder.CompanyID != model.Order.CompanyID)
+                var orderTotalPrice = orderToBeDeleted.GetTotalPrice();
+                //Adjust cutomer balance
+                foreach (var orderDetail in orderToBeDeleted.OrderDetails)
                 {
-                    var orderDetails = _context.OrderDetails.Any(d => d.OrderID == savedOrder.ID);
-                    if(orderDetails)
+                    var articlsInOutForAdd = new ArticleInOut
                     {
-                        ModelState.AddModelError("", "Could't save. Order has order rows with different company. Please remove rows first or delete the order. ");
-                        if (model.Order.ID > 0)
+                        ArticleID = orderDetail.ArticleID,
+                        WarehouseID = orderDetail.WarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == orderDetail.WarehouseID).AsNoTracking().FirstOrDefault()),
+                        QtyPackagesIn = orderDetail.QtyPackages,
+                        QtyExtraIn = orderDetail.QtyExtra
+                    };
+                    var AddResult = ArticleBalance.Add(_context, articlsInOutForAdd);
+                    if (AddResult.Value == false)
+                    {
+                        ModelState.AddModelError("", _localizer["Couldn't Delete order."]);
+                        if (_hostingEnvironment.IsDevelopment())
                         {
-                            model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
+                            ModelState.AddModelError("", JSonHelper.ToJSon(AddResult));
                         }
                         AddOrderLists(model);
                         return View(model);
                     }
+                    _context.OrderDetails.Remove(orderDetail);
                 }
-                model.Order.TotalPrice = savedOrder.TotalPrice;
-                _context.Orders.Update(model.Order);
-                if (!string.IsNullOrWhiteSpace(SaveOrderDetail))
-                {
-                    if(model.Order.ID != 0)
-                    {
-                        //var articlePackageWeight = _context.Articles.Where(a => a.ID == model.OrderDetail.ArticleID).FirstOrDefault()?.PackageWeight ?? 0;
-                        //var totalWeight = (model.OrderDetail.QtyBoxes * articlePackageWeight) + (model.OrderDetail.QtyReserveBoxes * articlePackageWeight) + model.OrderDetail.QtyKg;
+                //Adjust cutomer balance
+                _context.Orders.Remove(orderToBeDeleted);
+                await _context.SaveChangesAsync();
+                AddOrderLists(model);
+                return RedirectToAction(nameof(Index));
 
-                        var totalWeightOrPackage = OrderValidation.OrderDetailTotalWeightOrPackage(_context, model.OrderDetail);
-                        model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeightOrPackage;
-                        if(model.OrderDetail.OrderID == 0)
+            }
+
+            //save Order details
+            if (!string.IsNullOrWhiteSpace(SaveOrderDetail) )
+            {
+                if (model.Order.ID == 0)
+                {
+                    ModelState.AddModelError("", _localizer["Please save the order header before adding articles to it."]);
+                    AddOrderLists(model);
+                    return View(model);
+                }
+               
+
+                var totalWeightOrPackage = OrderValidation.OrderDetailTotalWeightOrPackage(_context, model.OrderDetail);
+                model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeightOrPackage;
+                if(model.OrderDetail.OrderID == 0)
+                {
+                    model.OrderDetail.OrderID = model.Order.ID;
+                }
+                var customValidator = OrderValidation.OrderDetailIsValid(_context, model.OrderDetail);
+                if (!customValidator.Value)
+                {
+                    ModelState.AddModelError("", "Couldn't save.");
+                    if (_hostingEnvironment.IsDevelopment())
+                    {
+                        ModelState.AddModelError("", JSonHelper.ToJSon(customValidator));
+                    }
+                    AddOrderLists(model);
+                    return View(model);
+                }
+                if (model.OrderDetail.ID > 0)
+                {
+                    //Old OrderDetail has to be added back first
+                    var savedOrderDetail = _context.OrderDetails.Where(d => d.ID == model.OrderDetail.ID).AsNoTracking().FirstOrDefault();
+                    if (savedOrderDetail != null)
+                    {
+                        var articlsInOutForAdd = new ArticleInOut
                         {
-                            model.OrderDetail.OrderID = model.Order.ID;
-                        }
-                        var customValidator = OrderValidation.OrderDetailIsValid(_context, model.OrderDetail);
-                        if(!customValidator.Value)
+                            ArticleID = savedOrderDetail.ArticleID,
+                            WarehouseID = savedOrderDetail.WarehouseID,
+                            CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).AsNoTracking().FirstOrDefault()),
+                            QtyPackagesIn = savedOrderDetail.QtyPackages,
+                            QtyExtraIn = savedOrderDetail.QtyExtra
+                        };
+                        var AddResult = ArticleBalance.Add(_context, articlsInOutForAdd);
+                        if (AddResult.Value == false)
                         {
-                            ModelState.AddModelError("", "Couldn't save.");
+                            ModelState.AddModelError("", _localizer["Couldn't save."]);
                             if (_hostingEnvironment.IsDevelopment())
                             {
-                                ModelState.AddModelError("", JSonHelper.ToJSon(customValidator));
-                            }
-                            if (model.Order.ID > 0)
-                            {
-                                model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
+                                ModelState.AddModelError("", JSonHelper.ToJSon(AddResult));
                             }
                             AddOrderLists(model);
                             return View(model);
                         }
-                        // model.OrderDetail.Warehouse = _context.Warehouses.Where(w => w.ID == model.OrderDetail.WarehouseID).FirstOrDefault();
-                        if (model.OrderDetail.ID > 0)
-                        {
-                            //Old OrderDetail has to be added back first
-                            var savedOrderDetail = _context.OrderDetails.Where(d => d.ID == model.OrderDetail.ID).AsNoTracking().FirstOrDefault();
-                            if(savedOrderDetail != null)
-                            {
-                                model.Order.TotalPrice -= (model.Order.TotalPrice - savedOrderDetail.Extended_Price) > 0 ? savedOrderDetail.Extended_Price : 0;
-                                //savedOrderDetail.Warehouse = _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).FirstOrDefault();
-                                    
-                                var articlsInOutForAdd = new ArticleInOut
-                                {
-                                    ArticleID = savedOrderDetail.ArticleID,
-                                    WarehouseID = savedOrderDetail.WarehouseID,
-                                    CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).AsNoTracking().FirstOrDefault()),
-                                    QtyPackagesIn = savedOrderDetail.QtyPackages,
-                                    QtyExtraIn = savedOrderDetail.QtyExtra
-                                };
-                                var AddResult = ArticleBalance.Add(_context, articlsInOutForAdd);
-                                if (AddResult.Value == false)
-                                {
-                                    ModelState.AddModelError("", _localizer["Couldn't save."]);
-                                    if (_hostingEnvironment.IsDevelopment())
-                                    {
-                                        ModelState.AddModelError("", JSonHelper.ToJSon(AddResult));
-                                    }
-                                    if (model.Order.ID > 0)
-                                    {
-                                        model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                                    }
-                                    AddOrderLists(model);
-                                    return View(model);
-                                }
-                                savedOrderDetail.ArticleID = model.OrderDetail.ArticleID;
-                                savedOrderDetail.WarehouseID = model.OrderDetail.WarehouseID;
-                                savedOrderDetail.QtyPackages = model.OrderDetail.QtyPackages;
-                                savedOrderDetail.QtyExtra = model.OrderDetail.QtyExtra;
-                                savedOrderDetail.Price = model.OrderDetail.Price;
-                                savedOrderDetail.Extended_Price = model.OrderDetail.Extended_Price;
+                        savedOrderDetail.ArticleID = model.OrderDetail.ArticleID;
+                        savedOrderDetail.WarehouseID = model.OrderDetail.WarehouseID;
+                        savedOrderDetail.QtyPackages = model.OrderDetail.QtyPackages;
+                        savedOrderDetail.QtyExtra = model.OrderDetail.QtyExtra;
+                        savedOrderDetail.Price = model.OrderDetail.Price;
+                        savedOrderDetail.Extended_Price = model.OrderDetail.Extended_Price;
 
-                                var articleInOut = new ArticleInOut
-                                {
-                                    ArticleID = savedOrderDetail.ArticleID,
-                                    WarehouseID = savedOrderDetail.WarehouseID,
-                                    CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).FirstOrDefault()),
-                                    QtyPackagesOut = savedOrderDetail.QtyPackages,
-                                    QtyExtraOut = savedOrderDetail.QtyExtra
-                                };
-                                var result = ArticleBalance.Reduce(_context, articleInOut);
-                                if (result.Value == false)
-                                {
-                                    ModelState.AddModelError("", _localizer["Couldn't save."]);
-                                    if (_hostingEnvironment.IsDevelopment())
-                                    {
-                                        ModelState.AddModelError("", JSonHelper.ToJSon(result));
-                                    }
-                                    if (model.Order.ID > 0)
-                                    {
-                                        model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                                    }
-                                    AddOrderLists(model);
-                                    return View(model);
-                                }
-                                   
-                                _context.OrderDetails.Update(savedOrderDetail);
-                                // _context.SaveChanges();
-                            }
-                        }
-                        else
+                        var articleInOut = new ArticleInOut
                         {
-                            var articleInOut = new ArticleInOut
+                            ArticleID = savedOrderDetail.ArticleID,
+                            WarehouseID = savedOrderDetail.WarehouseID,
+                            CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).FirstOrDefault()),
+                            QtyPackagesOut = savedOrderDetail.QtyPackages,
+                            QtyExtraOut = savedOrderDetail.QtyExtra
+                        };
+                        var result = ArticleBalance.Reduce(_context, articleInOut);
+                        if (result.Value == false)
+                        {
+                            ModelState.AddModelError("", _localizer["Couldn't save."]);
+                            if (_hostingEnvironment.IsDevelopment())
                             {
-                                ArticleID = model.OrderDetail.ArticleID,
-                                WarehouseID = model.OrderDetail.WarehouseID,
-                                CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == model.OrderDetail.WarehouseID).FirstOrDefault()),
-                                QtyPackagesOut = model.OrderDetail.QtyPackages,
-                                QtyExtraOut = model.OrderDetail.QtyExtra
-                            };
-                            var result = ArticleBalance.Reduce(_context, articleInOut);
-                            if (result.Value == false)
-                            {
-                                ModelState.AddModelError("", _localizer["Couldn't save."]);
-                                if (_hostingEnvironment.IsDevelopment())
-                                {
-                                    ModelState.AddModelError("", JSonHelper.ToJSon(result));
-                                }
-                                if (model.Order.ID > 0)
-                                {
-                                    model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-                                }
-                                AddOrderLists(model);
-                                return View(model);
+                                ModelState.AddModelError("", JSonHelper.ToJSon(result));
                             }
-                            _context.OrderDetails.Add(model.OrderDetail);
-                            model.Order.TotalPrice += model.OrderDetail.Extended_Price;
+                            AddOrderLists(model);
+                            return View(model);
                         }
-                                                                         
+
+                        _context.OrderDetails.Update(savedOrderDetail);
                            
-                        _context.Update(model.Order);
-                        await _context.SaveChangesAsync();
-
-                        AddOrderLists(model);
-                        return RedirectToAction(nameof(Create), new { id = model.Order.ID });
                     }
-                    else
+                }
+                else
+                {
+                    // new order detail
+                    var articleInOut = new ArticleInOut
                     {
-                        //
-                        ModelState.AddModelError("", "Please save order before trying to add details.");
-                        if (model.Order.ID > 0)
+                        ArticleID = model.OrderDetail.ArticleID,
+                        WarehouseID = model.OrderDetail.WarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == model.OrderDetail.WarehouseID).FirstOrDefault()),
+                        QtyPackagesOut = model.OrderDetail.QtyPackages,
+                        QtyExtraOut = model.OrderDetail.QtyExtra
+                    };
+                    var result = ArticleBalance.Reduce(_context, articleInOut);
+                    if (result.Value == false)
+                    {
+                        ModelState.AddModelError("", _localizer["Couldn't save."]);
+                        if (_hostingEnvironment.IsDevelopment())
                         {
-                            model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
+                            ModelState.AddModelError("", JSonHelper.ToJSon(result));
                         }
                         AddOrderLists(model);
                         return View(model);
                     }
+                    _context.OrderDetails.Add(model.OrderDetail);
+                      
                 }
+                await _context.SaveChangesAsync();
+                AddOrderLists(model);
+                return RedirectToAction(nameof(Create), new { id = model.Order.ID });
+                
+               
             }
-            if(model.Order.ID > 0)
-            {
-                model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
-            }
+           
+            
+            
             AddOrderLists(model);
             return View(model);
         }
@@ -427,6 +415,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
 
         private void AddOrderLists(SaveOrderViewModel model)
         {
+            if (model.Order?.ID > 0)
+            {
+                model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
+            }
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order?.CompanyID);
             ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName", model.Order?.EmployeeID);
             ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name", model.ArticleCategory?.ID);

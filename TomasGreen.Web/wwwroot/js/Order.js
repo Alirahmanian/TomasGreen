@@ -257,7 +257,7 @@ function ValidateOrder() {
        // $('#Order_CompanyID').data('val', 'false');
         isOrderValid = false;
     }
-    $("#Order_AmountPaid").val(function (i, v) { return v.replace("kr", ""); }).val();
+    //$("#Order_AmountPaid").val(function (i, v) { return v.replace("kr", ""); }).val();
     
     return isOrderValid;
 }
