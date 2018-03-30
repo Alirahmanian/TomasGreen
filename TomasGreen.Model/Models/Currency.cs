@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class Currency :BaseEntity
+    public class Currency : BaseEntity
     {
         [DataType(DataType.DateTime)]
         public DateTime Date { get; set; }
@@ -15,5 +15,6 @@ namespace TomasGreen.Model.Models
         public decimal Rate { get; set; }
         [Display(Name = "Is base")]
         public bool IsBase { get; set; }
+        public bool Archive { get; set; }
     }
 }
