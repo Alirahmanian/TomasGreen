@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using TomasGreen.Model.Models;
 
 namespace TomasGreen.Web.Services
 {
@@ -16,6 +17,22 @@ namespace TomasGreen.Web.Services
             {
                 var response = client.GetStringAsync("https://openexchangerates.org/api/latest.json?app_id=618af0cb0f4842d08114545d83dbd9ce");
                 jSonCurrency = JsonConvert.DeserializeObject<JSonCurrency>(response.Result);
+                if (jSonCurrency != null)
+                {
+                    List<Currency> Currencies = new List<Currency>();
+                    foreach (var rate in jSonCurrency.Rates)
+                    {
+                        var currency = new Currency
+                        {
+                            Rate = rate.Value,
+                            Code = rate.Key,
+                            Date = CurrencyRates.ConvertFromUnixTimestamp(double.Parse(jSonCurrency.Timestamp))
+                        };
+                        Currencies.Add(currency);
+                    }
+
+
+                }
             }
             return jSonCurrency;
         }

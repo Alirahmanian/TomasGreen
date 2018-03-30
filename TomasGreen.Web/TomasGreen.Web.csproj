@@ -43,6 +43,7 @@
     <Folder Include="Areas\Packing\Models\" />
     <Folder Include="Areas\Roasting\Data\" />
     <Folder Include="Areas\Roasting\ViewModels\" />
+    <Folder Include="BankReportFiles\" />
   </ItemGroup>
 
   <ItemGroup>

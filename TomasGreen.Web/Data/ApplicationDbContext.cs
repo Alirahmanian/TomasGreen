@@ -44,7 +44,9 @@ namespace TomasGreen.Web.Data
         public DbSet<DicingPlan> DicingPlans { get; set; }
         public DbSet<DicingPlanDetail> DicingPlanDetails { get; set; }
         public DbSet<WarehouseToWarehouse> WarehouseToWarehouses { get; set; }
-        
+        public DbSet<Currency> Currencies { get; set; }
+        public DbSet<ExternalApi> ExternalApis { get; set; }
+        public DbSet<ExternalApiFunction> ExternalApiFunctions { get; set; }
 
 
         public virtual async Task<int> SaveChangesAsync()
@@ -86,6 +88,15 @@ namespace TomasGreen.Web.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ExternalApi>()
+           .HasIndex(p => new { p.Link, p.Key})
+           .IsUnique(true);
+            modelBuilder.Entity<ExternalApiFunction>()
+           .HasIndex(p => new { p.ExternalApiID, p.Name })
+           .IsUnique(true);
+            modelBuilder.Entity<Currency>()
+            .HasIndex(p => p.Code)
+            .IsUnique(true);
             modelBuilder.Entity<WarehouseToWarehouse>()
             .HasIndex(p => new { p.Date, p.SenderWarehouseID, p.RecipientWarehouseID, p.ArticleID })
             .IsUnique(true);

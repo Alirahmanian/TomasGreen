@@ -35,22 +35,7 @@ namespace TomasGreen.Web.Controllers
         }
         public IActionResult Index()
         {
-            var jSonCurrency = CurrencyRates.GetRates();
-            if(jSonCurrency != null)
-            {
-                List<Currency> Currencies = new List<Currency>();
-                foreach(var rate in jSonCurrency.Rates)
-                {
-                    var currency = new Currency
-                    {
-                        Rate = rate.Value, Code = rate.Key,
-                        Date = CurrencyRates.ConvertFromUnixTimestamp(double.Parse(jSonCurrency.Timestamp))
-                    };
-                    Currencies.Add(currency);
-                }
-
-
-            }
+           
 
             return View();
         }

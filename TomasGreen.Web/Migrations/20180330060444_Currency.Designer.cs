@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180330060444_Currency")]
+    partial class Currency
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -543,63 +544,6 @@ namespace TomasGreen.Web.Migrations
                         .IsUnique();
 
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.ExternalApi", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<string>("Key")
-                        .IsRequired();
-
-                    b.Property<string>("Link")
-                        .IsRequired();
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("Provider")
-                        .IsRequired();
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Link", "Key")
-                        .IsUnique();
-
-                    b.ToTable("ExternalApis");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.ExternalApiFunction", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<int>("ExternalApiID");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("ParameterPattern");
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ExternalApiID", "Name")
-                        .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL");
-
-                    b.ToTable("ExternalApiFunctions");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Order", b =>
@@ -1280,14 +1224,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseID")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.ExternalApiFunction", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.ExternalApi", "ExternalApi")
-                        .WithMany("Functions")
-                        .HasForeignKey("ExternalApiID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
