@@ -146,8 +146,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     result.Value = true;
                     return result;
                 }
-               
-               
                 var purchasedArticle = _context.PurchasedArticles.Where(p => p.ID == purchasedArticleWarehouse.PurchasedArticleID).FirstOrDefault();
                 var orderDetails = _context.OrderDetails.Include(d => d.Order).Where(o => o.Order.LoadedDate == null)
                     .Where(o => o.Order.OrderDate >= purchasedArticle.Date && o.Order.OrderDate <= purchasedArticleWarehouse.ArrivedDate)
@@ -253,10 +251,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
                             WarehouseID = (int)purchasedArticleWarehouse.WarehouseID,
                             CompanyID = ArticleBalance.GetWarehouseCompany(_context, onthewayWarehouse),
-                            QtyPackagesOut = totalQtyPackagesToBeShifted, //(purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
-                            QtyExtraOut = totalQtyExtraToBeShifted //(purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
+                            QtyPackages = (totalQtyPackagesToBeShifted * -1), //(purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
+                            QtyExtra = (totalQtyExtraToBeShifted * -1) //(purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
                         };
-                        var UndoReduceResult = ArticleBalance.UndoReduce(_context, articleInOutForUndoReduce);
+                        var UndoReduceResult = ArticleBalance.Reduce(_context, articleInOutForUndoReduce);
                         if (!UndoReduceResult.Value)
                         {
                             result.Value = false; result.Property = UndoReduceResult.Property; result.Message = UndoReduceResult.Message;
@@ -268,10 +266,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
                             WarehouseID = (int)purchasedArticleWarehouse.WarehouseID,
                             CompanyID = ArticleBalance.GetWarehouseCompany(_context, onthewayWarehouse),
-                            QtyPackagesIn = purchasedArticleWarehouse.QtyPackages,
-                            QtyExtraIn = purchasedArticleWarehouse.QtyExtra
+                            QtyPackages = (purchasedArticleWarehouse.QtyPackages * -1),
+                            QtyExtra = (purchasedArticleWarehouse.QtyExtra * -1)
                         };
-                        var UndoAddResult = ArticleBalance.UndoAdd(_context, articleInOutForUndoAdd);
+                        var UndoAddResult = ArticleBalance.Add(_context, articleInOutForUndoAdd);
                         if (!UndoAddResult.Value)
                         {
                             result.Value = false; result.Property = UndoAddResult.Property; result.Message = UndoAddResult.Message;
@@ -285,8 +283,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
                             WarehouseID = (int)purchasedArticleWarehouse.ArrivedAtWarehouseID,
                             CompanyID = ArticleBalance.GetWarehouseCompany(_context, arrivedWarehouse),
-                            QtyPackagesIn = purchasedArticleWarehouse.QtyPackagesArrived,
-                            QtyExtraIn = purchasedArticleWarehouse.QtyExtraArrived
+                            QtyPackages = purchasedArticleWarehouse.QtyPackagesArrived,
+                            QtyExtra = purchasedArticleWarehouse.QtyExtraArrived
                         };
                         var AddResult = ArticleBalance.Add(_context, articleInOutForAdd);
                         if (!AddResult.Value)
@@ -300,8 +298,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             ArticleID = purchasedArticleWarehouse.PurchasedArticle.ArticleID,
                             WarehouseID = (int)purchasedArticleWarehouse.ArrivedAtWarehouseID,
                             CompanyID = ArticleBalance.GetWarehouseCompany(_context, arrivedWarehouse),
-                            QtyPackagesOut = (purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
-                            QtyExtraOut = (purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
+                            QtyPackages = (purchasedArticleWarehouse.QtyPackagesArrived - QtyPackagesArrived),
+                            QtyExtra = (purchasedArticleWarehouse.QtyExtraArrived - QtyExtraArrived)
                         };
                         var ReduceResult = ArticleBalance.Reduce(_context, articleInOutForReduce);
                         if (!ReduceResult.Value)

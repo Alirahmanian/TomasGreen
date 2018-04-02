@@ -1,6 +1,42 @@
 ﻿var ArticleCategories = []
 //=======================================
 //=======================================
+function LoadCurrency(element) {
+    if ($(element).val() !== "0" && $(element).val() !== "Select") {
+        var urlWithLang = "Import/Orders/GetCurrencyRate";
+        if (window.location.href.indexOf('/en/') !== -1) {
+            urlWithLang = "/en/" + urlWithLang;
+        }
+        if (window.location.href.indexOf('/ru/') !== -1) {
+            urlWithLang = "/ru/" + urlWithLang;
+        }
+        $.ajax({
+            type: "GET",
+            url: urlWithLang,
+            data: { 'currencyId': $(element).val() },
+            dataType: "json",
+            success: function (data) {
+                renderCurrency(data);
+                
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        })
+    }
+    else {
+        $('#recommendedRate').text('');
+    }
+
+}
+
+//=======================================
+//=======================================
+function renderCurrency(data) {
+    $("#recommendedRate").text('latest rate: ' + data.rate);
+}
+//=======================================
+//=======================================
 function LoadArticleCategories(element) {
     $("#ArticleWarehouseBalance").text('');
     if (ArticleCategories.length === 0) {

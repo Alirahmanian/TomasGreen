@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180401100324_PurchasedDecimalPres4")]
+    partial class PurchasedDecimalPres4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -673,15 +674,18 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime>("OrderDate");
 
-                    b.Property<string>("OrderNumber");
-
                     b.Property<bool>("OrderPaid");
+
+                    b.Property<string>("OrderdBy");
 
                     b.Property<DateTime?>("PaidDate");
 
                     b.Property<DateTime?>("PaymentDate");
 
                     b.Property<string>("PaymentWarning");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<decimal?>("TotalPrice")
                         .HasColumnType("decimal(18, 4)");
@@ -698,10 +702,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasIndex("CurrencyID");
 
                     b.HasIndex("EmployeeID");
-
-                    b.HasIndex("OrderNumber")
-                        .IsUnique()
-                        .HasFilter("[OrderNumber] IS NOT NULL");
 
                     b.ToTable("Orders");
                 });

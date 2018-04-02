@@ -152,8 +152,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     ArticleID = tempPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
                     WarehouseID = tempPurchasedArticleWarehouse.WarehouseID,
                     CompanyID = ArticleBalance.GetWarehouseCompany(_context, tempPurchasedArticleWarehouse.Warehouse),
-                    QtyPackagesIn = tempPurchasedArticleWarehouse.QtyPackages,
-                    QtyExtraIn = tempPurchasedArticleWarehouse.QtyExtra
+                    QtyPackages = tempPurchasedArticleWarehouse.QtyPackages,
+                    QtyExtra = tempPurchasedArticleWarehouse.QtyExtra
                 };
                 var result = ArticleBalance.Add(_context, articleInOut);
                // var result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
@@ -180,33 +180,47 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 if (savedPurchasedArticle != null)
                 {
                     //rollback old values from article balance
-                    var errors = new List<PropertyValidation>();
-                   
+                 
                     var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
-                    var tempPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
-                    tempPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
-                    tempPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
-                    tempPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
-                    tempPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
+                    var oldPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
+                    oldPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
+                    oldPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
+                    oldPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
+                    oldPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
                     foreach (var purchasedArticleWarehouse in savedPurchasedArticle.Warehouses)
                     {
                         if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                         {
-                            tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
+                            oldPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
+                            oldPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
+                            _context.Remove(purchasedArticleWarehouse);
+                        }
+                    }
+                    var changedPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
+                    changedPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
+                    changedPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
+                    changedPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
+                    changedPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
+                    foreach (var purchasedArticleWarehouse in savedPurchasedArticle.Warehouses)
+                    {
+                        if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
+                        {
+                            changedPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
+                            changedPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
                             _context.Remove(purchasedArticleWarehouse);
                         }
                     }
                     var articleInOut = new ArticleInOut
                     {
-                        ArticleID = tempPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
-                        WarehouseID = tempPurchasedArticleWarehouse.WarehouseID,
-                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, tempPurchasedArticleWarehouse.Warehouse),
-                        QtyPackagesIn = tempPurchasedArticleWarehouse.QtyPackages,
-                        QtyExtraIn = tempPurchasedArticleWarehouse.QtyExtra
+                        ArticleID = changedPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
+                        WarehouseID = changedPurchasedArticleWarehouse.WarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, changedPurchasedArticleWarehouse.Warehouse),
+                        QtyPackages = (changedPurchasedArticleWarehouse.QtyPackages > oldPurchasedArticleWarehouse.QtyPackages)? (changedPurchasedArticleWarehouse.QtyPackages - oldPurchasedArticleWarehouse.QtyPackages)
+                        : ((oldPurchasedArticleWarehouse.QtyPackages - changedPurchasedArticleWarehouse.QtyPackages) * -1),
+                        QtyExtra = (changedPurchasedArticleWarehouse.QtyExtra > oldPurchasedArticleWarehouse.QtyExtra) ? (changedPurchasedArticleWarehouse.QtyExtra - oldPurchasedArticleWarehouse.QtyExtra)
+                        : ((oldPurchasedArticleWarehouse.QtyExtra - changedPurchasedArticleWarehouse.QtyExtra) * -1)
                     };
-                    var result = ArticleBalance.Reduce(_context, articleInOut);
-                   // var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasedArticleWarehouse);
+                    var result = ArticleBalance.Add(_context, articleInOut);
                     if (result.Value == false)
                     {
                         ModelState.AddModelError("", "Couldn't save.");
@@ -244,8 +258,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     articleInOut.ArticleID = tempPurchasedArticleWarehouse.PurchasedArticle.ArticleID;
                     articleInOut.WarehouseID = tempPurchasedArticleWarehouse.WarehouseID;
                     articleInOut.CompanyID = ArticleBalance.GetWarehouseCompany(_context, tempPurchasedArticleWarehouse.Warehouse);
-                    articleInOut.QtyPackagesIn = tempPurchasedArticleWarehouse.QtyPackages;
-                    articleInOut.QtyExtraIn = tempPurchasedArticleWarehouse.QtyExtra;
+                    articleInOut.QtyPackages = tempPurchasedArticleWarehouse.QtyPackages;
+                    articleInOut.QtyExtra = tempPurchasedArticleWarehouse.QtyExtra;
                     
                     result = ArticleBalance.Add(_context, articleInOut);
                    // result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
@@ -342,8 +356,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     ArticleID = tempPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
                     WarehouseID = tempPurchasedArticleWarehouse.WarehouseID,
                     CompanyID = ArticleBalance.GetWarehouseCompany(_context, tempPurchasedArticleWarehouse.Warehouse),
-                    QtyPackagesIn = tempPurchasedArticleWarehouse.QtyPackages,
-                    QtyExtraIn = tempPurchasedArticleWarehouse.QtyExtra
+                    QtyPackages = (tempPurchasedArticleWarehouse.QtyPackages * -1),
+                    QtyExtra = (tempPurchasedArticleWarehouse.QtyExtra * -1)
                 };
                 var result = ArticleBalance.Reduce(_context, articleInOut);
                // var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasedArticleWarehouse);

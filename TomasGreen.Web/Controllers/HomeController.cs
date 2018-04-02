@@ -35,7 +35,6 @@ namespace TomasGreen.Web.Controllers
         }
         public IActionResult Index()
         {
-           
 
             return View();
         }

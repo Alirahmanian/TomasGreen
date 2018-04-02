@@ -83,9 +83,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 model.Order = new Order();
                 model.Order.OrderDate = DateTime.Today;
-                ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name");
-                ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName");
-                ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name");
+                AddOrderLists(model);
             }
             return View(model);
         }
@@ -117,6 +115,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     //new order
                     var guid = Guid.NewGuid();
                     model.Order.Guid = guid;
+                    //model.Order.OrderNumber = NewOrderNumber(model.Order); later
                     _context.Add(model.Order);
                     await _context.SaveChangesAsync();
                     var savedOrder = _context.Orders.Where(o => o.OrderDate == model.Order.OrderDate && o.CompanyID == model.Order.CompanyID && o.Guid == guid).FirstOrDefault();
@@ -148,7 +147,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         var orderDetails = _context.OrderDetails.Any(d => d.OrderID == savedOrder.ID);
                         if (orderDetails)
                         {
-                            ModelState.AddModelError("", "Could't save. Order has order rows with different company. Please remove rows first or delete the order. ");
+                            ModelState.AddModelError("", "Could't save. Order has rows with different company. Please remove rows first or delete the order. ");
                             AddOrderLists(model);
                             return View(model);
                         }
@@ -163,7 +162,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     savedOrder.OrderDate = model.Order.OrderDate;
                     savedOrder.PaymentWarning = model.Order.PaymentWarning;
                     savedOrder.TransportFee = model.Order.TransportFee;
-                    savedOrder.OrderdBy = model.Order.OrderdBy;
+                    savedOrder.CurrencyID = model.Order.CurrencyID;
                     _context.Update(savedOrder);
                     await _context.SaveChangesAsync();
                     AddOrderLists(model);
@@ -191,15 +190,15 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 //Adjust cutomer balance
                 foreach (var orderDetail in orderToBeDeleted.OrderDetails)
                 {
-                    var articlsInOutForAdd = new ArticleInOut
+                    var articlsInOutForReduce = new ArticleInOut
                     {
                         ArticleID = orderDetail.ArticleID,
                         WarehouseID = orderDetail.WarehouseID,
                         CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == orderDetail.WarehouseID).AsNoTracking().FirstOrDefault()),
-                        QtyPackagesIn = orderDetail.QtyPackages,
-                        QtyExtraIn = orderDetail.QtyExtra
+                        QtyPackages = (orderDetail.QtyPackages * -1),
+                        QtyExtra = (orderDetail.QtyExtra * -1)
                     };
-                    var AddResult = ArticleBalance.Add(_context, articlsInOutForAdd);
+                    var AddResult = ArticleBalance.Add(_context, articlsInOutForReduce);
                     if (AddResult.Value == false)
                     {
                         ModelState.AddModelError("", _localizer["Couldn't Delete order."]);
@@ -229,8 +228,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     AddOrderLists(model);
                     return View(model);
                 }
-               
-
                 var totalWeightOrPackage = OrderValidation.OrderDetailTotalWeightOrPackage(_context, model.OrderDetail);
                 model.OrderDetail.Extended_Price = model.OrderDetail.Price * totalWeightOrPackage;
                 if(model.OrderDetail.OrderID == 0)
@@ -254,25 +251,43 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     var savedOrderDetail = _context.OrderDetails.Where(d => d.ID == model.OrderDetail.ID).AsNoTracking().FirstOrDefault();
                     if (savedOrderDetail != null)
                     {
-                        var articlsInOutForAdd = new ArticleInOut
+                        var articlsInOutForUndoReduce = new ArticleInOut
                         {
                             ArticleID = savedOrderDetail.ArticleID,
                             WarehouseID = savedOrderDetail.WarehouseID,
                             CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).AsNoTracking().FirstOrDefault()),
-                            QtyPackagesIn = savedOrderDetail.QtyPackages,
-                            QtyExtraIn = savedOrderDetail.QtyExtra
+                            QtyPackages = (savedOrderDetail.QtyPackages * -1),
+                            QtyExtra = (savedOrderDetail.QtyExtra * -1)
                         };
-                        var AddResult = ArticleBalance.Add(_context, articlsInOutForAdd);
-                        if (AddResult.Value == false)
+                        var undoReduceResult = ArticleBalance.Reduce(_context, articlsInOutForUndoReduce);
+                        if (undoReduceResult.Value == false)
                         {
                             ModelState.AddModelError("", _localizer["Couldn't save."]);
                             if (_hostingEnvironment.IsDevelopment())
                             {
-                                ModelState.AddModelError("", JSonHelper.ToJSon(AddResult));
+                                ModelState.AddModelError("", JSonHelper.ToJSon(undoReduceResult));
                             }
                             AddOrderLists(model);
                             return View(model);
                         }
+                        var companyBalance = new CompanyCreditDebitBalance
+                        {
+                            CompanyID = _context.Orders.Where(o => o.ID == savedOrderDetail.OrderID).FirstOrDefault().CompanyID,
+                            CurrencyID = _context.Orders.Where(o => o.ID == savedOrderDetail.OrderID).FirstOrDefault().CurrencyID,
+                            Debit = (savedOrderDetail.Extended_Price * -1)
+                        };
+                        var undoDebitResult = CompanyBalance.Add(_context, companyBalance);
+                        if(!undoDebitResult.Value)
+                        {
+                            ModelState.AddModelError("", _localizer["Couldn't save."]);
+                            if (_hostingEnvironment.IsDevelopment())
+                            {
+                                ModelState.AddModelError("", JSonHelper.ToJSon(undoDebitResult));
+                            }
+                            AddOrderLists(model);
+                            return View(model);
+                        }
+                        _context.SaveChanges();
                         savedOrderDetail.ArticleID = model.OrderDetail.ArticleID;
                         savedOrderDetail.WarehouseID = model.OrderDetail.WarehouseID;
                         savedOrderDetail.QtyPackages = model.OrderDetail.QtyPackages;
@@ -285,8 +300,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             ArticleID = savedOrderDetail.ArticleID,
                             WarehouseID = savedOrderDetail.WarehouseID,
                             CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == savedOrderDetail.WarehouseID).FirstOrDefault()),
-                            QtyPackagesOut = savedOrderDetail.QtyPackages,
-                            QtyExtraOut = savedOrderDetail.QtyExtra
+                            QtyPackages = savedOrderDetail.QtyPackages,
+                            QtyExtra = savedOrderDetail.QtyExtra
                         };
                         var result = ArticleBalance.Reduce(_context, articleInOut);
                         if (result.Value == false)
@@ -299,7 +314,19 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             AddOrderLists(model);
                             return View(model);
                         }
-
+                      
+                        companyBalance.Debit = savedOrderDetail.Extended_Price;
+                        var AddDebitResult = CompanyBalance.Add(_context, companyBalance);
+                        if (!undoDebitResult.Value)
+                        {
+                            ModelState.AddModelError("", _localizer["Couldn't save."]);
+                            if (_hostingEnvironment.IsDevelopment())
+                            {
+                                ModelState.AddModelError("", JSonHelper.ToJSon(undoDebitResult));
+                            }
+                            AddOrderLists(model);
+                            return View(model);
+                        }
                         _context.OrderDetails.Update(savedOrderDetail);
                            
                     }
@@ -312,8 +339,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         ArticleID = model.OrderDetail.ArticleID,
                         WarehouseID = model.OrderDetail.WarehouseID,
                         CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == model.OrderDetail.WarehouseID).FirstOrDefault()),
-                        QtyPackagesOut = model.OrderDetail.QtyPackages,
-                        QtyExtraOut = model.OrderDetail.QtyExtra
+                        QtyPackages = model.OrderDetail.QtyPackages,
+                        QtyExtra = model.OrderDetail.QtyExtra
                     };
                     var result = ArticleBalance.Reduce(_context, articleInOut);
                     if (result.Value == false)
@@ -322,6 +349,23 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         if (_hostingEnvironment.IsDevelopment())
                         {
                             ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                        }
+                        AddOrderLists(model);
+                        return View(model);
+                    }
+                    var companyBalance = new CompanyCreditDebitBalance
+                    {
+                        CompanyID = model.Order.CompanyID,
+                        CurrencyID = model.Order.CurrencyID,
+                        Debit = model.OrderDetail.Extended_Price
+                    };
+                    var AddDebitResult = CompanyBalance.Add(_context, companyBalance);
+                    if (!AddDebitResult.Value)
+                    {
+                        ModelState.AddModelError("", _localizer["Couldn't save."]);
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", JSonHelper.ToJSon(AddDebitResult));
                         }
                         AddOrderLists(model);
                         return View(model);
@@ -377,10 +421,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 ArticleID = orderDetail.ArticleID,
                 WarehouseID = orderDetail.WarehouseID,
                 CompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == orderDetail.WarehouseID).FirstOrDefault()),
-                QtyPackagesOut = orderDetail.QtyPackages,
-                QtyExtraOut = orderDetail.QtyExtra
+                QtyPackages = (orderDetail.QtyPackages * -1),
+                QtyExtra = (orderDetail.QtyExtra * -1)
             };
-            var UndoReduceResult = ArticleBalance.UndoReduce(_context, articleInOutForUndoReduce);
+            var UndoReduceResult = ArticleBalance.Reduce(_context, articleInOutForUndoReduce);
             if (!UndoReduceResult.Value)
             {
                 ModelState.AddModelError("", _localizer["Couldn't delete."]);
@@ -419,6 +463,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 model.Order.OrderDetails = _context.OrderDetails.Include(a => a.Article).Include(w => w.Warehouse).Where(d => d.OrderID == model.Order.ID).ToList();
             }
+            ViewData["CurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Code), "ID", "Code", model.Order?.CurrencyID);
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.Order?.CompanyID);
             ViewData["EmployeeID"] = new SelectList(_context.Employees, "ID", "FullName", model.Order?.EmployeeID);
             ViewData["ArticleCategoryID"] = new SelectList(_context.ArticleCategories, "ID", "Name", model.ArticleCategory?.ID);
@@ -450,15 +495,23 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             
            
         }
-       
+        
+        private string NewOrderNumber(Order model)
+        {
+            var result = "";
+           
+            return result;
+        }
 
         #region Ajax Calls
+        public JsonResult GetCurrencyRate(int currencyId)
+        {
+            var currency = _context.Currencies.Where(c => c.ID == currencyId).FirstOrDefault();
+            return new JsonResult(currency);
+        }
         public JsonResult GetArticleCategories()
         {
-          
             var articleCategories = _context.ArticleCategories.Where(c => c.Archive != true).OrderBy(c => c.Name);
-           
-         
             return new JsonResult(articleCategories);
         }
 
@@ -511,6 +564,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             var orderDetails = _context.OrderDetails.Where(d => d.OrderID == orderId).ToList();
             return PartialView("_OrderDetailsPartialView", orderDetails);
         }
+       
         #endregion
     }
 }

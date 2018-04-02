@@ -67,14 +67,16 @@
                                 <span asp-validation-for="@Model.Order.PaymentDate" class="text-danger"></span>
                             </div>
                         </div>
+
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label asp-for="@Model.Order.OrderdBy" class="control-label"> Contact</label>
-                                <textarea asp-for="@Model.Order.OrderdBy" class="form-control"></textarea>
-                                <span asp-validation-for="@Model.Order.OrderdBy" class="text-danger"></span>
+                                <label asp-for="@Model.Order.CurrencyID" class="control-label">@localizer["Currency"]</label>
+                                <select asp-for="@Model.Order.CurrencyID" class="form-control" asp-items="ViewBag.CurrencyID" onchange=" LoadCurrency(this)">
+                                    <option>Select</option>
+                                </select>
+                                <span asp-validation-for="@Model.Order.CurrencyID" class="text-danger"></span>
                             </div>
                         </div>
-
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="@Model.Order.Coments" class="control-label"></label>
@@ -84,7 +86,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label asp-for="@Model.Order.TransportFee" class="control-label">@localizer["Trans. fee"]</label>
+                                <label asp-for="@Model.Order.TransportFee" class="control-label">@localizer["Transport fee"]</label>
                                 <input asp-for="@Model.Order.TransportFee" class="form-control" />
                                 <span asp-validation-for="@Model.Order.TransportFee" class="text-danger"></span>
                             </div>
@@ -116,6 +118,9 @@
 
                     <div class="row ">
                         <div class="bg-warning"><b>Filled by system</b></div>
+                        <div class="col-md-6">
+                            <span>Number: </span><span>@Model.Order.OrderNumber</span>
+                        </div>
                         <div class="col-md-6">
                             <span>Tot. price: </span><span>@Model.Order.GetTotalPrice().ToString("C")</span>
                         </div>

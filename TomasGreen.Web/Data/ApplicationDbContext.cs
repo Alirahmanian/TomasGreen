@@ -47,6 +47,7 @@ namespace TomasGreen.Web.Data
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<ExternalApi> ExternalApis { get; set; }
         public DbSet<ExternalApiFunction> ExternalApiFunctions { get; set; }
+        public DbSet<CompanyCreditDebitBalance> CompanyCreditDebitBalances { get; set; }
 
 
         public virtual async Task<int> SaveChangesAsync()
@@ -88,6 +89,22 @@ namespace TomasGreen.Web.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CompanyCreditDebitBalance>()
+            .HasIndex(p => new { p.CompanyID, p.CurrencyID })
+            .IsUnique(true);
+            modelBuilder.Entity<PurchasedArticle>().Property(x => x.UnitPrice).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TotalPrice).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TransportCost).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<PurchasedArticle>().Property(x => x.Discount).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<PurchasedArticle>().Property(x => x.PenaltyFee).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TollFee).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TotalPerUnit).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<Article>().Property(x => x.MinimumPricePerUSD).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Credit).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Debit).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<OrderDetail>().Property(x => x.Price).HasColumnType("decimal(18, 4)");
+            modelBuilder.Entity<OrderDetail>().Property(x => x.Extended_Price).HasColumnType("decimal(18, 4)");
+           
             modelBuilder.Entity<ExternalApi>()
            .HasIndex(p => new { p.Link, p.Key})
            .IsUnique(true);
@@ -97,6 +114,7 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Currency>()
             .HasIndex(p => p.Code)
             .IsUnique(true);
+            modelBuilder.Entity<Currency>().Property(x => x.Rate).HasColumnType("decimal(18, 4)");
             modelBuilder.Entity<WarehouseToWarehouse>()
             .HasIndex(p => new { p.Date, p.SenderWarehouseID, p.RecipientWarehouseID, p.ArticleID })
             .IsUnique(true);
@@ -137,7 +155,9 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<PackagingMaterial>()
               .HasIndex(p => new { p.Name, p.ArticleUnitID })
               .IsUnique(true);
-
+            modelBuilder.Entity<Order>()
+            .HasIndex(p => new { p.OrderNumber })
+            .IsUnique(true);
             modelBuilder.Entity<OrderDetail>()
             .HasIndex(p => new { p.OrderID, p.ArticleID, p.WarehouseID, p.Price})
             .IsUnique(true);
@@ -164,12 +184,16 @@ namespace TomasGreen.Web.Data
                .HasIndex(p => new { p.ArticleID, p.WarehouseID, p.CompanyID })
                .IsUnique(true);
 
-
+            
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
-           
+            //foreach (var property in modelBuilder.Model.GetEntityTypes().SelectMany(t => t.GetProperties()).Where(p => p.ClrType == typeof(decimal)))
+            //{
+            //    property.Relational().ColumnType = "decimal(18, 4)";
+            //}
+
             base.OnModelCreating(modelBuilder);
 
         }

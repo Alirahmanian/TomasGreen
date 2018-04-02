@@ -113,8 +113,8 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
                         ArticleID = model.ArticleID,
                         WarehouseID = model.FromWarehouseID,
                         CompanyID = (ArticleBalance.WarehouseIsCoutomers(_context, model.FromWarehouseID) == false)? ArticleBalance.GetWarehouseCompany(_context, model.FromWarehouseID) : model.CompanyID,
-                        QtyPackagesOut = model.QtyPackages,
-                        QtyExtraOut = model.QtyExtra
+                        QtyPackages = model.QtyPackages,
+                        QtyExtra = model.QtyExtra
                     };
                     var result = ArticleBalance.Reduce(_context, articleInOut);
                     if (result.Value == false)

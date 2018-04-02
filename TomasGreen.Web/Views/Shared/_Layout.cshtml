@@ -20,7 +20,7 @@
     </environment>
 </head>
 <body>
-   
+    <div class="bg-warning"><a asp-area="Admin" asp-controller="Currencies" asp-action="Index">@await Component.InvokeAsync(nameof(LatestCurrencyRates))</a></div>
     <nav class="navbar navbar-inverse navbar-fixed-top nav-bg-green nav-text-black ">
         <div class="container leftMargin">
             <div class="navbar-header">
@@ -46,27 +46,29 @@
                     <li><a asp-area="Chocolate" asp-controller="Home" asp-action="Index">@localizer["Chocolate"]</a></li>
                     <li><a asp-area="Commision" asp-controller="Home" asp-action="Index">@localizer["Commision"]</a></li>
                     <li><a asp-area="Office" asp-controller="Home" asp-action="Index">@localizer["Office"]</a></li>
+                   
 
                     @*@{
-                if (User.Identity.IsAuthenticated)
-                {
-                        <li><a asp-area="" asp-controller="Home" asp-action=@localizer["Index"]>Home</a></li>
-                        <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a></li>
-                        <li><a asp-area="Accounting" asp-controller="Home" asp-action="Index">Accounting</a></li>
-                        <li><a asp-area="Management" asp-controller="Home" asp-action="Index">Management</a></li>
-                        <li><a asp-area="Purchase" asp-controller="Home" asp-action="Index">Purchase</a></li>
-                        <li><a asp-area="Sales" asp-controller="Home" asp-action="Index">Sales</a></li>
-                        <li><a asp-area="Stock" asp-controller="Home" asp-action="Index">Stock</a></li>
-        }
-        else
-        {
-                        @await Html.PartialAsync("_LoginPartial")
-        }
-                            }*@
+                                if (User.Identity.IsAuthenticated)
+                                {
+                                        <li><a asp-area="" asp-controller="Home" asp-action=@localizer["Index"]>Home</a></li>
+                                        <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a></li>
+                                        <li><a asp-area="Accounting" asp-controller="Home" asp-action="Index">Accounting</a></li>
+                                        <li><a asp-area="Management" asp-controller="Home" asp-action="Index">Management</a></li>
+                                        <li><a asp-area="Purchase" asp-controller="Home" asp-action="Index">Purchase</a></li>
+                                        <li><a asp-area="Sales" asp-controller="Home" asp-action="Index">Sales</a></li>
+                                        <li><a asp-area="Stock" asp-controller="Home" asp-action="Index">Stock</a></li>
+                        }
+                        else
+                        {
+                                        @await Html.PartialAsync("_LoginPartial")
+                        }
+                                            }*@
 
                 </ul>
 
             </div>
+
         </div>
     </nav>
     <div class="container leftMargin body-content">
@@ -75,9 +77,7 @@
 
 
 
-        <footer class="navbar-inverse navbar-fixed-bottom">
-            
-        </footer>
+        <footer class="navbar-inverse navbar-fixed-bottom"></footer>
     </div>
 
     <environment include="Development">

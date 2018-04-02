@@ -23,7 +23,7 @@ namespace TomasGreen.Model.Models
         public int QtyPackages { get; set; } = 0;
         //[Range(0, Int32.MaxValue)]
        // public int QtyReserveBoxes { get; set; } = 0;
-        [Range(0, Int32.MaxValue)]
+        [Range(0, double.MaxValue)]
         public decimal QtyExtra { get; set; } = 0;
 
         public string Notes { get; set; }
