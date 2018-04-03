@@ -13,7 +13,7 @@ using TomasGreen.Web.Data;
 using TomasGreen.Web.Validations;
 using TomasGreen.Web.Extensions;
 using Microsoft.Extensions.Localization;
-
+using TomasGreen.Web.Helpers;
 
 namespace TomasGreen.Web.Areas.Import.Controllers
 {
@@ -82,13 +82,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SavePurchasedArticleWarehouseViewModel model)
         {
-            //
-            var skippedErrors = ModelState.Keys.Where(key => key.StartsWith("PurchasedArticle.ID") || key.StartsWith("PurchasedArticle.CompanyID"));
+            //Make it all in one model later. There is no need for many to many relations any more
+            var skippedErrors = ModelState.Keys.Where(key => key.StartsWith("PurchasedArticle.ID") || key.StartsWith(nameof(PurchasedArticle.CompanyID))
+            || key.StartsWith(nameof(PurchasedArticle.CurrencyID)));
             foreach (var key in skippedErrors)
             {
                 ModelState.Remove(key);
             }
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 var customModelValidator = PurchasedArticleValidation.PurchasedArticleIsValid(_context, model.PurchasedArticle);
                 if (customModelValidator.Value == false)
@@ -106,7 +107,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 AddPurchasedArticleLists(model);
                 return View(model);
             }
-            if(model.PurchasedArticle.ID == 0)
+            if (model.PurchasedArticle.ID == 0)
             {
                 var guid = Guid.NewGuid();
                 model.PurchasedArticle.Guid = guid;
@@ -117,7 +118,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 _context.Add(model.PurchasedArticle);
                 await _context.SaveChangesAsync();
                 var savedPurchasedArticle = _context.PurchasedArticles.Where(r => r.Date == model.PurchasedArticle.Date && r.ArticleID == model.PurchasedArticle.ArticleID && r.Guid == guid).FirstOrDefault();
-                if(savedPurchasedArticle == null)
+                if (savedPurchasedArticle == null)
                 {
                     ModelState.AddModelError("", "Couldn't save.");
                     model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
@@ -137,16 +138,16 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 tempPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
                 tempPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
                 tempPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
-                    foreach (var purchasedArticleWarehouse in model.PurchasedArticleWarehouses)
+                foreach (var purchasedArticleWarehouse in model.PurchasedArticleWarehouses)
+                {
+                    if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                     {
-                        if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
-                        {
-                            purchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
-                            _context.Add(purchasedArticleWarehouse);
-                            tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
-                        }
+                        purchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
+                        _context.Add(purchasedArticleWarehouse);
+                        tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
+                        tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
                     }
+                }
                 var articleInOut = new ArticleInOut
                 {
                     ArticleID = tempPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
@@ -156,7 +157,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     QtyExtra = tempPurchasedArticleWarehouse.QtyExtra
                 };
                 var result = ArticleBalance.Add(_context, articleInOut);
-               // var result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
                 if (result.Value == false)
                 {
                     ModelState.AddModelError("", "Couldn't save.");
@@ -171,6 +171,32 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     return View(model);
 
                 }
+                var totalPerUnit = ArticleHelper.TotalPerUnit(_context, model.PurchasedArticle.ArticleID, tempPurchasedArticleWarehouse.QtyPackages, tempPurchasedArticleWarehouse.QtyExtra);
+                var totalPrice = totalPerUnit * model.PurchasedArticle.UnitPrice;
+                model.PurchasedArticle.TotalPerUnit = totalPerUnit;
+                model.PurchasedArticle.TotalPrice = totalPrice;
+                if (totalPrice > 0 && model.PurchasedArticle.CompanyID != null && model.PurchasedArticle.CurrencyID != null)
+                {
+                    var companyBalance = new CompanyCreditDebitBalance
+                    {
+                        CompanyID = model.PurchasedArticle.CompanyID??0,
+                        CurrencyID = model.PurchasedArticle.CurrencyID??0,
+                        Credit = model.PurchasedArticle.TotalPrice
+                    };
+                    var AddDebitResult = CompanyBalance.Add(_context, companyBalance);
+                    if (!AddDebitResult.Value)
+                    {
+                        ModelState.AddModelError("", _localizer["Couldn't save."]);
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", JSonHelper.ToJSon(AddDebitResult));
+                        }
+                        model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+                }
+                
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -180,110 +206,121 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 if (savedPurchasedArticle != null)
                 {
                     //rollback old values from article balance
-                 
-                    var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
-                    var oldPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
-                    oldPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
-                    oldPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
-                    oldPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
-                    oldPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
-                    foreach (var purchasedArticleWarehouse in savedPurchasedArticle.Warehouses)
-                    {
-                        if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
-                        {
-                            oldPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            oldPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
-                            _context.Remove(purchasedArticleWarehouse);
-                        }
-                    }
-                    var changedPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
-                    changedPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
-                    changedPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
-                    changedPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
-                    changedPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
-                    foreach (var purchasedArticleWarehouse in savedPurchasedArticle.Warehouses)
-                    {
-                        if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
-                        {
-                            changedPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            changedPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
-                            _context.Remove(purchasedArticleWarehouse);
-                        }
-                    }
-                    var articleInOut = new ArticleInOut
-                    {
-                        ArticleID = changedPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
-                        WarehouseID = changedPurchasedArticleWarehouse.WarehouseID,
-                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, changedPurchasedArticleWarehouse.Warehouse),
-                        QtyPackages = (changedPurchasedArticleWarehouse.QtyPackages > oldPurchasedArticleWarehouse.QtyPackages)? (changedPurchasedArticleWarehouse.QtyPackages - oldPurchasedArticleWarehouse.QtyPackages)
-                        : ((oldPurchasedArticleWarehouse.QtyPackages - changedPurchasedArticleWarehouse.QtyPackages) * -1),
-                        QtyExtra = (changedPurchasedArticleWarehouse.QtyExtra > oldPurchasedArticleWarehouse.QtyExtra) ? (changedPurchasedArticleWarehouse.QtyExtra - oldPurchasedArticleWarehouse.QtyExtra)
-                        : ((oldPurchasedArticleWarehouse.QtyExtra - changedPurchasedArticleWarehouse.QtyExtra) * -1)
-                    };
-                    var result = ArticleBalance.Add(_context, articleInOut);
-                    if (result.Value == false)
-                    {
-                        ModelState.AddModelError("", "Couldn't save.");
-                        if (_hostingEnvironment.IsDevelopment())
-                        {
-                            ModelState.AddModelError("", JSonHelper.ToJSon(result));
-                        }
-                        model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(savedPurchasedArticle?.ArticleID ?? 0);
-                        AddPurchasedArticleLists(model);
-                        return View(model);
-
-                    }
-
-                    if (savedPurchasedArticle.CompanyID != model.PurchasedArticle.CompanyID)
-                    {
-                        // rollBack Company balance
-                    }
-                    tempPurchasedArticleWarehouse.QtyPackages = 0;
-                    tempPurchasedArticleWarehouse.QtyExtra = 0;
+                    var newQtyPackages = 0; decimal newQtyExtra = 0;
                     foreach (var purchasedArticleWarehouse in model.PurchasedArticleWarehouses)
                     {
                         if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                         {
-                            tempPurchasedArticleWarehouse.QtyPackages += purchasedArticleWarehouse.QtyPackages;
-                            tempPurchasedArticleWarehouse.QtyExtra += purchasedArticleWarehouse.QtyExtra;
-
-                            purchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
-                            purchasedArticleWarehouse.AddedDate = savedPurchasedArticle.AddedDate;
-                            purchasedArticleWarehouse.ModifiedDate = DateTime.Now;
-                            _context.Add(purchasedArticleWarehouse);
-                           
+                            newQtyPackages += purchasedArticleWarehouse.QtyPackages;
+                            newQtyExtra += purchasedArticleWarehouse.QtyExtra;
                         }
                     }
-
-                    articleInOut.ArticleID = tempPurchasedArticleWarehouse.PurchasedArticle.ArticleID;
-                    articleInOut.WarehouseID = tempPurchasedArticleWarehouse.WarehouseID;
-                    articleInOut.CompanyID = ArticleBalance.GetWarehouseCompany(_context, tempPurchasedArticleWarehouse.Warehouse);
-                    articleInOut.QtyPackages = tempPurchasedArticleWarehouse.QtyPackages;
-                    articleInOut.QtyExtra = tempPurchasedArticleWarehouse.QtyExtra;
-                    
-                    result = ArticleBalance.Add(_context, articleInOut);
-                   // result = articleBalance.AddPurchasedArticleToBalance(tempPurchasedArticleWarehouse);
-                    if (result.Value == false)
+                    var oldQtyPackages = 0; decimal oldQtyExtra = 0;
+                    var onThewayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay).FirstOrDefault();
+                    var tempPurchasedArticleWarehouse = new PurchasedArticleWarehouse();
+                    tempPurchasedArticleWarehouse.WarehouseID = onThewayWarehouse.ID;
+                    tempPurchasedArticleWarehouse.Warehouse = onThewayWarehouse;
+                    tempPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticle.ID;
+                    tempPurchasedArticleWarehouse.PurchasedArticle = savedPurchasedArticle;
+                    foreach (var purchasedArticleWarehouse in savedPurchasedArticle.Warehouses)
                     {
-                        ModelState.AddModelError("", "Couldn't save.");
-                        if (_hostingEnvironment.IsDevelopment())
+                        if (purchasedArticleWarehouse.QtyPackages > 0 || purchasedArticleWarehouse.QtyExtra > 0)
                         {
-                            ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                            oldQtyPackages += purchasedArticleWarehouse.QtyPackages;
+                            oldQtyExtra += purchasedArticleWarehouse.QtyExtra;
                         }
-                        model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(savedPurchasedArticle?.ArticleID ?? 0);
-                        AddPurchasedArticleLists(model);
-                        return View(model);
-
+                    }
+                    var articleInOut = new ArticleInOut
+                    {
+                        ArticleID = tempPurchasedArticleWarehouse.PurchasedArticle.ArticleID,
+                        WarehouseID = tempPurchasedArticleWarehouse.WarehouseID,
+                        CompanyID = ArticleBalance.GetWarehouseCompany(_context, tempPurchasedArticleWarehouse.Warehouse),
+                        QtyPackages = (newQtyPackages > oldQtyPackages)? (newQtyPackages - oldQtyPackages) : ((oldQtyPackages - newQtyPackages) * -1),
+                        QtyExtra = (newQtyExtra > oldQtyExtra) ? (newQtyExtra - oldQtyExtra) : ((oldQtyExtra - newQtyExtra) * -1)
+                    };
+                    if(articleInOut.QtyPackages != 0 || articleInOut.QtyExtra != 0 )
+                    {
+                        var result = ArticleBalance.Add(_context, articleInOut);
+                        if (result.Value == false)
+                        {
+                            ModelState.AddModelError("", "Couldn't save.");
+                            if (_hostingEnvironment.IsDevelopment())
+                            {
+                                ModelState.AddModelError("", JSonHelper.ToJSon(result));
+                            }
+                            model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(savedPurchasedArticle?.ArticleID ?? 0);
+                            AddPurchasedArticleLists(model);
+                            return View(model);
+                        }
+                        var oldtotalPerUnit = ArticleHelper.TotalPerUnit(_context, savedPurchasedArticle.ArticleID, oldQtyPackages, oldQtyExtra);
+                        var oldtotalPrice = oldtotalPerUnit * savedPurchasedArticle.UnitPrice;
+                        if (oldtotalPrice > 0 && savedPurchasedArticle.CompanyID != null && savedPurchasedArticle.CurrencyID != null)
+                        {
+                            var companyBalance = new CompanyCreditDebitBalance
+                            {
+                                CompanyID = savedPurchasedArticle.CompanyID ?? 0,
+                                CurrencyID = savedPurchasedArticle.CurrencyID ?? 0,
+                                Credit = (oldtotalPrice *-1)
+                            };
+                            var AddDebitResult = CompanyBalance.Add(_context, companyBalance);
+                            if (!AddDebitResult.Value)
+                            {
+                                ModelState.AddModelError("", _localizer["Couldn't save."]);
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(AddDebitResult));
+                                }
+                                model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+                        }
+                        var newtotalPerUnit = ArticleHelper.TotalPerUnit(_context, model.PurchasedArticle.ArticleID, newQtyPackages, newQtyExtra);
+                        var newtotalPrice = newtotalPerUnit * model.PurchasedArticle.UnitPrice;
+                        model.PurchasedArticle.TotalPrice = newtotalPrice;
+                        model.PurchasedArticle.TotalPerUnit = newtotalPerUnit;
+                        if (newtotalPrice > 0 && model.PurchasedArticle.CompanyID != null && model.PurchasedArticle.CurrencyID != null)
+                        {
+                            var companyBalance = new CompanyCreditDebitBalance
+                            {
+                                CompanyID = model.PurchasedArticle.CompanyID ?? 0,
+                                CurrencyID = model.PurchasedArticle.CurrencyID ?? 0,
+                                Credit = newtotalPrice
+                            };
+                            var AddDebitResult = CompanyBalance.Add(_context, companyBalance);
+                            if (!AddDebitResult.Value)
+                            {
+                                ModelState.AddModelError("", _localizer["Couldn't save."]);
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(AddDebitResult));
+                                }
+                                model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+                        }
+                    }
+                   
+                   
+                    var savedPurchasedArticleWarehouse = _context.PurchasedArticleWarehouses.Where(i => i.PurchasedArticleID == savedPurchasedArticle.ID).FirstOrDefault();
+                    if (savedPurchasedArticleWarehouse != null)
+                    {
+                        savedPurchasedArticleWarehouse.QtyPackages = newQtyPackages;
+                        savedPurchasedArticleWarehouse.QtyExtra = newQtyExtra;
+                        _context.PurchasedArticleWarehouses.Update(savedPurchasedArticleWarehouse);
                     }
                     savedPurchasedArticle.ArticleID = model.PurchasedArticle.ArticleID;
                     savedPurchasedArticle.Date = model.PurchasedArticle.Date;
                     savedPurchasedArticle.CompanyID = model.PurchasedArticle.CompanyID;
+                    savedPurchasedArticle.CurrencyID = model.PurchasedArticle.CurrencyID;
                     savedPurchasedArticle.ContainerNumber = model.PurchasedArticle.ContainerNumber;
                     savedPurchasedArticle.Description = model.PurchasedArticle.Description;
+                    savedPurchasedArticle.TotalPerUnit = model.PurchasedArticle.TotalPerUnit;
+                    savedPurchasedArticle.TotalPrice = model.PurchasedArticle.TotalPrice;
+
                     _context.Update(savedPurchasedArticle);
-
                     await _context.SaveChangesAsync();
-
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -294,18 +331,17 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     return View(model);
                 }
 
-                   
+
             }
 
             // return RedirectToAction(nameof(Index));
 
-            
+
             ViewData["ArticleID"] = new SelectList(_context.Articles, "ID", "Name", model.PurchasedArticle.ArticleID);
             ViewData["CompanyID"] = new SelectList(_context.Companies, "ID", "Name", model.PurchasedArticle.CompanyID);
             return View(model);
         }
 
-     
         // GET: Stock/PurchasedArticles/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -359,8 +395,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     QtyPackages = (tempPurchasedArticleWarehouse.QtyPackages * -1),
                     QtyExtra = (tempPurchasedArticleWarehouse.QtyExtra * -1)
                 };
-                var result = ArticleBalance.Reduce(_context, articleInOut);
-               // var result = articleBalance.RemovePurchasedArticleFromBalance(tempPurchasedArticleWarehouse);
+                var result = ArticleBalance.Add(_context, articleInOut);
                 if (result.Value == false)
                 {
                     ModelState.AddModelError("", "Couldn't save.");
@@ -371,6 +406,26 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     return View(savedPurchasedArticle);
 
                 }
+                if (savedPurchasedArticle.CompanyID != null && savedPurchasedArticle.CurrencyID != null)
+                {
+                    var companyBalance = new CompanyCreditDebitBalance
+                    {
+                        CompanyID = savedPurchasedArticle.CompanyID ?? 0,
+                        CurrencyID = savedPurchasedArticle.CurrencyID ?? 0,
+                        Credit = (savedPurchasedArticle.TotalPrice * -1)
+                    };
+                    var AddDebitResult = CompanyBalance.Add(_context, companyBalance);
+                    if (!AddDebitResult.Value)
+                    {
+                        ModelState.AddModelError("", _localizer["Couldn't save."]);
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", JSonHelper.ToJSon(AddDebitResult));
+                        }
+                        return View(savedPurchasedArticle);
+                    }
+                }
+
             }
             _context.PurchasedArticles.Remove(savedPurchasedArticle);
             await _context.SaveChangesAsync();
@@ -386,7 +441,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         {
             ViewData["ArticleID"] = new SelectList(_context.Articles.Include(u => u.ArticleUnit).Include(f => f.ArticlePackageForm), "ID", "Name", model.PurchasedArticle?.ArticleID);
             ViewData["CompanyID"] = new SelectList(_context.Companies.Where(c => c.IsOwner == false), "ID", "Name", model.PurchasedArticle?.CompanyID);
-           
+            ViewData["CurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false), "ID", "Code", model.PurchasedArticle?.CurrencyID);
+
         }
 
         #region 
@@ -461,7 +517,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         var savedPurchasedArticleWarehouse = _context.PurchasedArticleWarehouses.Where(r => r.PurchasedArticleID == id && r.WarehouseID == warehouse.ID).FirstOrDefault();
                         if(savedPurchasedArticleWarehouse != null)
                         {
-                           // tempPurchasedArticleWarehouse.ID = savedPurchasedArticleWarehouse.ID;
+                            tempPurchasedArticleWarehouse.ID = savedPurchasedArticleWarehouse.ID;
                             tempPurchasedArticleWarehouse.PurchasedArticleID = savedPurchasedArticleWarehouse.PurchasedArticleID;
                             tempPurchasedArticleWarehouse.WarehouseID = warehouse.ID;
                             tempPurchasedArticleWarehouse.Warehouse = warehouse;

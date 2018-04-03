@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180403180911_Paymenttype")]
+    partial class Paymenttype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -376,19 +377,13 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("PaymentTypeID");
-
                     b.Property<string>("UserName");
 
                     b.HasKey("ID");
 
                     b.HasIndex("CompanyBalanceDetailTypeID");
 
-                    b.HasIndex("CurrencyID");
-
-                    b.HasIndex("PaymentTypeID");
-
-                    b.HasIndex("CompanyID", "CurrencyID", "CompanyBalanceDetailTypeID", "BalanceChangerID", "PaymentTypeID")
+                    b.HasIndex("CompanyID", "CurrencyID", "CompanyBalanceDetailTypeID", "BalanceChangerID")
                         .IsUnique();
 
                     b.ToTable("CompanyBalanceDetails");
@@ -1387,21 +1382,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.CompanyBalanceDetailType", "CompanyBalanceDetailType")
                         .WithMany("CompanyBalanceDetails")
                         .HasForeignKey("CompanyBalanceDetailTypeID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.PaymentType", "PaymentType")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

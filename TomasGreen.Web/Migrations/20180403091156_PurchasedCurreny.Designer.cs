@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180403091156_PurchasedCurreny")]
+    partial class PurchasedCurreny
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -347,73 +348,6 @@ namespace TomasGreen.Web.Migrations
                         .IsUnique();
 
                     b.ToTable("Companies");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.CompanyBalanceDetail", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<int>("BalanceChangerID");
-
-                    b.Property<string>("Comment");
-
-                    b.Property<int>("CompanyBalanceDetailTypeID");
-
-                    b.Property<int>("CompanyID");
-
-                    b.Property<decimal>("Credit")
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<int>("CurrencyID");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<decimal>("Debit")
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<int>("PaymentTypeID");
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CompanyBalanceDetailTypeID");
-
-                    b.HasIndex("CurrencyID");
-
-                    b.HasIndex("PaymentTypeID");
-
-                    b.HasIndex("CompanyID", "CurrencyID", "CompanyBalanceDetailTypeID", "BalanceChangerID", "PaymentTypeID")
-                        .IsUnique();
-
-                    b.ToTable("CompanyBalanceDetails");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.CompanyBalanceDetailType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("CompanyBalanceDetailTypes");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.CompanyCreditDebitBalance", b =>
@@ -978,28 +912,6 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("PackingPlanMixArticles");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PaymentType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL");
-
-                    b.ToTable("PaymentTypes");
-                });
-
             modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
                 {
                     b.Property<int>("ID")
@@ -1379,29 +1291,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
                         .WithMany("ArticleWarehouseBalances")
                         .HasForeignKey("WarehouseID")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.CompanyBalanceDetail", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.CompanyBalanceDetailType", "CompanyBalanceDetailType")
-                        .WithMany("CompanyBalanceDetails")
-                        .HasForeignKey("CompanyBalanceDetailTypeID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.PaymentType", "PaymentType")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

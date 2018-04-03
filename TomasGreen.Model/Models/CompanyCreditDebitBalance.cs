@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace TomasGreen.Model.Models
@@ -8,7 +9,9 @@ namespace TomasGreen.Model.Models
     {
         public int CompanyID { get; set; }
         public int CurrencyID { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
         public decimal Credit { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
         public decimal Debit { get; set; }
 
         //nav.

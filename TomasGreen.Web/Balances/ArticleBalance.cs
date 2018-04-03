@@ -90,7 +90,7 @@ namespace TomasGreen.Web.Balances
                 return result;
             }
 
-            if(model.QtyPackages == 0 && model.QtyPackages == 0)
+            if(model.QtyPackages == 0 && model.QtyExtra == 0)
             {
                 result.Value = false; result.Property = nameof(model.QtyPackages); result.Message = "model is not valid.";
                 return result;

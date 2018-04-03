@@ -15,6 +15,8 @@ namespace TomasGreen.Model.Models
         public int ArticleID { get; set; }
         [Display(Name = "Company")]
         public int? CompanyID { get; set; }
+        [Display(Name = "Currency")]
+        public int? CurrencyID { get; set; }
         [Display(Name = "Container")]
         public string ContainerNumber { get; set; }
         [DataType(DataType.MultilineText)]

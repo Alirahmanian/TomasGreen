@@ -142,21 +142,37 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         AddOrderLists(model);
                         return View(model);
                     }
-                    if (savedOrder.CompanyID != model.Order.CompanyID)
+
+                    //Adjust customer balance in case company or currency is different
+                    if(savedOrder.CompanyID != model.Order.CompanyID || savedOrder.CurrencyID != model.Order.CurrencyID)
                     {
-                        var orderDetails = _context.OrderDetails.Any(d => d.OrderID == savedOrder.ID);
-                        if (orderDetails)
+                        if(savedOrder.GetTotalPrice() > 0)
                         {
-                            ModelState.AddModelError("", "Could't save. Order has rows with different company. Please remove rows first or delete the order. ");
-                            AddOrderLists(model);
-                            return View(model);
+                            var companyBalance = new CompanyCreditDebitBalance
+                            {
+                                CompanyID = savedOrder.CompanyID,
+                                CurrencyID = savedOrder.CurrencyID,
+                                Debit = (savedOrder.GetTotalPrice() * -1)
+                            };
+                            var debitResult = CompanyBalance.Add(_context, companyBalance);
+                            if (!debitResult.Value)
+                            {
+                                ModelState.AddModelError("", _localizer["Couldn't save."]);
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(debitResult));
+                                }
+                                AddOrderLists(model);
+                                return View(model);
+                            }
                         }
                     }
-                    //Adjust previous customer balance
-                    //Adjust current customer balance
+                    
+                   
                     savedOrder.Cash = model.Order.Cash;
                     savedOrder.Coments = model.Order.Coments;
                     savedOrder.CompanyID = model.Order.CompanyID;
+                    savedOrder.CurrencyID = model.Order.CurrencyID;
                     savedOrder.Confirmed = model.Order.Confirmed;
                     savedOrder.EmployeeID = model.Order.EmployeeID;
                     savedOrder.OrderDate = model.Order.OrderDate;
@@ -187,7 +203,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     return View(model);
                 }
                 var orderTotalPrice = orderToBeDeleted.GetTotalPrice();
-                //Adjust cutomer balance
+                //Adjust customer balance
                 foreach (var orderDetail in orderToBeDeleted.OrderDetails)
                 {
                     var articlsInOutForReduce = new ArticleInOut
@@ -212,6 +228,26 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     _context.OrderDetails.Remove(orderDetail);
                 }
                 //Adjust cutomer balance
+                if (orderTotalPrice > 0 )
+                {
+                    var companyBalance = new CompanyCreditDebitBalance
+                    {
+                        CompanyID = orderToBeDeleted.CompanyID,
+                        CurrencyID = orderToBeDeleted.CurrencyID,
+                        Debit = (orderTotalPrice * -1)
+                    };
+                    var AddDebitResult = CompanyBalance.Add(_context, companyBalance);
+                    if (!AddDebitResult.Value)
+                    {
+                        ModelState.AddModelError("", _localizer["Couldn't save."]);
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", JSonHelper.ToJSon(AddDebitResult));
+                        }
+                        AddOrderLists(model);
+                        return View(model);
+                    }
+                }
                 _context.Orders.Remove(orderToBeDeleted);
                 await _context.SaveChangesAsync();
                 AddOrderLists(model);

@@ -48,6 +48,9 @@ namespace TomasGreen.Web.Data
         public DbSet<ExternalApi> ExternalApis { get; set; }
         public DbSet<ExternalApiFunction> ExternalApiFunctions { get; set; }
         public DbSet<CompanyCreditDebitBalance> CompanyCreditDebitBalances { get; set; }
+        public DbSet<CompanyBalanceDetail> CompanyBalanceDetails { get; set; }
+        public DbSet<CompanyBalanceDetailType> CompanyBalanceDetailTypes { get; set; }
+        public DbSet<PaymentType> PaymentTypes { get; set; }
 
 
         public virtual async Task<int> SaveChangesAsync()
@@ -92,6 +95,15 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<CompanyCreditDebitBalance>()
             .HasIndex(p => new { p.CompanyID, p.CurrencyID })
             .IsUnique(true);
+            modelBuilder.Entity<CompanyBalanceDetail>()
+              .HasIndex(p => new { p.CompanyID, p.CurrencyID, p.CompanyBalanceDetailTypeID, p.BalanceChangerID, p.PaymentTypeID })
+             .IsUnique(true);
+            modelBuilder.Entity<CompanyBalanceDetailType>()
+             .HasIndex(p => new { p.Name })
+             .IsUnique(true);
+            modelBuilder.Entity<PaymentType>()
+             .HasIndex(p => new { p.Name })
+             .IsUnique(true);
             modelBuilder.Entity<PurchasedArticle>().Property(x => x.UnitPrice).HasColumnType("decimal(18, 4)");
             modelBuilder.Entity<PurchasedArticle>().Property(x => x.TotalPrice).HasColumnType("decimal(18, 4)");
             modelBuilder.Entity<PurchasedArticle>().Property(x => x.TransportCost).HasColumnType("decimal(18, 4)");
