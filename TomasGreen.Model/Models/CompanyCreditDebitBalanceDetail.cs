@@ -6,7 +6,7 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class CompanyBalanceDetail : BaseEntity
+    public class CompanyCreditDebitBalanceDetail : BaseEntity
     {
         public DateTime Date { get; set; }
         [Display(Name = "Company")]
@@ -17,7 +17,7 @@ namespace TomasGreen.Model.Models
         public int CurrencyID { get; set; }
         [Display(Name = "Balance Changer type")]
         [Required(ErrorMessage = "Please choose a balance Changer type.")]
-        public int CompanyBalanceDetailTypeID { get; set; }
+        public int CompanyCreditDebitBalanceDetailTypeID { get; set; }
         public int BalanceChangerID { get; set; }
         public int PaymentTypeID { get; set; }
         [Column(TypeName ="decimal(18,4)")]
@@ -25,9 +25,14 @@ namespace TomasGreen.Model.Models
         [Column(TypeName = "decimal(18,4)")]
         public decimal Debit { get; set; }
         public string Comment { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal CreditBeforeChange { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal DebitBeforeChange { get; set; }
+        public bool RowCreatedBySystem { get; set; }
 
         //nav.
-        public CompanyBalanceDetailType CompanyBalanceDetailType { get; set; }
+        public CompanyCreditDebitBalanceDetailType CompanyCreditDebitBalanceDetailType { get; set; }
         public Company Company { get; set; }
         public Currency Currency { get; set; }
         public PaymentType PaymentType { get; set; }

@@ -7,5 +7,6 @@ namespace TomasGreen.Model.Models
     public class PaymentType :BaseEntity
     {
         public string Name { get; set; }
+        public bool UsedBySystem { get; set; }
     }
 }

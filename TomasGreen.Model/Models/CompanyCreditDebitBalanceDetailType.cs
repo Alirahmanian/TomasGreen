@@ -5,12 +5,13 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class CompanyBalanceDetailType : BaseEntity
+    public class CompanyCreditDebitBalanceDetailType : BaseEntity
     {
         [Required(ErrorMessage = "Please put a baalance changer type.")]
         public string Name { get; set; }
+        public bool UsedBySystem { get; set; }
 
         //nav.
-        public ICollection<CompanyBalanceDetail> CompanyBalanceDetails { get; set; }
+        public ICollection<CompanyCreditDebitBalanceDetail> CompanyCreditDebitBalanceDetails { get; set; }
     }
 }
