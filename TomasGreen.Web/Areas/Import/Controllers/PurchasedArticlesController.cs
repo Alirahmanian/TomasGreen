@@ -20,7 +20,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
     [Area("Import")]
     public class PurchasedArticlesController : Controller
     {
-        private const string COMPANYCREDITDEBITBALANCEDETAILTYPE_FOR_PURCHASE = "Purchase";
+       
         private const string PAYMENTTYPE_FOR_ARTICLE = "Article";
         private readonly ApplicationDbContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -215,14 +215,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddPurchasedArticleLists(model);
                                 return View(model);
                             }
-                            var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == COMPANYCREDITDEBITBALANCEDETAILTYPE_FOR_PURCHASE).FirstOrDefault();
-                            var paymentType = _context.PaymentTypes.Where(p => p.Name == PAYMENTTYPE_FOR_ARTICLE).FirstOrDefault();
+                            var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
+                            var paymentType = _context.PaymentTypes.Where(p => p.Name == CompanyPaymentTypeLookUp.Article).FirstOrDefault();
                             if (companyBalanceDetailType == null || paymentType == null)
                             {
                                 ModelState.AddModelError("", _localizer["Couldn't save."]);
                                 if (_hostingEnvironment.IsDevelopment())
                                 {
-                                    ModelState.AddModelError("", _localizer["Couldn't find balance changer's type."]);
+                                   ModelState.AddModelError("", _localizer[$"Couldn't find balance changer's type. Check CompanyBalanceLookUps for { CompanyBalanceDetailTypeLookUp.Purchase}, { CompanyPaymentTypeLookUp.Article}"]);
                                 }
                                 model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
                                 AddPurchasedArticleLists(model);
@@ -353,14 +353,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                     AddPurchasedArticleLists(model);
                                     return View(model);
                                 }
-                                var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == COMPANYCREDITDEBITBALANCEDETAILTYPE_FOR_PURCHASE).FirstOrDefault();
-                                var paymentType = _context.PaymentTypes.Where(p => p.Name == PAYMENTTYPE_FOR_ARTICLE).FirstOrDefault();
+                                var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
+                                var paymentType = _context.PaymentTypes.Where(p => p.Name == CompanyPaymentTypeLookUp.Article).FirstOrDefault();
                                 if (companyBalanceDetailType == null || paymentType == null)
                                 {
                                     ModelState.AddModelError("", _localizer["Couldn't save."]);
                                     if (_hostingEnvironment.IsDevelopment())
                                     {
-                                        ModelState.AddModelError("", _localizer["Couldn't find balance changer's type."]);
+                                        ModelState.AddModelError("", _localizer[$"Couldn't find balance changer's type. Check CompanyBalanceLookUps for { CompanyBalanceDetailTypeLookUp.Purchase}, { CompanyPaymentTypeLookUp.Article}"]);
                                     }
                                     model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
                                     AddPurchasedArticleLists(model);
@@ -427,14 +427,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                     AddPurchasedArticleLists(model);
                                     return View(model);
                                 }
-                                var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == COMPANYCREDITDEBITBALANCEDETAILTYPE_FOR_PURCHASE).FirstOrDefault();
-                                var paymentType = _context.PaymentTypes.Where(p => p.Name == PAYMENTTYPE_FOR_ARTICLE).FirstOrDefault();
+                                var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
+                                var paymentType = _context.PaymentTypes.Where(p => p.Name == CompanyPaymentTypeLookUp.Article).FirstOrDefault();
                                 if (companyBalanceDetailType == null || paymentType == null)
                                 {
                                     ModelState.AddModelError("", _localizer["Couldn't save."]);
                                     if (_hostingEnvironment.IsDevelopment())
                                     {
-                                        ModelState.AddModelError("", _localizer["Couldn't find balance changer's type."]);
+                                        ModelState.AddModelError("", _localizer[$"Couldn't find balance changer's type. Check CompanyBalanceLookUps for { CompanyBalanceDetailTypeLookUp.Purchase}, { CompanyPaymentTypeLookUp.Article}"]);
                                     }
                                     model.PurchasedArticleWarehouses = GetPurchasedArticleWarehouse(0);
                                     AddPurchasedArticleLists(model);
@@ -596,14 +596,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         }
                         return View(savedPurchasedArticle);
                     }
-                    var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == COMPANYCREDITDEBITBALANCEDETAILTYPE_FOR_PURCHASE).FirstOrDefault();
-                    var paymentType = _context.PaymentTypes.Where(p => p.Name == PAYMENTTYPE_FOR_ARTICLE).FirstOrDefault();
+                    var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
+                    var paymentType = _context.PaymentTypes.Where(p => p.Name == CompanyPaymentTypeLookUp.Article).FirstOrDefault();
                     if (companyBalanceDetailType == null || paymentType == null)
                     {
                         ModelState.AddModelError("", _localizer["Couldn't save."]);
                         if (_hostingEnvironment.IsDevelopment())
                         {
-                            ModelState.AddModelError("", _localizer["Couldn't find balance changer's type."]);
+                            ModelState.AddModelError("", _localizer[$"Couldn't find balance changer's type. Check CompanyBalanceLookUps for { CompanyBalanceDetailTypeLookUp.Purchase}, { CompanyPaymentTypeLookUp.Article}"]);
                         }
                         return View(savedPurchasedArticle);
                     }
