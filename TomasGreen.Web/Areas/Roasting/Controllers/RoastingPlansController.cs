@@ -379,7 +379,7 @@ namespace TomasGreen.Web.Areas.Roasting.Controllers
         public JsonResult GetArticlesByWarehouse(int warehouseID, int companyID)
         {
             var articles = (from aw in _context.ArticleWarehouseBalances
-                            where aw.CompanyID == companyID && aw.WarehouseID == warehouseID
+                            where aw.CompanyID == companyID && aw.WarehouseID == warehouseID && (aw.QtyPackagesOnhand > 0 || aw.QtyExtraOnhand > 0)
                             join a in _context.Articles on aw.ArticleID equals a.ID
                             join w in _context.Warehouses on aw.WarehouseID equals w.ID
                               orderby a.Name

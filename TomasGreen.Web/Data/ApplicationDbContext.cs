@@ -9,6 +9,7 @@ using TomasGreen.Web.Models;
 using TomasGreen.Model.Models;
 using System.Reflection;
 using TomasGreen.Web.Areas.Import.ViewModels;
+using EntityFrameworkCore.Triggers;
 
 namespace TomasGreen.Web.Data
 {
@@ -52,9 +53,13 @@ namespace TomasGreen.Web.Data
         public DbSet<CompanyCreditDebitBalanceDetailType> CompanyCreditDebitBalanceDetailTypes { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
 
-
+       
         public virtual async Task<int> SaveChangesAsync()
         {
+            //Triggers<CompanyCreditDebitBalanceDetailType>.Updating += e => e.Entity.Name = (e.Original.UsedBySystem == true)? e.Original.Name: e.Entity.Name;
+            //Triggers<CompanyCreditDebitBalanceDetailType>.Deleting += e => e.Cancel = e.Original.UsedBySystem;
+            //Triggers<PaymentType>.Updating += e => e.Entity.Name = (e.Original.UsedBySystem == true) ? e.Original.Name : e.Entity.Name;
+            //Triggers<PaymentType>.Deleting += e => e.Cancel = e.Original.UsedBySystem;
             PutBaseEntityValues();
             return await base.SaveChangesAsync();
         }
@@ -83,11 +88,20 @@ namespace TomasGreen.Web.Data
 
             foreach (var entry in ChangeTracker.Entries().Where(x => x.Entity.GetType().GetProperty("UserName") != null))
             {
-               
-               // entry.Property("UserName").CurrentValue = 
+                // entry.Property("UserName").CurrentValue = 
             }
-
-           
+            // To protect values sused by the system
+            foreach (var entry in ChangeTracker.Entries().Where(c => c.Entity is PaymentType || c.Entity is CompanyCreditDebitBalanceDetailType))
+            {
+                if (entry.State == EntityState.Modified || entry.State == EntityState.Deleted)
+                {
+                    var isUsedBySystem = (bool)entry.Property("UsedBySystem").OriginalValue;
+                    if (isUsedBySystem)
+                    {
+                        entry.State = EntityState.Unchanged;
+                    }
+                }
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

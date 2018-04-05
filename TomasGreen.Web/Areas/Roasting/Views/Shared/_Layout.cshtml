@@ -9,6 +9,7 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/CustomSite.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -18,8 +19,8 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-full bg-info">
-        <div class="container">
+    <nav class="navbar navbar-inverse navbar-fixed-top nav-bg-green nav-text-black">
+        <div class="container leftMargin">
             <div class="nav-tabs">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -30,33 +31,23 @@
                 @await Html.PartialAsync("_LanguagePartial")
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">@localizer["TomasGreen"]</a>
             </div>
-            <div class="navbar-collapse collapse avbar navbar-toggleable-md navbar-dark bg-company-red">
+            <div class="navbar-collapse collapse navbar-toggleable-md nav-text-black">
                 <ul class="nav nav-pills">
                     <li><a asp-area="Roasting" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Roasting"]</a></li>
                     <li role="presentation" class="dropdown">
-                        <a class=" dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a class=" nav-link dropdown-toggle nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                             @localizer["Plans"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a asp-area="Roasting" asp-controller="RoastingPlans" asp-action="Index">@localizer["Roasting"]</a></li>
                         </ul>
-                        
                     </li>
-                   
-                
-
-
-
-
                 </ul>
 
             </div>
         </div>
     </nav>
-    
-
-
-    <div class="container body-content">
+    <div class="container leftMargin body-content">
         @RenderBody()
 
 

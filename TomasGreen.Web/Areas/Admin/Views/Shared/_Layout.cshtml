@@ -31,15 +31,23 @@
                 @await Html.PartialAsync("_LanguagePartial")
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">@localizer["TomasGreen"] </a>
             </div>
-            <div class="avbar navbar-collapse collapse navbar-toggleable-md nav-text-black">
+            <div class="navbar-collapse collapse navbar-toggleable-md nav-text-black">
                 <ul class="nav nav-pills">
                     <li><a asp-area="Import" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Admin"]</a></li>
                     <li role="presentation" class="dropdown">
-                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" >
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                             @localizer["Currency"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="Admin" asp-controller="Currencies" asp-action="Index" >@localizer["Currency"]</a></li>
+                            <li><a asp-area="Admin" asp-controller="Currencies" asp-action="Index">@localizer["Currency"]</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation" class="dropdown">
+                        <a class="nav-link dropdown-toggle nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            @localizer["Payment"] <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-area="Admin" asp-controller="PaymentTypes" asp-action="Index">@localizer["Payment"]</a></li>
                         </ul>
                     </li>
                 </ul>
