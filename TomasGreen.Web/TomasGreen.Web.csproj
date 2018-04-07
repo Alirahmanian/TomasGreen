@@ -48,8 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Areas\Import\Views\PurchasedArticles\Delete.cshtml" />
-    <None Include="Areas\Import\Views\PurchasedArticles\Details.cshtml" />
     <None Include="Areas\Import\Views\PurchasedArticles\Index.cshtml" />
     <None Include="wwwroot\js\Order.js" />
   </ItemGroup>

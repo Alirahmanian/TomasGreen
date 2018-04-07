@@ -19,6 +19,7 @@ namespace TomasGreen.Model.Models
         [ScaffoldColumn(false)]
         [DisplayName("Saved by")]
         public string UserName { get; set; }
+        public bool Archive { get; set; } = false;
 
     }
 }

@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TomasGreen.Model.Models
 {
-    public class PurchasedArticleWarehouse : BaseEntity
+    public class PurchasedArticleDetail : BaseEntity
     {
         [Required(ErrorMessage = "Please choose an article.")]
         public int PurchasedArticleID { get; set; }
+        [Required(ErrorMessage = "Please choose an Article.")]
+        public int ArticleID { get; set; }
         [Required(ErrorMessage = "Please choose a warehouse.")]
         public int WarehouseID { get; set; }
         [Display(Name = "Packages")]
@@ -19,6 +21,12 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Extra")]
         [Range(0, Int32.MaxValue)]
         public decimal QtyExtra { get; set; } = 0;
+        [Display(Name = "Unit price")]
+        [Column(TypeName = "decimal(18, 4)")]
+        public decimal UnitPrice { get; set; } = 0;
+        [Display(Name = "Total per unit")]
+        [Column(TypeName = "decimal(18, 4)")]
+        public decimal TotalPerUnit { get; set; } = 0;
 
         //Arrived
         public DateTime? ArrivedDate{ get; set; }
@@ -34,8 +42,10 @@ namespace TomasGreen.Model.Models
         public string Notes { get; set; }
 
         //nav
+        public virtual Article Article { get; set; }
         public virtual PurchasedArticle PurchasedArticle { get; set; }
-        public virtual Warehouse Warehouse { get; set; }
+        public virtual Warehouse OntheWayWarehouse { get; set; }
+        public virtual Warehouse ArrivedAtWarehouse { get; set; }
 
         //
         public bool HasIssue()

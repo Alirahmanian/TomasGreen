@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180407113056_IndexestoPurchasedArticleCostDetailAndType")]
+    partial class IndexestoPurchasedArticleCostDetailAndType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1090,8 +1091,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("CompanyID");
 
-                    b.Property<string>("ContainerNumber");
-
                     b.Property<int>("CurrencyID");
 
                     b.Property<DateTime>("Date");
@@ -1138,7 +1137,9 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("PurchasedArticleCostTypeID");
+                    b.Property<int>("PurchaseArticleCostTypeID");
+
+                    b.Property<int?>("PurchasedArticleCostTypeID");
 
                     b.Property<int>("PurchasedArticleID");
 
@@ -1152,7 +1153,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("PurchasedArticleCostTypeID");
 
-                    b.HasIndex("PurchasedArticleID", "PurchasedArticleCostTypeID", "CompanyID", "CurrencyID")
+                    b.HasIndex("PurchasedArticleID", "PurchaseArticleCostTypeID", "CompanyID", "CurrencyID")
                         .IsUnique();
 
                     b.ToTable("PurchasedArticleCostDetails");
@@ -1197,6 +1198,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime?>("ArrivedDate");
 
                     b.Property<int>("ArticleID");
+
+                    b.Property<string>("ContainerNumber");
 
                     b.Property<DateTime?>("ModifiedDate");
 

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TomasGreen.Web.Areas.Import.ViewModels.PurchasedArticleViewModel>
+﻿@model IEnumerable<TomasGreen.Model.Models.PurchasedArticle>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,25 +13,20 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayName("Article")
+                @Html.DisplayName("Date")
             </th>
             <th>
                 @Html.DisplayName("Supplier")
             </th>
+            
             <th>
-                @Html.DisplayName("Date")
-            </th>
-            <th>
-                @Html.DisplayName("Warehouses")
-            </th>
-            <th>
-                @Html.DisplayName("Total/Unit")
+                @Html.DisplayName("TotalPrice")
             </th>
             <th>
                 @Html.DisplayName("Exp. to arrive")
             </th>
             <th>
-                @Html.DisplayName("Received")
+                @Html.DisplayName("Arrived")
             </th>
 
             <th></th>
@@ -40,29 +35,20 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-
             <td>
-                @Html.DisplayFor(modelItem => item.Article.Name)
+                @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Company.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WarehouseSummary)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalPerUnit)
+                @Html.DisplayFor(modelItem => item.TotalPrice)
             </td>
             <td>
                 @(item.ExpectedToArrive.HasValue ? item.ExpectedToArrive.Value.ToString("yyyy-MM-dd") : "")
-               
-
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Received)
+                @Html.DisplayFor(modelItem => item.Arrived)
             </td>
             <td>
                 <a asp-action="Create" asp-route-id="@item.ID">Edit</a> |

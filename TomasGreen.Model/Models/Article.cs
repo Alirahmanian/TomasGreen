@@ -32,7 +32,6 @@ namespace TomasGreen.Model.Models
 
         [Display(Name = "Country")]
         public int CountryID { get; set; }
-        public bool Archive { get; set; }
 
 
 

@@ -19,6 +19,5 @@ namespace TomasGreen.Model.Models
        
         [Display(Name = "Is base")]
         public bool IsBase { get; set; }
-        public bool Archive { get; set; }
     }
 }

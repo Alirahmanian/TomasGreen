@@ -17,21 +17,13 @@ namespace TomasGreen.Web.Validations
                 result.Value = false; result.Property = nameof(model.Date); result.Message = "Please choose a date.";
                 return result;
             }
-            if (model.ArticleID == 0)
-            {
-                result.Value = false; result.Property = nameof(model.ArticleID); result.Message = "Please choose an article.";
-                return result;
-            }
+           
             if(model.CompanyID == 0)
             {
                 result.Value = false; result.Property = nameof(model.CompanyID); result.Message = "Please choose a supplier.";
                 return result;
             }
-            if (model.UnitPrice == 0)
-            {
-                result.Value = false; result.Property = nameof(model.UnitPrice); result.Message = "Please put unit price.";
-                return result;
-            }
+            
             return result;
         }
 

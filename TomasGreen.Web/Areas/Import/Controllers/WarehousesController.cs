@@ -246,8 +246,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         {
             if (model.ID == 0)
                 return true;
-            var warehouse = _context.Warehouses.Include(w => w.PurchasedArticles).Include(w => w.OrderDetails).Where(w => w.ID == model.ID).FirstOrDefault();
-            if (warehouse.OrderDetails.Count > 0 || warehouse.PurchasedArticles.Count > 0)
+            var warehouse = _context.Warehouses.Include(w => w.PurchasedArticleDetails).Include(w => w.OrderDetails).Where(w => w.ID == model.ID).FirstOrDefault();
+            if (warehouse.OrderDetails.Count > 0 || warehouse.PurchasedArticleDetails.Count > 0)
                 return false;
           
             

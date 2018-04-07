@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180407105328_PurchasedArticleDetails")]
+    partial class PurchasedArticleDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1090,8 +1091,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("CompanyID");
 
-                    b.Property<string>("ContainerNumber");
-
                     b.Property<int>("CurrencyID");
 
                     b.Property<DateTime>("Date");
@@ -1138,7 +1137,9 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("PurchasedArticleCostTypeID");
+                    b.Property<int>("PurchaseArticleCostTypeID");
+
+                    b.Property<int?>("PurchasedArticleCostTypeID");
 
                     b.Property<int>("PurchasedArticleID");
 
@@ -1152,8 +1153,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("PurchasedArticleCostTypeID");
 
-                    b.HasIndex("PurchasedArticleID", "PurchasedArticleCostTypeID", "CompanyID", "CurrencyID")
-                        .IsUnique();
+                    b.HasIndex("PurchasedArticleID");
 
                     b.ToTable("PurchasedArticleCostDetails");
                 });
@@ -1169,16 +1169,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
+                    b.Property<string>("Name");
 
                     b.Property<string>("UserName");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("PurchasedArticleCostTypes");
                 });
@@ -1197,6 +1192,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime?>("ArrivedDate");
 
                     b.Property<int>("ArticleID");
+
+                    b.Property<string>("ContainerNumber");
 
                     b.Property<DateTime?>("ModifiedDate");
 

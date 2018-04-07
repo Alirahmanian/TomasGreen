@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180406161502_AddingArchivetoAllEntities")]
+    partial class AddingArchivetoAllEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,8 +159,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("UserName");
 
-                    b.Property<decimal>("WeightPerPackage")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("WeightPerPackage");
 
                     b.HasKey("ID");
 
@@ -277,14 +277,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<decimal>("QtyExtraIn")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtraIn");
 
-                    b.Property<decimal>("QtyExtraOnhand")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtraOnhand");
 
-                    b.Property<decimal>("QtyExtraOut")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtraOut");
 
                     b.Property<int>("QtyPackagesIn");
 
@@ -317,22 +314,17 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Balance");
 
-                    b.Property<decimal>("CreditLimit")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("CreditLimit");
 
-                    b.Property<decimal>("CreditReceived")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("CreditReceived");
 
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Discount");
 
                     b.Property<bool>("IsOwner");
 
-                    b.Property<decimal>("LastBalance")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("LastBalance");
 
                     b.Property<DateTime>("LastBalanceDate");
 
@@ -344,19 +336,15 @@ namespace TomasGreen.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(255);
 
-                    b.Property<decimal>("Paid")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Paid");
 
-                    b.Property<decimal>("Purchases")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Purchases");
 
-                    b.Property<decimal>("Received")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Received");
 
                     b.Property<bool>("Ruble");
 
-                    b.Property<decimal>("SouldToUs")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("SouldToUs");
 
                     b.Property<string>("UserName");
 
@@ -422,7 +410,7 @@ namespace TomasGreen.Web.Migrations
                         .HasColumnType("decimal(18, 4)");
 
                     b.Property<decimal>("CreditBeforeChange")
-                        .HasColumnType("decimal(18, 4)");
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<int>("CurrencyID");
 
@@ -432,7 +420,7 @@ namespace TomasGreen.Web.Migrations
                         .HasColumnType("decimal(18, 4)");
 
                     b.Property<decimal>("DebitBeforeChange")
-                        .HasColumnType("decimal(18, 4)");
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -590,16 +578,13 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<decimal>("QtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtra");
 
                     b.Property<int>("QtyPackages");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("TotalPrice");
 
-                    b.Property<decimal>("TotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("TotalWeight");
 
                     b.Property<string>("UserName");
 
@@ -633,13 +618,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<decimal>("QtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtra");
 
                     b.Property<int>("QtyPackages");
 
-                    b.Property<decimal>("TotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("TotalWeight");
 
                     b.Property<string>("UserName");
 
@@ -846,8 +829,7 @@ namespace TomasGreen.Web.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18, 4)");
 
-                    b.Property<decimal>("QtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtra");
 
                     b.Property<int>("QtyPackages");
 
@@ -900,8 +882,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<decimal>("Dimensions")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Dimensions");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -909,13 +890,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("PackagingCategoryID");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Price");
 
                     b.Property<string>("UserName");
 
-                    b.Property<decimal>("Volume")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Volume");
 
                     b.HasKey("ID");
 
@@ -973,13 +952,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("NewArticleID");
 
-                    b.Property<decimal>("NewQtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("NewQtyExtra");
 
                     b.Property<int>("NewQtyPackages");
 
-                    b.Property<decimal>("NewTotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("NewTotalWeight");
 
                     b.Property<int>("Packages");
 
@@ -989,13 +966,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("PackingPlanID");
 
-                    b.Property<decimal>("PricePerUnit")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("PricePerUnit");
 
                     b.Property<int>("ToWarehouseID");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("TotalPrice");
 
                     b.Property<string>("UserName");
 
@@ -1021,20 +996,17 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("ArticleID");
 
-                    b.Property<decimal>("MixPercent")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("MixPercent");
 
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<int>("PackingPlanMixID");
 
-                    b.Property<decimal>("QtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtra");
 
                     b.Property<int>("QtyPackages");
 
-                    b.Property<decimal>("TotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("TotalWeight");
 
                     b.Property<string>("UserName");
 
@@ -1088,15 +1060,17 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Arrived");
 
-                    b.Property<int>("CompanyID");
+                    b.Property<int?>("CompanyID")
+                        .IsRequired();
 
-                    b.Property<string>("ContainerNumber");
-
-                    b.Property<int>("CurrencyID");
+                    b.Property<int?>("CurrencyID");
 
                     b.Property<DateTime>("Date");
 
                     b.Property<string>("Description");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<DateTime?>("ExpectedToArrive");
 
@@ -1106,7 +1080,18 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
+                    b.Property<decimal>("PenaltyFee")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<bool>("Received");
+
+                    b.Property<decimal>("TollFee")
+                        .HasColumnType("decimal(18, 4)");
+
                     b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal>("TransportCost")
                         .HasColumnType("decimal(18, 4)");
 
                     b.Property<string>("UserName");
@@ -1116,71 +1101,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasIndex("CompanyID");
 
                     b.ToTable("PurchasedArticles");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleCostDetail", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18, 4)");
-
-                    b.Property<bool>("Archive");
-
-                    b.Property<int>("CompanyID");
-
-                    b.Property<int>("CurrencyID");
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<int>("PurchasedArticleCostTypeID");
-
-                    b.Property<int>("PurchasedArticleID");
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CompanyID");
-
-                    b.HasIndex("CurrencyID");
-
-                    b.HasIndex("PurchasedArticleCostTypeID");
-
-                    b.HasIndex("PurchasedArticleID", "PurchasedArticleCostTypeID", "CompanyID", "CurrencyID")
-                        .IsUnique();
-
-                    b.ToTable("PurchasedArticleCostDetails");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleCostType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<bool>("Archive");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("PurchasedArticleCostTypes");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleDetail", b =>
@@ -1198,17 +1118,17 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("ArticleID");
 
+                    b.Property<string>("ContainerNumber");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Notes");
 
                     b.Property<int>("PurchasedArticleID");
 
-                    b.Property<decimal>("QtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtra");
 
-                    b.Property<decimal>("QtyExtraArrived")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtraArrived");
 
                     b.Property<int>("QtyPackages");
 
@@ -1263,13 +1183,11 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("NewArticleID");
 
-                    b.Property<decimal>("NewQtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("NewQtyExtra");
 
                     b.Property<int>("NewQtyPackages");
 
-                    b.Property<decimal>("NewTotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("NewTotalWeight");
 
                     b.Property<int>("Packages");
 
@@ -1277,32 +1195,25 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("PackagingMaterialPackageID");
 
-                    b.Property<decimal>("PricePerUnit")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("PricePerUnit");
 
-                    b.Property<decimal>("QtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtra");
 
                     b.Property<int>("QtyPackages");
 
-                    b.Property<decimal>("Salt")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("Salt");
 
-                    b.Property<decimal>("SaltLimit")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("SaltLimit");
 
                     b.Property<int>("ToWarehouseID");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("TotalPrice");
 
-                    b.Property<decimal>("TotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("TotalWeight");
 
                     b.Property<string>("UserName");
 
-                    b.Property<decimal>("WeightChange")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("WeightChange");
 
                     b.HasKey("ID");
 
@@ -1370,8 +1281,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<decimal>("QtyExtra")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<decimal>("QtyExtra");
 
                     b.Property<int>("QtyPackages");
 
@@ -1713,29 +1623,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleCostDetail", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.PurchasedArticleCostType", "PurchasedArticleCostType")
-                        .WithMany()
-                        .HasForeignKey("PurchasedArticleCostTypeID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.PurchasedArticle", "PurchasedArticle")
-                        .WithMany("PurchasedArticleCostDetails")
-                        .HasForeignKey("PurchasedArticleID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

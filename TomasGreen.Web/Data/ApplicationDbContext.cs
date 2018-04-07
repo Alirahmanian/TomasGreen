@@ -32,7 +32,7 @@ namespace TomasGreen.Web.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<PurchasedArticle> PurchasedArticles { get; set; }
-        public DbSet<PurchasedArticleWarehouse> PurchasedArticleWarehouses { get; set; }
+        public DbSet<PurchasedArticleDetail> PurchasedArticleDetails { get; set; }
         public DbSet<ArticleWarehouseBalance> ArticleWarehouseBalances { get; set; }
         public DbSet<ArticleUnit> ArticleUnits { get; set; }
         public DbSet<ArticlePackageForm> ArticlePakageForms { get; set; }
@@ -52,8 +52,10 @@ namespace TomasGreen.Web.Data
         public DbSet<CompanyCreditDebitBalanceDetail> CompanyCreditDebitBalanceDetails { get; set; }
         public DbSet<CompanyCreditDebitBalanceDetailType> CompanyCreditDebitBalanceDetailTypes { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
+        public DbSet<PurchasedArticleCostType> PurchasedArticleCostTypes { get; set; }
+        public DbSet<PurchasedArticleCostDetail> PurchasedArticleCostDetails { get; set; }
 
-       
+
         public virtual async Task<int> SaveChangesAsync()
         {
             //Triggers<CompanyCreditDebitBalanceDetailType>.Updating += e => e.Entity.Name = (e.Original.UsedBySystem == true)? e.Original.Name: e.Entity.Name;
@@ -106,6 +108,12 @@ namespace TomasGreen.Web.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<PurchasedArticleCostType>()
+           .HasIndex(p => new { p.Name })
+           .IsUnique(true);
+            modelBuilder.Entity<PurchasedArticleCostDetail>()
+            .HasIndex(p => new {p.PurchasedArticleID, p.PurchasedArticleCostTypeID, p.CompanyID, p.CurrencyID  })
+            .IsUnique(true);
             modelBuilder.Entity<CompanyCreditDebitBalance>()
             .HasIndex(p => new { p.CompanyID, p.CurrencyID })
             .IsUnique(true);
@@ -178,18 +186,18 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Warehouse>()
             .HasIndex(p => p.Name)
             .IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleWarehouse>()
+            modelBuilder.Entity<PurchasedArticleDetail>()
                 .HasIndex(p => new { p.PurchasedArticleID, p.WarehouseID })
                 .IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleWarehouse>()
+            modelBuilder.Entity<PurchasedArticleDetail>()
                 .HasOne(p => p.PurchasedArticle)
-                .WithMany(p => p.Warehouses)
+                .WithMany(p => p.PurchasedArticleDetails)
                 .HasForeignKey(p => p.PurchasedArticleID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<PurchasedArticleWarehouse>()
-                .HasOne(p => p.Warehouse)
-                .WithMany(p => p.PurchasedArticles)
+            modelBuilder.Entity<PurchasedArticleDetail>()
+                .HasOne(p => p.OntheWayWarehouse)
+                .WithMany(p => p.PurchasedArticleDetails)
                 .HasForeignKey(p => p.WarehouseID)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -197,28 +205,22 @@ namespace TomasGreen.Web.Data
                .HasIndex(p => new { p.ArticleID, p.WarehouseID, p.CompanyID })
                .IsUnique(true);
 
-            modelBuilder.Entity<PurchasedArticle>().Property(x => x.UnitPrice).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TotalPrice).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TransportCost).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<PurchasedArticle>().Property(x => x.Discount).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<PurchasedArticle>().Property(x => x.PenaltyFee).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TollFee).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<PurchasedArticle>().Property(x => x.TotalPerUnit).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<Article>().Property(x => x.MinimumPricePerUSD).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Credit).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Debit).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<CompanyCreditDebitBalanceDetail>().Property(x => x.Credit).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<CompanyCreditDebitBalanceDetail>().Property(x => x.Debit).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<OrderDetail>().Property(x => x.Price).HasColumnType("decimal(18, 4)");
-            modelBuilder.Entity<OrderDetail>().Property(x => x.Extended_Price).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<PurchasedArticle>().Property(x => x.TotalPrice).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<Article>().Property(x => x.MinimumPricePerUSD).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Credit).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Debit).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<CompanyCreditDebitBalanceDetail>().Property(x => x.Credit).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<CompanyCreditDebitBalanceDetail>().Property(x => x.Debit).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<OrderDetail>().Property(x => x.Price).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<OrderDetail>().Property(x => x.Extended_Price).HasColumnType("decimal(18, 4)");
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
-            //foreach (var property in modelBuilder.Model.GetEntityTypes().SelectMany(t => t.GetProperties()).Where(p => p.ClrType == typeof(decimal)))
-            //{
-            //    property.Relational().ColumnType = "decimal(18, 4)";
-            //}
+            foreach (var property in modelBuilder.Model.GetEntityTypes().SelectMany(t => t.GetProperties()).Where(p => p.ClrType == typeof(decimal)))
+            {
+               property.Relational().ColumnType = "decimal(18, 4)";
+            }
 
             base.OnModelCreating(modelBuilder);
 

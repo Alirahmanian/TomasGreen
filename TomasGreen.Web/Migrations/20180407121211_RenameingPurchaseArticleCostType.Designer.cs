@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180407121211_RenameingPurchaseArticleCostType")]
+    partial class RenameingPurchaseArticleCostType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1090,8 +1091,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("CompanyID");
 
-                    b.Property<string>("ContainerNumber");
-
                     b.Property<int>("CurrencyID");
 
                     b.Property<DateTime>("Date");
@@ -1197,6 +1196,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime?>("ArrivedDate");
 
                     b.Property<int>("ArticleID");
+
+                    b.Property<string>("ContainerNumber");
 
                     b.Property<DateTime?>("ModifiedDate");
 

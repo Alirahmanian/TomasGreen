@@ -14,7 +14,6 @@ namespace TomasGreen.Model.Models
         public string Description { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-        public bool Archive { get; set; } = false;
         [Display(Name = "Is on the way")]
         public bool IsOnTheWay { get; set; } = false;
         [Display(Name = "Is customers")]
@@ -23,7 +22,7 @@ namespace TomasGreen.Model.Models
 
         //nav
         public virtual CompanySection Section { get; set; }
-        public  ICollection<PurchasedArticleWarehouse> PurchasedArticles { get; set; }
+        public  ICollection<PurchasedArticleDetail> PurchasedArticleDetails { get; set; }
         public virtual ICollection<ArticleWarehouseBalance> ArticleWarehouseBalances { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
 
