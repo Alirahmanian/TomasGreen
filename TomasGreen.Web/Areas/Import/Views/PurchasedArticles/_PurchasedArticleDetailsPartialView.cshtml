@@ -39,11 +39,23 @@
 
             <td align="right">
                 @Html.DisplayFor(modelItem => item.QtyPackages)
-                <p>@item.QtyPackagesArrived</p>
+                @{
+                    if (item.ArrivedDate != null)
+                    {
+                        <p>@item.QtyPackagesArrived</p>
+                    }
+
+                }
             </td>
             <td align="right">
                 @Html.DisplayFor(modelItem => item.QtyExtra)
-                <p>@item.QtyExtraArrived</p>
+                @{
+                    if (item.ArrivedDate != null)
+                    {
+                      <p>@item.QtyExtraArrived</p>
+                    }
+
+                }
             </td>
             <td align="right">
                 @Html.DisplayFor(modelItem => item.UnitPrice)

@@ -44,12 +44,13 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: PurchaseArticles/Create
-        public ActionResult Create(int? id)
+        public ActionResult Create(int? id, int? PurchasedArticleId)
         {
             var model = new SavePurchasedArticleViewModel();
             model.PurchasedArticleDetail = new PurchasedArticleDetail();
             model.PurchasedArticleCostDetail = new PurchasedArticleCostDetail();
             model.PurchasedArticleDetail.OntheWayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay == true).FirstOrDefault();
+            model.PurchasedArticleDetail.WarehouseID = model.PurchasedArticleDetail.OntheWayWarehouse.ID;
             if (id > 0)
             {
                 model.PurchasedArticle = _context.PurchasedArticles.Include(d => d.PurchasedArticleDetails).Include(c => c.PurchasedArticleCostDetails).Where(p => p.ID == id).FirstOrDefault();
@@ -82,11 +83,16 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         // POST: PurchaseArticles/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(SavePurchasedArticleViewModel model, string SavePurchasedArticle, string SavePurchasedArticleDetail,
+        public async Task<IActionResult> Create(SavePurchasedArticleViewModel model, string SavePurchasedArticle, string SavePurchasedArticleDetail,
             string DeletePurchasedArticleDetail, string SavePurchasedArticleCostDetail, string DeletePurchasedArticleCostDetail)
         {
             try
             {
+                var skippedErrors = ModelState.Keys;
+                foreach (var key in skippedErrors)
+                {
+                    ModelState.Remove(key);
+                }
                 //Save PurchasedArticle
                 if (!string.IsNullOrWhiteSpace(SavePurchasedArticle))
                 {
@@ -97,21 +103,74 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         AddPurchasedArticleLists(model);
                         return View(model);
                     }
-                    var skippedErrors = ModelState.Keys;
-                    foreach (var key in skippedErrors)
-                    {
-                        ModelState.Remove(key);
-                    }
+                    
                     if (model.PurchasedArticle.ID == 0)
                     {
                         //new Purchase
+                        var guid = Guid.NewGuid();
+                        model.PurchasedArticle.Guid = guid;
+                        _context.PurchasedArticles.Add(model.PurchasedArticle);
+                        await _context.SaveChangesAsync();
+                        var savedPurchasedArticle = _context.PurchasedArticles.Where(p =>  p.Guid == guid && p.Date == model.PurchasedArticle.Date && p.CompanyID == model.PurchasedArticle.CompanyID && p.CurrencyID == model.PurchasedArticle.CurrencyID ).FirstOrDefault();
+                        if (savedPurchasedArticle == null)
+                        {
+                            ModelState.AddModelError("", "Couldn't save.");
+                            AddPurchasedArticleLists(model);
+                            return View(model);
+                        }
+                        model.PurchasedArticle = savedPurchasedArticle;
+                        if(model.PurchasedArticleDetail != null)
+                        {
+                            model.PurchasedArticleDetail.PurchasedArticleID = model.PurchasedArticle.ID;
+                        }
+                        else
+                        {
+                            model.PurchasedArticleDetail = new PurchasedArticleDetail { PurchasedArticleID = model.PurchasedArticle.ID };
+                        }
+                        if(model.PurchasedArticleCostDetail != null)
+                        {
+                            model.PurchasedArticleCostDetail.PurchasedArticleID = model.PurchasedArticle.ID;
+                        }
+                        else
+                        {
+                            model.PurchasedArticleCostDetail = new PurchasedArticleCostDetail { PurchasedArticleID = model.PurchasedArticle.ID };
+                        }
+                        
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+                    else
+                    {
+                        //Update Purchase
                     }
 
                 }
                 //Save PurchasedArticleDetail
                 if (!string.IsNullOrWhiteSpace(SavePurchasedArticleDetail))
                 {
-
+                    model.PurchasedArticleDetail.PurchasedArticleID = model.PurchasedArticle.ID;
+                    var customModelValidator = PurchasedArticleValidation.PurchasedArticleDetailIsValid(_context, model.PurchasedArticleDetail);
+                    if (customModelValidator.Value == false)
+                    {
+                        ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+                    if (model.PurchasedArticleDetail.ID == 0)
+                    {
+                        //new PurchasedArticleDetail
+                        var totalPerUnit = ArticleHelper.TotalPerUnit(_context, model.PurchasedArticleDetail.ArticleID, model.PurchasedArticleDetail.QtyPackages, model.PurchasedArticleDetail.QtyExtra);
+                        var totalPrice = totalPerUnit * model.PurchasedArticleDetail.UnitPrice;
+                        model.PurchasedArticleDetail.TotalPerUnit = totalPerUnit;
+                        _context.PurchasedArticleDetails.Add(model.PurchasedArticleDetail);
+                        await _context.SaveChangesAsync();
+                        AddPurchasedArticleLists(model); 
+                        return RedirectToAction(nameof(Create), new { id = model.PurchasedArticle.ID });
+                    }
+                    else
+                    {
+                        //update PurchasedArticleDetail
+                    }
                 }
                 //Delete PurchasedArticleDetail
                 if (!string.IsNullOrWhiteSpace(DeletePurchasedArticleDetail))
@@ -130,12 +189,27 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception exception)
             {
-                return View();
+                ModelState.AddModelError("", "Couldn't save." + exception.Message.ToString());
+                AddPurchasedArticleLists(model);
+                return View(model);
             }
         }
-
+        // GET: Sales/Orders/Edit/5
+        public async Task<IActionResult> EditRow(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var orderDetail = _context.OrderDetails.Where(d => d.ID == id).FirstOrDefault();
+            if (orderDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = orderDetail.OrderID, orderDetailId = orderDetail.ID });
+        }
         // GET: PurchaseArticles/Delete/5
         public ActionResult Delete(int id)
         {
