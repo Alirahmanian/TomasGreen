@@ -20,7 +20,6 @@ namespace TomasGreen.Web.Data
         {
           
         }
-
         //public DbSet<UserType> UserTypes { get; set; }
         //public DbSet<SystemUser> SystemUser { get; set; }
         public DbSet<Article> Articles { get; set; }
@@ -54,66 +53,20 @@ namespace TomasGreen.Web.Data
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<PurchasedArticleCostType> PurchasedArticleCostTypes { get; set; }
         public DbSet<PurchasedArticleCostDetail> PurchasedArticleCostDetails { get; set; }
-
-
-        public virtual async Task<int> SaveChangesAsync()
-        {
-            //Triggers<CompanyCreditDebitBalanceDetailType>.Updating += e => e.Entity.Name = (e.Original.UsedBySystem == true)? e.Original.Name: e.Entity.Name;
-            //Triggers<CompanyCreditDebitBalanceDetailType>.Deleting += e => e.Cancel = e.Original.UsedBySystem;
-            //Triggers<PaymentType>.Updating += e => e.Entity.Name = (e.Original.UsedBySystem == true) ? e.Original.Name : e.Entity.Name;
-            //Triggers<PaymentType>.Deleting += e => e.Cancel = e.Original.UsedBySystem;
-            PutBaseEntityValues();
-            return await base.SaveChangesAsync();
-        }
-        
-        public void PutBaseEntityValues()
-        {
-            foreach (var entry in ChangeTracker.Entries().Where(x => x.Entity.GetType().GetProperty("AddedDate") != null))
-            {
-                if (entry.State == EntityState.Added)
-                {
-                    entry.Property("AddedDate").CurrentValue = entry.Property("AddedDate").CurrentValue?? DateTime.Now;
-                }
-                else if (entry.State == EntityState.Modified)
-                {
-                    entry.Property("AddedDate").IsModified = false;
-                }
-            }
-
-            foreach (var entry in ChangeTracker.Entries().Where(
-                e =>
-                    e.Entity.GetType().GetProperty("ModifiedDate") != null &&
-                    e.State == EntityState.Modified))
-            {
-                entry.Property("ModifiedDate").CurrentValue = entry.Property("ModifiedDate").CurrentValue??DateTime.Now;
-            }
-
-            foreach (var entry in ChangeTracker.Entries().Where(x => x.Entity.GetType().GetProperty("UserName") != null))
-            {
-                // entry.Property("UserName").CurrentValue = 
-            }
-            // To protect values sused by the system
-            foreach (var entry in ChangeTracker.Entries().Where(c => c.Entity is PaymentType || c.Entity is CompanyCreditDebitBalanceDetailType))
-            {
-                if (entry.State == EntityState.Modified || entry.State == EntityState.Deleted)
-                {
-                    var isUsedBySystem = (bool)entry.Property("UsedBySystem").OriginalValue;
-                    if (isUsedBySystem)
-                    {
-                        entry.State = EntityState.Unchanged;
-                    }
-                }
-            }
-        }
+        public DbSet<PurchasedArticleContainerDetail> PurchasedArticleContainerDetails { get; set; }
+        public DbSet<PurchasedArticleShortageDealingDetail> PurchasedArticleShortageDealingDetails { get; set; }
+        public DbSet<ArticleWarehouseBalanceDetail> ArticleWarehouseBalanceDetails { get; set; }
+        public DbSet<ArticleWarehouseBalanceDetailType> ArticleWarehouseBalanceDetailTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PurchasedArticleCostType>()
-           .HasIndex(p => new { p.Name })
-           .IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleCostDetail>()
-            .HasIndex(p => new {p.PurchasedArticleID, p.PurchasedArticleCostTypeID, p.CompanyID, p.CurrencyID  })
-            .IsUnique(true);
+            modelBuilder.Entity<ArticleWarehouseBalanceDetailType>().HasIndex(p => new { p.Name }).IsUnique(true);
+            modelBuilder.Entity<ArticleWarehouseBalanceDetail>()
+             .HasIndex(p => new { p.ArticleID, p.WarehouseID, p.CompanyID, p.ArticleWarehouseBalanceDetailTypeID, p.BalanceChangerID }).IsUnique(true);
+            modelBuilder.Entity<PurchasedArticleShortageDealingDetail>().HasIndex(p => new { p.PurchasedArticleID, p.CompanyID, p.CurrencyID }).IsUnique(true);
+            modelBuilder.Entity<PurchasedArticleContainerDetail>().HasIndex(p => new { p.PurchasedArticleID, p.ContainerNumber }).IsUnique(true);
+            modelBuilder.Entity<PurchasedArticleCostType>().HasIndex(p => new { p.Name }).IsUnique(true);
+            modelBuilder.Entity<PurchasedArticleCostDetail>().HasIndex(p => new {p.PurchasedArticleID, p.PurchasedArticleCostTypeID, p.CompanyID, p.CurrencyID  }).IsUnique(true);
             modelBuilder.Entity<CompanyCreditDebitBalance>()
             .HasIndex(p => new { p.CompanyID, p.CurrencyID })
             .IsUnique(true);
@@ -226,6 +179,54 @@ namespace TomasGreen.Web.Data
 
         }
 
-       
+        public virtual async Task<int> SaveChangesAsync()
+        {
+            //Triggers<CompanyCreditDebitBalanceDetailType>.Updating += e => e.Entity.Name = (e.Original.UsedBySystem == true)? e.Original.Name: e.Entity.Name;
+            //Triggers<CompanyCreditDebitBalanceDetailType>.Deleting += e => e.Cancel = e.Original.UsedBySystem;
+            //Triggers<PaymentType>.Updating += e => e.Entity.Name = (e.Original.UsedBySystem == true) ? e.Original.Name : e.Entity.Name;
+            //Triggers<PaymentType>.Deleting += e => e.Cancel = e.Original.UsedBySystem;
+            PutBaseEntityValues();
+            return await base.SaveChangesAsync();
+        }
+
+        private void PutBaseEntityValues()
+        {
+            foreach (var entry in ChangeTracker.Entries().Where(x => x.Entity.GetType().GetProperty("AddedDate") != null))
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Property("AddedDate").CurrentValue = entry.Property("AddedDate").CurrentValue ?? DateTime.Now;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Property("AddedDate").IsModified = false;
+                }
+            }
+
+            foreach (var entry in ChangeTracker.Entries().Where(
+                e =>
+                    e.Entity.GetType().GetProperty("ModifiedDate") != null &&
+                    e.State == EntityState.Modified))
+            {
+                entry.Property("ModifiedDate").CurrentValue = entry.Property("ModifiedDate").CurrentValue ?? DateTime.Now;
+            }
+
+            foreach (var entry in ChangeTracker.Entries().Where(x => x.Entity.GetType().GetProperty("UserName") != null))
+            {
+                // entry.Property("UserName").CurrentValue = 
+            }
+            // To protect values sused by the system
+            foreach (var entry in ChangeTracker.Entries().Where(c => c.Entity is PaymentType || c.Entity is CompanyCreditDebitBalanceDetailType))
+            {
+                if (entry.State == EntityState.Modified || entry.State == EntityState.Deleted)
+                {
+                    var isUsedBySystem = (bool)entry.Property("UsedBySystem").OriginalValue;
+                    if (isUsedBySystem)
+                    {
+                        entry.State = EntityState.Unchanged;
+                    }
+                }
+            }
+        }
     }
 }

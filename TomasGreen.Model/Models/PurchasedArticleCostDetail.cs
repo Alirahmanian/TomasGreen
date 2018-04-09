@@ -19,6 +19,7 @@ namespace TomasGreen.Model.Models
         public decimal Amount { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
+        public Guid? Guid { get; set; }
 
         //nav.
         public PurchasedArticle PurchasedArticle { get; set; }

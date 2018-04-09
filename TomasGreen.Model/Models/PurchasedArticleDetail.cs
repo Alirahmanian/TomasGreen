@@ -27,6 +27,7 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Total per unit")]
         [Column(TypeName = "decimal(18, 4)")]
         public decimal TotalPerUnit { get; set; } = 0;
+        public Guid? Guid { get; set; }
 
         //Arrived
         public DateTime? ArrivedDate{ get; set; }

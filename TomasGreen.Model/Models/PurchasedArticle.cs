@@ -7,6 +7,13 @@ namespace TomasGreen.Model.Models
 {
     public class PurchasedArticle : BaseEntity
     {
+        public PurchasedArticle()
+        {
+            PurchasedArticleDetails = new HashSet<PurchasedArticleDetail>();
+            PurchasedArticleCostDetails = new HashSet<PurchasedArticleCostDetail>();
+            PurchasedArticleContainerDetails = new HashSet<PurchasedArticleContainerDetail>();
+        }
+        
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
@@ -15,8 +22,6 @@ namespace TomasGreen.Model.Models
         public int CompanyID { get; set; }
         [Display(Name = "Currency")]
         public int CurrencyID { get; set; }
-        [Display(Name = "Container")]
-        public string ContainerNumber { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
         public Guid? Guid { get; set; }
@@ -34,5 +39,17 @@ namespace TomasGreen.Model.Models
         public virtual Company Company { get; set; }
         public virtual IEnumerable<PurchasedArticleDetail> PurchasedArticleDetails { get; set; }
         public virtual IEnumerable<PurchasedArticleCostDetail> PurchasedArticleCostDetails { get; set; }
+        public virtual IEnumerable<PurchasedArticleShortageDealingDetail> PurchasedArticleShortageDealingDetails { get; set; }
+        public virtual IEnumerable<PurchasedArticleContainerDetail> PurchasedArticleContainerDetails { get; set; }
+
+        public decimal GetTotalPrice()
+        {
+            decimal result = 0;
+            foreach (var purchasedArticleDetail in PurchasedArticleDetails)
+            {
+                result += purchasedArticleDetail.TotalPerUnit;
+            }
+            return result;
+        }
     }
 }
