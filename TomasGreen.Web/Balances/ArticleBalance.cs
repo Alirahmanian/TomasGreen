@@ -170,7 +170,6 @@ namespace TomasGreen.Web.Balances
             result.Value = true;
             return result;
         }
-
         public static PropertyValidation Reduce(ApplicationDbContext _context, ArticleInOut model)
         {
             var result = new PropertyValidation(true, "Reduce", "ArticleWarehouseBalance", "", "");
