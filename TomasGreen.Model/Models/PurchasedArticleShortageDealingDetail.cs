@@ -10,6 +10,7 @@ namespace TomasGreen.Model.Models
         public int CompanyID { get; set; }
         public int CurrencyID { get; set; }
         public decimal Amount { get; set; }
+        public decimal Description { get; set; }
         public Guid? Guid { get; set; }
 
         public PurchasedArticle PurchasedArticle { get; set; }

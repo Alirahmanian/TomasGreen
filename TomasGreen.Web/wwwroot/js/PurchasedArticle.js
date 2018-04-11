@@ -8,9 +8,29 @@ function EnableDisablePurchasedArticleTabs() {
     }
     else {
         $("#PurchasedArticleTaps").find(":input").prop("disabled", false);
-       
+        PutActiveTab();
     }
     $("#PurchasedArticleDetail_TotalPerUnit").prop('disabled', true);
+}
+function ChangeActiveTab(index) {
+    $("#ActiveTab").val(index);
+    PutActiveTab();
+}
+
+function PutActiveTab() {
+    if ($("#ActiveTab").val() !== "") {
+        $('.PurchasedArticle_Taps li').removeClass('active');
+        $('.tab-pane').removeClass('active show');
+        $('.PurchasedArticle_Taps li').eq($("#ActiveTab").val()).addClass('active');
+        $('.tab-pane').eq($("#ActiveTab").val()).addClass('active');
+    }
+    else {
+        $('.PurchasedArticle_Taps li').removeClass('active');
+        $('.tab-pane').removeClass('active, show');
+        $('.PurchasedArticle_Taps li').eq(0).addClass('active');
+        $('.tab-pane').eq(0).addClass('active');
+    }
+
 }
 //=======================================
 //=======================================
@@ -27,9 +47,7 @@ function ValidatePurchasedArticle() {
         $("#PurchasedArticle_CurrencyID").closest('div').append('<p style="color:red">Please choose a currency.</p>');
         isPurchasedArticleValid = false;
     }
-    else {
-
-    }
+    
     return isPurchasedArticleValid;
 }
 //=======================================
@@ -60,7 +78,8 @@ function ValidatePurchasedArticleDetail() {
 //=======================================
 //=======================================
 $(document).ready(
-    EnableDisablePurchasedArticleTabs()
+    EnableDisablePurchasedArticleTabs(),
+   
    
 
 

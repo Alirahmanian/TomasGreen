@@ -15,6 +15,7 @@ using TomasGreen.Web.Extensions;
 using Microsoft.Extensions.Localization;
 using TomasGreen.Web.Helpers;
 using Microsoft.AspNetCore.Http;
+using TomasGreen.Web.Areas.Import.Helpers;
 
 namespace TomasGreen.Web.Areas.Import.Controllers
 {
@@ -44,16 +45,20 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         }
 
         // GET: PurchaseArticles/Create
-        public ActionResult Create(int? id, int? purchasedArticleId)
+        public ActionResult Create(int? id, int? activeTab, int? articleDetailId, int? costDetailId, int? shortageDealingDetailId, int? containerDetailId)
         {
             var model = new SavePurchasedArticleViewModel();
+            model.ActiveTab = (activeTab > 0)? (int)activeTab: PurchasedArticleTabs.Article;
             model.PurchasedArticleDetail = new PurchasedArticleDetail();
             model.PurchasedArticleCostDetail = new PurchasedArticleCostDetail();
-            model.PurchasedArticleDetail.OntheWayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay == true).FirstOrDefault();
-            model.PurchasedArticleDetail.WarehouseID = model.PurchasedArticleDetail.OntheWayWarehouse.ID;
+            model.PurchasedArticleContainerDetail = new PurchasedArticleContainerDetail();
+            model.PurchasedArticleShortageDealingDetail = new PurchasedArticleShortageDealingDetail();
+           // model.PurchasedArticleDetail.OntheWayWarehouse = _context.Warehouses.Where(w => w.IsOnTheWay == true).FirstOrDefault();
+            //model.PurchasedArticleDetail.WarehouseID = model.PurchasedArticleDetail.OntheWayWarehouse.ID;
             if (id > 0)
             {
-                model.PurchasedArticle = _context.PurchasedArticles.Include(d => d.PurchasedArticleDetails).Include(c => c.PurchasedArticleCostDetails).Where(p => p.ID == id).FirstOrDefault();
+                model.PurchasedArticle = _context.PurchasedArticles.Include(d => d.PurchasedArticleDetails).Include(c => c.PurchasedArticleCostDetails)
+                    .Include(s => s.PurchasedArticleShortageDealingDetails).Include(c => c.PurchasedArticleContainerDetails).Where(p => p.ID == id).FirstOrDefault();
                 foreach(var detail in model.PurchasedArticle.PurchasedArticleDetails)
                 {
                     detail.OntheWayWarehouse = _context.Warehouses.Where(w => w.ID == detail.WarehouseID).FirstOrDefault();
@@ -66,11 +71,32 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 {
                     detail.Company = _context.Companies.Where(c=> c.ID == detail.CompanyID).FirstOrDefault();
                     detail.Currency = _context.Currencies.Where(c => c.ID == detail.CurrencyID).FirstOrDefault();
+                    detail.PurchasedArticleCostType = _context.PurchasedArticleCostTypes.Find(detail.PurchasedArticleCostTypeID);
                 }
-                
-                if(purchasedArticleId > 0)
+                foreach (var detail in model.PurchasedArticle.PurchasedArticleShortageDealingDetails)
                 {
-                    model.PurchasedArticleDetail = _context.PurchasedArticleDetails.Where(d => d.ID == purchasedArticleId).FirstOrDefault();
+                    detail.Company = _context.Companies.Where(c => c.ID == detail.CompanyID).FirstOrDefault();
+                    detail.Currency = _context.Currencies.Where(c => c.ID == detail.CurrencyID).FirstOrDefault();
+                }
+                if (articleDetailId > 0)
+                {
+                    model.PurchasedArticleDetail = _context.PurchasedArticleDetails.Find(articleDetailId);
+                    model.ActiveTab = PurchasedArticleTabs.Article;
+                }
+                if (costDetailId > 0)
+                {
+                    model.PurchasedArticleCostDetail = _context.PurchasedArticleCostDetails.Find(costDetailId);
+                    model.ActiveTab = PurchasedArticleTabs.Cost;
+                }
+                if (shortageDealingDetailId > 0)
+                {
+                    model.PurchasedArticleShortageDealingDetail = _context.PurchasedArticleShortageDealingDetails.Find(costDetailId);
+                    model.ActiveTab = PurchasedArticleTabs.ShortageDealing;
+                }
+                if (containerDetailId > 0)
+                {
+                    model.PurchasedArticleContainerDetail = _context.PurchasedArticleContainerDetails.Find(containerDetailId);
+                    model.ActiveTab = PurchasedArticleTabs.Container;
                 }
             }
             else
@@ -87,7 +113,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SavePurchasedArticleViewModel model, string SavePurchasedArticle, string SavePurchasedArticleDetail,
-            string DeletePurchasedArticleDetail, string SavePurchasedArticleCostDetail, string DeletePurchasedArticleCostDetail, string SavePurchasedArticleContainerDetail, string DeletePurchasedArticleContainerDetail)
+            string SavePurchasedArticleCostDetail, string SavePurchasedArticleContainerDetail, string SavePurchasedArticleShortageDetail)
         {
             try
             {
@@ -675,8 +701,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                     AddPurchasedArticleLists(model);
                                     return View(model);
                                 }
-                               
-                                await _context.SaveChangesAsync();
+                                
                                 //Rollback company balance too
                                
 
@@ -689,31 +714,87 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         }
                     }
                 }
-                //Delete PurchasedArticleDetail
-                if (!string.IsNullOrWhiteSpace(DeletePurchasedArticleDetail))
-                {
-
-                }
+               
                 //Save PurchasedArticleCostDetail
-                if (!string.IsNullOrWhiteSpace(DeletePurchasedArticleDetail))
+                if (!string.IsNullOrWhiteSpace(SavePurchasedArticleCostDetail))
+                {
+                    //Check the model
+                    if (model.PurchasedArticleCostDetail == null)
+                    {
+                        ModelState.AddModelError("", "Couldn't save.");
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", "Model's purchasedArticleCostDetail is missing.");
+                        }
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+
+                    model.PurchasedArticleCostDetail.PurchasedArticleID = model.PurchasedArticle.ID;
+                    var customModelValidator = PurchasedArticleValidation.PurchasedArticleCostDetailIsValid(_context, model.PurchasedArticleCostDetail);
+                    if (customModelValidator.Value == false)
+                    {
+                        ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+                    if(model.PurchasedArticleCostDetail.ID == 0)
+                    {
+                        // new
+                        _context.PurchasedArticleCostDetails.Add(model.PurchasedArticleCostDetail);
+                        await _context.SaveChangesAsync();
+                        //AddPurchasedArticleLists(model);
+                        return RedirectToAction(nameof(Create), new { id = model.PurchasedArticle.ID, activeTab = PurchasedArticleTabs.Cost });
+                    }
+                    else
+                    {
+                      //Update 
+                    }
+                }
+               
+                //Save PurchasedArticleShortageDetail
+                if (!string.IsNullOrWhiteSpace(SavePurchasedArticleShortageDetail))
                 {
 
                 }
-                //Delete PurchasedArticleCostDetail
-                if (!string.IsNullOrWhiteSpace(DeletePurchasedArticleDetail))
-                {
-
-                }
+                
                 //Save PurchasedArticleContainerDetail
                 if (!string.IsNullOrWhiteSpace(SavePurchasedArticleContainerDetail))
                 {
+                    //Check the model
+                    if (model.PurchasedArticleContainerDetail == null)
+                    {
+                        ModelState.AddModelError("", "Couldn't save.");
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", "Model's purchasedArticleContainerDetail is missing.");
+                        }
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
 
+                    model.PurchasedArticleContainerDetail.PurchasedArticleID = model.PurchasedArticle.ID;
+                    var customModelValidator = PurchasedArticleValidation.PurchasedArticleContainerDetailIsValid(_context, model.PurchasedArticleContainerDetail);
+                    if (customModelValidator.Value == false)
+                    {
+                        ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+                    if (model.PurchasedArticleContainerDetail.ID == 0)
+                    {
+                        // new
+                        _context.PurchasedArticleContainerDetails.Add(model.PurchasedArticleContainerDetail);
+                        await _context.SaveChangesAsync();
+                        //AddPurchasedArticleLists(model);
+                        return RedirectToAction(nameof(Create), new { id = model.PurchasedArticle.ID, activeTab = PurchasedArticleTabs.Container});
+                    }
+                    else
+                    {
+                        //Update 
+                    }
                 }
-                //Delete PurchasedArticleContainerDetail
-                if (!string.IsNullOrWhiteSpace(DeletePurchasedArticleContainerDetail))
-                {
-
-                }
+               
                 return RedirectToAction(nameof(Index));
             }
             catch(Exception exception)
@@ -723,8 +804,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 return View(model);
             }
         }
+                    
+        // GET: PurchaseArticles/Delete/5
+        public ActionResult DeletePurchasedArticle(int id)
+        {
+            return View();
+        }
         // GET: 
-        public async Task<IActionResult> EditRow(int? id)
+        public async Task<IActionResult> EditPurchasedArticleDetail(int? id)
         {
             if (id == null)
             {
@@ -735,39 +822,62 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction(nameof(Create), new { id = purchasedArticleDetail.PurchasedArticleID, purchasedArticleId = purchasedArticleDetail.ID });
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleDetail.PurchasedArticleID, ArticleDetailId = purchasedArticleDetail.ID });
         }
-        // GET: PurchaseArticles/Delete/5
-        public ActionResult Delete(int id)
+        // GET: 
+        public async Task<IActionResult> DeletePurchasedArticleDetail(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var purchasedArticleDetail = _context.PurchasedArticleDetails.AsNoTracking().Where(d => d.ID == id).FirstOrDefault();
+            if (purchasedArticleDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleDetail.PurchasedArticleID, ArticleDetailId = purchasedArticleDetail.ID });
         }
 
-        // POST: PurchaseArticles/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> EditPurchasedArticleCostDetail(int? id)
         {
-            try
+            if (id == null)
             {
-                // TODO: Add delete logic here
+                return NotFound();
+            }
+            var purchasedArticleCostDetail = _context.PurchasedArticleCostDetails.AsNoTracking().Where(d => d.ID == id).FirstOrDefault();
+            if (purchasedArticleCostDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleCostDetail.PurchasedArticleID, CostDetailId = purchasedArticleCostDetail.ID });
+        }
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
+        public async Task<IActionResult> EditPurchasedArticleContainerDetail(int? id)
+        {
+            if (id == null)
             {
-                return View();
+                return NotFound();
             }
+            var purchasedArticleContainerDetail = _context.PurchasedArticleContainerDetails.AsNoTracking().Where(d => d.ID == id).FirstOrDefault();
+            if (purchasedArticleContainerDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleContainerDetail.PurchasedArticleID, ContainerDetailId = purchasedArticleContainerDetail.ID });
         }
 
         private void AddPurchasedArticleLists(SavePurchasedArticleViewModel model)
         {
+            ViewData["WarehouseID"] = new SelectList(_context.Warehouses.Where(c => c.Archive == false).OrderBy(a => a.Name), "ID", "Name", model.PurchasedArticleDetail?.WarehouseID);
             ViewData["ArticleID"] = new SelectList(_context.Articles.Where(c => c.Archive == false).OrderBy(a => a.Name), "ID", "Name", model.PurchasedArticleDetail?.ArticleID);
             ViewData["CompanyID"] = new SelectList(_context.Companies.Where(c => c.IsOwner == false && c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticle?.CompanyID);
             ViewData["CurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Code), "ID", "Code", model.PurchasedArticle?.CurrencyID);
             ViewData["CostTypeID"] = new SelectList(_context.PurchasedArticleCostTypes.Where(c => c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleCostDetail?.PurchasedArticleCostTypeID);
-            ViewData["CostCompanyID"] = new SelectList(_context.Companies.Where(c => c.IsOwner == false && c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleCostDetail?.CompanyID);
+            ViewData["CostCompanyID"] = new SelectList(_context.Companies.Where(c => c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleCostDetail?.CompanyID);
             ViewData["CostCurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Code), "ID", "Code", model.PurchasedArticleCostDetail?.CurrencyID);
+            ViewData["ShortageDealingCompanyID"] = new SelectList(_context.Companies.Where(c => c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleShortageDealingDetail?.CompanyID);
+            ViewData["ShortageDealingCurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Code), "ID", "Code", model.PurchasedArticleShortageDealingDetail?.CurrencyID);
 
         }
     }

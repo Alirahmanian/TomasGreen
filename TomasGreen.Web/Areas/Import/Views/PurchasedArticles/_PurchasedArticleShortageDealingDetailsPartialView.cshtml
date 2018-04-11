@@ -1,0 +1,45 @@
+﻿@model IEnumerable<TomasGreen.Model.Models.PurchasedArticleShortageDealingDetail>
+
+
+<table class="table table-responsive table-hover table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Company)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Company.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Currency.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                <a asp-action="EditPurchasedArticleShortageDealingDetail" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit alert-warning"></span></a>&nbsp;&nbsp; |&nbsp;&nbsp;
+                <a asp-action="DeletePurchasedArticleShortageDealingDetail" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure you want to delete this post?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

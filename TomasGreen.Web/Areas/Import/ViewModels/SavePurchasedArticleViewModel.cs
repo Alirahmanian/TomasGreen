@@ -12,5 +12,8 @@ namespace TomasGreen.Web.Areas.Import.ViewModels
         public PurchasedArticle PurchasedArticle { get; set; }
         public PurchasedArticleDetail PurchasedArticleDetail { get; set; }
         public PurchasedArticleCostDetail PurchasedArticleCostDetail { get; set; }
+        public PurchasedArticleShortageDealingDetail PurchasedArticleShortageDealingDetail { get; set; }
+        public PurchasedArticleContainerDetail PurchasedArticleContainerDetail { get; set; }
+        public int ActiveTab { get; set; }
     }
 }

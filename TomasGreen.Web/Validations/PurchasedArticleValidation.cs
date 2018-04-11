@@ -63,5 +63,54 @@ namespace TomasGreen.Web.Validations
             return result;
         }
 
+        public static PropertyValidation PurchasedArticleCostDetailIsValid(ApplicationDbContext _context, PurchasedArticleCostDetail model)
+        {
+            var result = new PropertyValidation(true, "PurchasedArticleCostDetailIsValid", "PurchasedArticleCostDetail", "", "");
+            if (model.CompanyID == 0)
+            {
+                result.Value = false; result.Property = nameof(model.CompanyID); result.Message = "please select a company.";
+                return result;
+            }
+            if (model.CurrencyID == 0)
+            {
+                result.Value = false; result.Property = nameof(model.CurrencyID); result.Message = "please select a currency.";
+                return result;
+            }
+            if (model.Amount == 0)
+            {
+                result.Value = false; result.Property = nameof(model.Amount); result.Message = "Please put amount.";
+                return result;
+            }
+            if (model.PurchasedArticleID == 0)
+            {
+                result.Value = false; result.Property = nameof(model.PurchasedArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchasedArticleID is missing.";
+                return result;
+            }
+
+            return result;
+        }
+
+        public static PropertyValidation PurchasedArticleContainerDetailIsValid(ApplicationDbContext _context, PurchasedArticleContainerDetail model)
+        {
+            var result = new PropertyValidation(true, "PurchasedArticleContainerDetailIsValid", "PurchasedArticleContainerDetail", "", "");
+            if (model.ContainerNumber == "")
+            {
+                result.Value = false; result.Property = nameof(model.ContainerNumber); result.Message = "please put container number.";
+                return result;
+            }
+            if (model.PurchasedArticleID == 0)
+            {
+                result.Value = false; result.Property = nameof(model.PurchasedArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchasedArticleID is missing.";
+                return result;
+            }
+            var ContainerNumberExists = _context.PurchasedArticleContainerDetails.Any(c => c.PurchasedArticleID == model.PurchasedArticleID && c.ContainerNumber == model.ContainerNumber && c.ID != model.ID);
+            if(ContainerNumberExists)
+            {
+                result.Value = false; result.Property = nameof(model.ContainerNumber); result.Message = "Container number is already taken."; result.SystemMessage = "";
+                return result;
+            }
+            return result;
+        }
+
     }
 }
