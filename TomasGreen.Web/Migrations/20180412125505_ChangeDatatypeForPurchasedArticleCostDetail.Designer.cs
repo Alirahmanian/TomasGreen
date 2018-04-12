@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180412125505_ChangeDatatypeForPurchasedArticleCostDetail")]
+    partial class ChangeDatatypeForPurchasedArticleCostDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,8 +148,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<decimal>("MinimumPricePerUSD")
                         .HasColumnType("decimal(18, 4)");
 
@@ -188,8 +187,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name");
@@ -213,8 +210,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -240,8 +235,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<decimal>("MeasurePerKg")
                         .HasColumnType("decimal(18, 4)");
@@ -282,8 +275,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<int>("ArticleID");
 
                     b.Property<int>("CompanyID");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -339,8 +330,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<decimal>("QtyExtra")
@@ -382,8 +371,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name");
@@ -421,8 +408,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18, 4)");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<bool>("IsOwner");
 
@@ -482,8 +467,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<decimal>("Debit")
                         .HasColumnType("decimal(18, 4)");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("UserName");
@@ -531,8 +514,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<decimal>("DebitBeforeChange")
                         .HasColumnType("decimal(18, 4)");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<int>("PaymentTypeID");
@@ -564,8 +545,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name")
@@ -594,8 +573,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("CompanyID");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name")
@@ -622,8 +599,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -654,8 +629,6 @@ namespace TomasGreen.Web.Migrations
                         .IsRequired();
 
                     b.Property<DateTime>("Date");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<bool>("IsBase");
 
@@ -738,8 +711,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("DicingPlanID");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<decimal>("QtyExtra")
@@ -784,8 +755,6 @@ namespace TomasGreen.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(255);
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<string>("ImageUrl");
 
                     b.Property<string>("LastName")
@@ -814,8 +783,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<string>("Key")
                         .IsRequired();
@@ -851,8 +818,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<bool>("Archive");
 
                     b.Property<int>("ExternalApiID");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -952,8 +917,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<decimal>("Extended_Price")
                         .HasColumnType("decimal(18, 4)");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Notes");
@@ -993,8 +956,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name");
@@ -1021,8 +982,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("Dimensions")
                         .HasColumnType("decimal(18, 4)");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -1142,8 +1101,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("ArticleID");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<decimal>("MixPercent")
                         .HasColumnType("decimal(18, 4)");
 
@@ -1182,10 +1139,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
-
-                    b.Property<int?>("CompanyCreditDebitBalanceDetailTypeID");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -1254,8 +1207,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("ContainerNumber");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<int>("PurchasedArticleID");
@@ -1321,8 +1272,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -1454,8 +1403,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("FromWarehouseID");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<int>("ManagerID");
 
                     b.Property<DateTime?>("ModifiedDate");
@@ -1530,8 +1477,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<Guid?>("Guid");
-
                     b.Property<bool>("IsCustomers");
 
                     b.Property<bool>("IsOnTheWay");
@@ -1568,8 +1513,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<int>("ArticleID");
 
                     b.Property<DateTime>("Date");
-
-                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 

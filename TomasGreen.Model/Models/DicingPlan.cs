@@ -32,7 +32,6 @@ namespace TomasGreen.Model.Models
         public decimal TotalWeight { get; set; }
         public decimal TotalPrice { get; set; }
 
-        public Guid? Guid { get; set; }
 
         //nav
         public Employee Manager { get; set; }

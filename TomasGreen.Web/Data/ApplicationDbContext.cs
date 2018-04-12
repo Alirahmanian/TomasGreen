@@ -66,7 +66,7 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<PurchasedArticleShortageDealingDetail>().HasIndex(p => new { p.PurchasedArticleID, p.CompanyID, p.CurrencyID }).IsUnique(true);
             modelBuilder.Entity<PurchasedArticleContainerDetail>().HasIndex(p => new { p.PurchasedArticleID, p.ContainerNumber }).IsUnique(true);
             modelBuilder.Entity<PurchasedArticleCostType>().HasIndex(p => new { p.Name }).IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleCostDetail>().HasIndex(p => new {p.PurchasedArticleID, p.PurchasedArticleCostTypeID, p.CompanyID, p.CurrencyID  }).IsUnique(true);
+            modelBuilder.Entity<PurchasedArticleCostDetail>().HasIndex(p => new {p.PurchasedArticleID, p.PaymentTypeID, p.CompanyID, p.CurrencyID  }).IsUnique(true);
             modelBuilder.Entity<CompanyCreditDebitBalance>()
             .HasIndex(p => new { p.CompanyID, p.CurrencyID })
             .IsUnique(true);

@@ -31,20 +31,17 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             _hostingEnvironment = hostingEnvironment;
             _localizer = localizer;
         }
-        // GET: PurchaseArticles
+
         public ActionResult Index()
         {
-            var purchasedArticles = _context.PurchasedArticles.Include(c => c.Company).OrderBy(p => p.Arrived == false).ThenBy(p => p.Date).ThenBy(c => c.Company.Name);
+            var purchasedArticles = _context.PurchasedArticles.Include(c => c.Company).Include(d => d.PurchasedArticleDetails).OrderBy(p => p.Arrived == false).ThenBy(p => p.Date).ThenBy(c => c.Company.Name);
+            foreach(var item in purchasedArticles)
+            {
+                item.TotalPrice = item.GetTotalPrice();
+            }
             return View(purchasedArticles);
         }
 
-        // GET: PurchaseArticles/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: PurchaseArticles/Create
         public ActionResult Create(int? id, int? activeTab, int? articleDetailId, int? costDetailId, int? shortageDealingDetailId, int? containerDetailId)
         {
             var model = new SavePurchasedArticleViewModel();
@@ -71,7 +68,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 {
                     detail.Company = _context.Companies.Where(c=> c.ID == detail.CompanyID).FirstOrDefault();
                     detail.Currency = _context.Currencies.Where(c => c.ID == detail.CurrencyID).FirstOrDefault();
-                    detail.PurchasedArticleCostType = _context.PurchasedArticleCostTypes.Find(detail.PurchasedArticleCostTypeID);
+                    detail.PaymentType = _context.PaymentTypes.Find(detail.PaymentTypeID);
                 }
                 foreach (var detail in model.PurchasedArticle.PurchasedArticleShortageDealingDetails)
                 {
@@ -90,7 +87,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 }
                 if (shortageDealingDetailId > 0)
                 {
-                    model.PurchasedArticleShortageDealingDetail = _context.PurchasedArticleShortageDealingDetails.Find(costDetailId);
+                    model.PurchasedArticleShortageDealingDetail = _context.PurchasedArticleShortageDealingDetails.Find(shortageDealingDetailId);
                     model.ActiveTab = PurchasedArticleTabs.ShortageDealing;
                 }
                 if (containerDetailId > 0)
@@ -109,11 +106,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             return View(model);
         }
 
-        // POST: PurchaseArticles/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SavePurchasedArticleViewModel model, string SavePurchasedArticle, string SavePurchasedArticleDetail,
-            string SavePurchasedArticleCostDetail, string SavePurchasedArticleContainerDetail, string SavePurchasedArticleShortageDetail)
+        public async Task<IActionResult> Create(SavePurchasedArticleViewModel model, string savePurchasedArticle, string savePurchasedArticleDetail,
+            string savePurchasedArticleCostDetail, string savePurchasedArticleContainerDetail, string savePurchasedArticleShortageDealingDetail)
         {
             try
             {
@@ -123,7 +119,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     ModelState.Remove(key);
                 }
                 //Save PurchasedArticle
-                if (!string.IsNullOrWhiteSpace(SavePurchasedArticle))
+                if (!string.IsNullOrWhiteSpace(savePurchasedArticle))
                 {
                     if(model.PurchasedArticle == null)
                     {
@@ -215,7 +211,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
 
                 }
                 //Save PurchasedArticleDetail
-                if (!string.IsNullOrWhiteSpace(SavePurchasedArticleDetail))
+                if (!string.IsNullOrWhiteSpace(savePurchasedArticleDetail))
                 {
                     //Check the model
                     if (model.PurchasedArticleDetail == null)
@@ -238,7 +234,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         return View(model);
                     }
                     
-                   
                     if (model.PurchasedArticleDetail.ID == 0)
                     {
                         //new PurchasedArticleDetail
@@ -247,6 +242,24 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             var totalPerUnit = ArticleHelper.TotalPerUnit(_context, model.PurchasedArticleDetail.ArticleID, model.PurchasedArticleDetail.QtyPackages, model.PurchasedArticleDetail.QtyExtra);
                             var totalPrice = totalPerUnit * model.PurchasedArticleDetail.UnitPrice;
                             model.PurchasedArticleDetail.TotalPerUnit = totalPerUnit;
+
+                            var guid = Guid.NewGuid();
+                            model.PurchasedArticleDetail.Guid = guid;
+                            _context.PurchasedArticleDetails.Add(model.PurchasedArticleDetail);
+                            await _context.SaveChangesAsync();
+                            var savedPurchasedArticleDetail = _context.PurchasedArticleDetails.Include(p => p.PurchasedArticle).Where(d => d.PurchasedArticleID == model.PurchasedArticle.ID && d.Guid == guid).FirstOrDefault();
+                            if (savedPurchasedArticleDetail == null)
+                            {
+                                ModelState.AddModelError("", "Couldn't save.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", "Couldn't save PurchasedArticleDetail");
+                                }
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+
+                            //***** Article balance go *****
                             var articleInOut = new ArticleInOut
                             {
                                 ArticleID = model.PurchasedArticleDetail.ArticleID,
@@ -266,7 +279,24 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddPurchasedArticleLists(model);
                                 return View(model);
                             }
+                            await _context.SaveChangesAsync();
+                            //Add ArticleBalanceDetails
+                            var articleWarehouseBalanceDetail = GetArticleWarehouseBalanceDetail(savedPurchasedArticleDetail);
+                            if(articleWarehouseBalanceDetail == null)
+                            {
+                                ModelState.AddModelError("", "Couldn't save.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", $"Couldn't create an articleWarehouseBalanceDetail.");
+                                }
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+                            _context.ArticleWarehouseBalanceDetails.Add(articleWarehouseBalanceDetail);
 
+                            //***** Article balance stop *****
+
+                            //***** Company balance go *****
                             var companyCreditDebitBalance = new CompanyCreditDebitBalance
                             {
                                 CompanyID = model.PurchasedArticle.CompanyID,
@@ -284,99 +314,21 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddPurchasedArticleLists(model);
                                 return View(model);
                             }
-                            var guid = Guid.NewGuid();
-                            model.PurchasedArticleDetail.Guid = guid;
-                            _context.PurchasedArticleDetails.Add(model.PurchasedArticleDetail);
-                            await _context.SaveChangesAsync();
-                            var savedPurchasedArticleDetail = _context.PurchasedArticleDetails.Include(p => p.PurchasedArticle).Where(d => d.PurchasedArticleID == model.PurchasedArticle.ID && d.Guid == guid).FirstOrDefault();
-                            if(savedPurchasedArticleDetail == null)
-                            {
-                                ModelState.AddModelError("", "Couldn't save.");
-                                if (_hostingEnvironment.IsDevelopment())
-                                {
-                                    ModelState.AddModelError("", "Couldn't save PurchasedArticleDetail");
-                                }
-                                AddPurchasedArticleLists(model);
-                                return View(model);
-                            }
-                            //Add ArticleBalanceDetails
-                            var articleWarehouseBalanceCompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == model.PurchasedArticleDetail.WarehouseID).FirstOrDefault());
-                            var articlewarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == savedPurchasedArticleDetail.ArticleID && b.WarehouseID == savedPurchasedArticleDetail.WarehouseID && b.CompanyID == articleWarehouseBalanceCompanyID).FirstOrDefault();
-                            if (articlewarehouseBalance == null)
-                            {
-                                ModelState.AddModelError("", "Couldn't save.");
-                                if (_hostingEnvironment.IsDevelopment())
-                                {
-                                    ModelState.AddModelError("", $"Couldn't saved ArticleWarehouseBalance.");
-                                }
-                                AddPurchasedArticleLists(model);
-                                return View(model);
-                            }
-                            var articleBalanceDetailType = _context.ArticleWarehouseBalanceDetailTypes.Where(t => t.Name == ArticleBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
-                            if(articleBalanceDetailType == null)
-                            {
-                                ModelState.AddModelError("", "Couldn't save.");
-                                if (_hostingEnvironment.IsDevelopment())
-                                {
-                                    ModelState.AddModelError("", $"Couldn't find {ArticleBalanceDetailTypeLookUp.Purchase} as lookup type.");
-                                }
-                                AddPurchasedArticleLists(model);
-                                return View(model);
-                            }
-                            var articleWarehouseBalanceDetail = new ArticleWarehouseBalanceDetail
-                            {
-                                ArticleID = savedPurchasedArticleDetail.ArticleID,
-                                WarehouseID = savedPurchasedArticleDetail.WarehouseID,
-                                CompanyID = savedPurchasedArticleDetail.PurchasedArticle.CompanyID,
-                                ArticleWarehouseBalanceDetailTypeID = articleBalanceDetailType.ID,
-                                BalanceChangerID = savedPurchasedArticleDetail.ID,
-                                Date = savedPurchasedArticleDetail.PurchasedArticle.Date,
-                                QtyPackages = savedPurchasedArticleDetail.QtyPackages,
-                                QtyExtra = savedPurchasedArticleDetail.QtyExtra,
-                                QtyPackagesOnHandBeforeChange = articlewarehouseBalance.QtyPackagesOnhand,
-                                QtyExtraOnHandBeforeChange = articlewarehouseBalance.QtyExtraOnhand,
-                                RowCreatedBySystem = true
-                            };
-                            _context.ArticleWarehouseBalanceDetails.Add(articleWarehouseBalanceDetail);
-                            // Changing company balance
-                            var companyCreditDeitBalance = _context.CompanyCreditDebitBalances.Where(b => b.CompanyID == savedPurchasedArticleDetail.PurchasedArticle.CompanyID && b.CurrencyID == savedPurchasedArticleDetail.PurchasedArticle.CurrencyID).FirstOrDefault();
-                            if(companyCreditDeitBalance == null)
-                            {
-                                ModelState.AddModelError("", "Couldn't save.");
-                                if (_hostingEnvironment.IsDevelopment())
-                                {
-                                    ModelState.AddModelError("", $"Couldn't find saved CompanyCreditDebitBalance.");
-                                }
-                                AddPurchasedArticleLists(model);
-                                return View(model);
-                            }
-                            var paymentType = _context.PaymentTypes.Where(p => p.Name == CompanyPaymentTypeLookUp.Article).FirstOrDefault();
-                            var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
-                            if(companyBalanceDetailType == null || paymentType == null)
-                            {
-                                ModelState.AddModelError("", "Couldn't save.");
-                                if (_hostingEnvironment.IsDevelopment())
-                                {
-                                    ModelState.AddModelError("", $"Couldn't find {CompanyBalanceDetailTypeLookUp.Purchase} or {CompanyPaymentTypeLookUp.Article} as Lookup types");
-                                }
-                                AddPurchasedArticleLists(model);
-                                return View(model);
-                            }
-                            var companyCreditDebitBalanceDetail = new CompanyCreditDebitBalanceDetail()
-                            {
-                                Date = savedPurchasedArticleDetail.PurchasedArticle.Date,
-                                CompanyID = savedPurchasedArticleDetail.PurchasedArticle.CompanyID,
-                                CurrencyID = savedPurchasedArticleDetail.PurchasedArticle.CurrencyID,
-                                CompanyCreditDebitBalanceDetailTypeID = companyBalanceDetailType.ID,
-                                PaymentTypeID = paymentType.ID,
-                                BalanceChangerID = savedPurchasedArticleDetail.ID,
-                                Credit = savedPurchasedArticleDetail.TotalPerUnit,
-                                CreditBeforeChange = companyCreditDeitBalance.Credit,
-                                DebitBeforeChange = companyCreditDeitBalance.Debit,
-                                RowCreatedBySystem = true
 
-                            };
+                            //Add CompanyCreditDebitBalanceDetail
+                            var companyCreditDebitBalanceDetail = GetCompanyCreditDebitBalanceDetailForArticle(savedPurchasedArticleDetail, true);
+                            if(companyCreditDebitBalanceDetail == null)
+                            {
+                                ModelState.AddModelError("", "Couldn't save.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", $"Couldn't create a companyCreditDebitBalanceDetail to save.");
+                                }
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
                             _context.CompanyCreditDebitBalanceDetails.Add(companyCreditDebitBalanceDetail);
+                            //***** Company balance stop *****
 
                             //successful
                             await _context.SaveChangesAsync();
@@ -716,7 +668,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                 }
                
                 //Save PurchasedArticleCostDetail
-                if (!string.IsNullOrWhiteSpace(SavePurchasedArticleCostDetail))
+                if (!string.IsNullOrWhiteSpace(savePurchasedArticleCostDetail))
                 {
                     //Check the model
                     if (model.PurchasedArticleCostDetail == null)
@@ -741,9 +693,77 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     if(model.PurchasedArticleCostDetail.ID == 0)
                     {
                         // new
-                        _context.PurchasedArticleCostDetails.Add(model.PurchasedArticleCostDetail);
-                        await _context.SaveChangesAsync();
-                        //AddPurchasedArticleLists(model);
+                        using (var dbContextTransaction = _context.Database.BeginTransaction())
+                        {
+                            var guid = Guid.NewGuid();
+                            model.PurchasedArticleCostDetail.Guid = guid;
+                            _context.PurchasedArticleCostDetails.Add(model.PurchasedArticleCostDetail);
+                            await _context.SaveChangesAsync();
+                            var savedPurchasedArticleCostDetail = _context.PurchasedArticleCostDetails.Include(p => p.PurchasedArticle)
+                                .Where(d => d.Guid == guid && d.PurchasedArticleID == model.PurchasedArticle.ID
+                                && d.CompanyID == model.PurchasedArticleCostDetail.CompanyID
+                                && d.CurrencyID == model.PurchasedArticleCostDetail.CurrencyID
+                                && d.PaymentTypeID == model.PurchasedArticleCostDetail.PaymentTypeID).FirstOrDefault();
+                           if(savedPurchasedArticleCostDetail == null)
+                           {
+                                ModelState.AddModelError("", "Couldn't save.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", $"Couldn't create a PurchasedArticleCostDetail.");
+                                }
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+                            //***** Company balance go *****
+                            var PayingCompany = _context.Companies.Where(c => c.ID == savedPurchasedArticleCostDetail.CompanyID).FirstOrDefault();
+                            var companyCreditDebitBalance = new CompanyCreditDebitBalance
+                            {
+                                CompanyID = savedPurchasedArticleCostDetail.CompanyID,
+                                CurrencyID = savedPurchasedArticleCostDetail.CurrencyID,
+                               
+                            };
+                            if (PayingCompany.IsOwner)
+                            {
+                                companyCreditDebitBalance.Debit = savedPurchasedArticleCostDetail.Amount;
+                            }
+                            else
+                            {
+                                companyCreditDebitBalance.Credit = savedPurchasedArticleCostDetail.Amount;
+                            }
+                            
+                            var addCompanyBalanceResult = CompanyBalance.Add(_context, companyCreditDebitBalance);
+                            if (!addCompanyBalanceResult.Value)
+                            {
+                                ModelState.AddModelError("", "Couldn't save.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", JSonHelper.ToJSon(addCompanyBalanceResult));
+                                }
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+                            await _context.SaveChangesAsync();
+                            //Add CompanyCreditDebitBalanceDetail
+                            var companyCreditDebitBalanceDetail = GetCompanyCreditDebitBalanceDetailForCost(savedPurchasedArticleCostDetail, (PayingCompany.IsOwner)? false:true );
+                            if (companyCreditDebitBalanceDetail == null)
+                            {
+                                ModelState.AddModelError("", "Couldn't save.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", $"Couldn't get a companyCreditDebitBalanceDetail to save.");
+                                }
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+                            _context.CompanyCreditDebitBalanceDetails.Add(companyCreditDebitBalanceDetail);
+                            //***** Company balance stop *****
+
+                            //successful
+                            await _context.SaveChangesAsync();
+                            dbContextTransaction.Commit();
+                        }
+                       
+                        AddPurchasedArticleLists(model);
                         return RedirectToAction(nameof(Create), new { id = model.PurchasedArticle.ID, activeTab = PurchasedArticleTabs.Cost });
                     }
                     else
@@ -752,14 +772,45 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                     }
                 }
                
-                //Save PurchasedArticleShortageDetail
-                if (!string.IsNullOrWhiteSpace(SavePurchasedArticleShortageDetail))
+                //Save PurchasedArticleShortageDealingDetail
+                if (!string.IsNullOrWhiteSpace(savePurchasedArticleShortageDealingDetail))
                 {
+                    //Check the model
+                    if (model.PurchasedArticleShortageDealingDetail == null)
+                    {
+                        ModelState.AddModelError("", "Couldn't save.");
+                        if (_hostingEnvironment.IsDevelopment())
+                        {
+                            ModelState.AddModelError("", "Model's purchasedArticleShortageDealingDetail is missing.");
+                        }
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+                    model.PurchasedArticleShortageDealingDetail.PurchasedArticleID = model.PurchasedArticle.ID;
+                    var customModelValidator = PurchasedArticleValidation.PurchasedArticleShortageDealingDetailIsValid(_context, model.PurchasedArticleShortageDealingDetail);
+                    if (customModelValidator.Value == false)
+                    {
+                        ModelState.AddModelError(customModelValidator.Property, customModelValidator.Message);
+                        AddPurchasedArticleLists(model);
+                        return View(model);
+                    }
+                    if (model.PurchasedArticleShortageDealingDetail.ID == 0)
+                    {
+                        // new
+                        _context.PurchasedArticleShortageDealingDetails.Add(model.PurchasedArticleShortageDealingDetail);
+                        await _context.SaveChangesAsync();
+                        //AddPurchasedArticleLists(model);
+                        return RedirectToAction(nameof(Create), new { id = model.PurchasedArticle.ID, activeTab = PurchasedArticleTabs.ShortageDealing });
+                    }
+                    else
+                    {
+                        //Update 
+                    }
 
                 }
                 
                 //Save PurchasedArticleContainerDetail
-                if (!string.IsNullOrWhiteSpace(SavePurchasedArticleContainerDetail))
+                if (!string.IsNullOrWhiteSpace(savePurchasedArticleContainerDetail))
                 {
                     //Check the model
                     if (model.PurchasedArticleContainerDetail == null)
@@ -805,12 +856,10 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             }
         }
                     
-        // GET: PurchaseArticles/Delete/5
         public ActionResult DeletePurchasedArticle(int id)
         {
             return View();
         }
-        // GET: 
         public async Task<IActionResult> EditPurchasedArticleDetail(int? id)
         {
             if (id == null)
@@ -822,9 +871,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction(nameof(Create), new { id = purchasedArticleDetail.PurchasedArticleID, ArticleDetailId = purchasedArticleDetail.ID });
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.Article, articleDetailId = purchasedArticleDetail.ID });
         }
-        // GET: 
         public async Task<IActionResult> DeletePurchasedArticleDetail(int? id)
         {
             if (id == null)
@@ -836,9 +884,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction(nameof(Create), new { id = purchasedArticleDetail.PurchasedArticleID, ArticleDetailId = purchasedArticleDetail.ID });
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.Article, articleDetailId = purchasedArticleDetail.ID });
         }
-
         public async Task<IActionResult> EditPurchasedArticleCostDetail(int? id)
         {
             if (id == null)
@@ -850,9 +897,47 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction(nameof(Create), new { id = purchasedArticleCostDetail.PurchasedArticleID, CostDetailId = purchasedArticleCostDetail.ID });
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleCostDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.Cost, costDetailId = purchasedArticleCostDetail.ID });
         }
-
+        public async Task<IActionResult> DeletePurchasedArticleCostDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var purchasedArticleCostDetail = _context.PurchasedArticleCostDetails.AsNoTracking().Where(d => d.ID == id).FirstOrDefault();
+            if (purchasedArticleCostDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleCostDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.Cost, costDetailId = purchasedArticleCostDetail.ID });
+        }
+        public async Task<IActionResult> EditPurchasedArticleShortageDealingDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var purchasedArticleShortageDealingDetail = _context.PurchasedArticleShortageDealingDetails.AsNoTracking().Where(d => d.ID == id).FirstOrDefault();
+            if (purchasedArticleShortageDealingDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleShortageDealingDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.ShortageDealing, shortageDealingDetailId = purchasedArticleShortageDealingDetail.ID });
+        }
+        public async Task<IActionResult> DeletePurchasedArticleShortageDealingDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var purchasedArticleShortageDealingDetail = _context.PurchasedArticleShortageDealingDetails.AsNoTracking().Where(d => d.ID == id).FirstOrDefault();
+            if (purchasedArticleShortageDealingDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleShortageDealingDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.ShortageDealing, shortageDealingDetailId = purchasedArticleShortageDealingDetail.ID });
+        }
         public async Task<IActionResult> EditPurchasedArticleContainerDetail(int? id)
         {
             if (id == null)
@@ -864,21 +949,186 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction(nameof(Create), new { id = purchasedArticleContainerDetail.PurchasedArticleID, ContainerDetailId = purchasedArticleContainerDetail.ID });
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleContainerDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.Container, containerDetailId = purchasedArticleContainerDetail.ID });
         }
-
+        public async Task<IActionResult> DeletePurchasedArticleContainerDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var purchasedArticleContainerDetail = _context.PurchasedArticleContainerDetails.AsNoTracking().Where(d => d.ID == id).FirstOrDefault();
+            if (purchasedArticleContainerDetail == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Create), new { id = purchasedArticleContainerDetail.PurchasedArticleID, activeTab = PurchasedArticleTabs.Container, containerDetailId = purchasedArticleContainerDetail.ID });
+        }
+        #region
         private void AddPurchasedArticleLists(SavePurchasedArticleViewModel model)
         {
+            
             ViewData["WarehouseID"] = new SelectList(_context.Warehouses.Where(c => c.Archive == false).OrderBy(a => a.Name), "ID", "Name", model.PurchasedArticleDetail?.WarehouseID);
             ViewData["ArticleID"] = new SelectList(_context.Articles.Where(c => c.Archive == false).OrderBy(a => a.Name), "ID", "Name", model.PurchasedArticleDetail?.ArticleID);
             ViewData["CompanyID"] = new SelectList(_context.Companies.Where(c => c.IsOwner == false && c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticle?.CompanyID);
             ViewData["CurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Code), "ID", "Code", model.PurchasedArticle?.CurrencyID);
-            ViewData["CostTypeID"] = new SelectList(_context.PurchasedArticleCostTypes.Where(c => c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleCostDetail?.PurchasedArticleCostTypeID);
+            ViewData["PaymentTypeID"] = new SelectList(_context.PaymentTypes.Where(c => c.Archive == false &&
+             c.CompanyCreditDebitBalanceDetailTypeID == (int)(_context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault().ID)).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleCostDetail?.PaymentTypeID);
             ViewData["CostCompanyID"] = new SelectList(_context.Companies.Where(c => c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleCostDetail?.CompanyID);
             ViewData["CostCurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Code), "ID", "Code", model.PurchasedArticleCostDetail?.CurrencyID);
             ViewData["ShortageDealingCompanyID"] = new SelectList(_context.Companies.Where(c => c.Archive == false).OrderBy(c => c.Name), "ID", "Name", model.PurchasedArticleShortageDealingDetail?.CompanyID);
             ViewData["ShortageDealingCurrencyID"] = new SelectList(_context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Code), "ID", "Code", model.PurchasedArticleShortageDealingDetail?.CurrencyID);
 
         }
+
+        private ArticleWarehouseBalanceDetail GetArticleWarehouseBalanceDetail(PurchasedArticleDetail model)
+        {
+            ArticleWarehouseBalanceDetail articleWarehouseBalanceDetail = null;
+            var customModelValidator = PurchasedArticleValidation.PurchasedArticleDetailIsValid(_context, model);
+            if(!customModelValidator.Value)
+            {
+                return articleWarehouseBalanceDetail;
+            }
+            if (model.ID == 0)
+            {
+                return articleWarehouseBalanceDetail;
+            }
+            if(model.PurchasedArticle == null)
+            {
+                model.PurchasedArticle = _context.PurchasedArticles.Where(p => p.ID == model.PurchasedArticleID).FirstOrDefault();
+            }
+            var articleWarehouseBalanceCompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == model.WarehouseID).FirstOrDefault());
+            var articlewarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ArticleID && b.WarehouseID == model.WarehouseID && b.CompanyID == articleWarehouseBalanceCompanyID).FirstOrDefault();
+            if (articlewarehouseBalance == null)
+            {
+                return articleWarehouseBalanceDetail;
+            }
+            var articleBalanceDetailType = _context.ArticleWarehouseBalanceDetailTypes.Where(t => t.Name == ArticleBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
+            if (articleBalanceDetailType == null)
+            {
+                return articleWarehouseBalanceDetail;
+            }
+            articleWarehouseBalanceDetail = new ArticleWarehouseBalanceDetail();
+            articleWarehouseBalanceDetail.ArticleID = model.ArticleID;
+            articleWarehouseBalanceDetail.WarehouseID = model.WarehouseID;
+            articleWarehouseBalanceDetail.CompanyID = model.PurchasedArticle.CompanyID;
+            articleWarehouseBalanceDetail.ArticleWarehouseBalanceDetailTypeID = articleBalanceDetailType.ID;
+            articleWarehouseBalanceDetail.BalanceChangerID = model.ID;
+            articleWarehouseBalanceDetail.Date = model.PurchasedArticle.Date;
+            articleWarehouseBalanceDetail.QtyPackages = model.QtyPackages;
+            articleWarehouseBalanceDetail.QtyExtra = model.QtyExtra;
+            articleWarehouseBalanceDetail.QtyPackagesOnHandBeforeChange = articlewarehouseBalance.QtyPackagesOnhand;
+            articleWarehouseBalanceDetail.QtyExtraOnHandBeforeChange = articlewarehouseBalance.QtyExtraOnhand;
+            articleWarehouseBalanceDetail.RowCreatedBySystem = true;
+
+            return articleWarehouseBalanceDetail;
+        }
+        private CompanyCreditDebitBalanceDetail GetCompanyCreditDebitBalanceDetailForArticle(PurchasedArticleDetail model, bool isCredit)
+        {
+            CompanyCreditDebitBalanceDetail companyCreditDebitBalanceDetail = null;
+            var customModelValidator = PurchasedArticleValidation.PurchasedArticleDetailIsValid(_context, model);
+            if (!customModelValidator.Value)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            if (model.ID == 0)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            if (model.PurchasedArticle == null)
+            {
+                model.PurchasedArticle = _context.PurchasedArticles.Where(p => p.ID == model.PurchasedArticleID).FirstOrDefault();
+            }
+            if(model.TotalPerUnit == 0)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            var companyCreditDeitBalance = _context.CompanyCreditDebitBalances.Where(b => b.CompanyID == model.PurchasedArticle.CompanyID 
+            && b.CurrencyID == model.PurchasedArticle.CurrencyID).FirstOrDefault();
+            if (companyCreditDeitBalance == null)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            var paymentType = _context.PaymentTypes.Where(p => p.Name == CompanyPaymentTypeLookUp.Article).FirstOrDefault();
+            var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
+            if (companyBalanceDetailType == null || paymentType == null)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            companyCreditDebitBalanceDetail = new CompanyCreditDebitBalanceDetail();
+            companyCreditDebitBalanceDetail.Date = model.PurchasedArticle.Date;
+            companyCreditDebitBalanceDetail.CompanyID = model.PurchasedArticle.CompanyID;
+            companyCreditDebitBalanceDetail.CurrencyID = model.PurchasedArticle.CurrencyID;
+            companyCreditDebitBalanceDetail.CompanyCreditDebitBalanceDetailTypeID = companyBalanceDetailType.ID;
+            companyCreditDebitBalanceDetail.PaymentTypeID = paymentType.ID;
+            companyCreditDebitBalanceDetail.BalanceChangerID = model.ID;
+            if(isCredit)
+            {
+                companyCreditDebitBalanceDetail.Credit = model.TotalPerUnit;
+            }
+            else
+            {
+                companyCreditDebitBalanceDetail.Debit = model.TotalPerUnit;
+            }
+            companyCreditDebitBalanceDetail.CreditBeforeChange = companyCreditDeitBalance.Credit;
+            companyCreditDebitBalanceDetail.DebitBeforeChange = companyCreditDeitBalance.Debit;
+            companyCreditDebitBalanceDetail.RowCreatedBySystem = true;
+            
+            return companyCreditDebitBalanceDetail;
+        }
+        private CompanyCreditDebitBalanceDetail GetCompanyCreditDebitBalanceDetailForCost(PurchasedArticleCostDetail model, bool isCredit)
+        {
+            CompanyCreditDebitBalanceDetail companyCreditDebitBalanceDetail = null;
+            var customModelValidator = PurchasedArticleValidation.PurchasedArticleCostDetailIsValid(_context, model);
+            if (!customModelValidator.Value)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            if (model.ID == 0)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            if (model.PurchasedArticle == null)
+            {
+                model.PurchasedArticle = _context.PurchasedArticles.Where(p => p.ID == model.PurchasedArticleID).FirstOrDefault();
+            }
+            if (model.Amount == 0)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            var companyCreditDeitBalance = _context.CompanyCreditDebitBalances.Where(b => b.CompanyID == model.CompanyID
+            && b.CurrencyID == model.CurrencyID).FirstOrDefault();
+            if (companyCreditDeitBalance == null)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            var paymentType = _context.PaymentTypes.Where(t => t.ID == model.PaymentTypeID).FirstOrDefault();
+            var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
+            if (companyBalanceDetailType == null || paymentType == null)
+            {
+                return companyCreditDebitBalanceDetail;
+            }
+            companyCreditDebitBalanceDetail = new CompanyCreditDebitBalanceDetail();
+            companyCreditDebitBalanceDetail.Date = model.PurchasedArticle.Date;
+            companyCreditDebitBalanceDetail.CompanyID = model.CompanyID;
+            companyCreditDebitBalanceDetail.CurrencyID = model.CurrencyID;
+            companyCreditDebitBalanceDetail.CompanyCreditDebitBalanceDetailTypeID = companyBalanceDetailType.ID;
+            companyCreditDebitBalanceDetail.PaymentTypeID = paymentType.ID;
+            companyCreditDebitBalanceDetail.BalanceChangerID = model.ID;
+            if(isCredit)
+            {
+                companyCreditDebitBalanceDetail.Credit = model.Amount;
+            }
+            else
+            {
+                companyCreditDebitBalanceDetail.Debit = model.Amount;
+            }
+            companyCreditDebitBalanceDetail.CreditBeforeChange = companyCreditDeitBalance.Credit;
+            companyCreditDebitBalanceDetail.DebitBeforeChange = companyCreditDeitBalance.Debit;
+            companyCreditDebitBalanceDetail.RowCreatedBySystem = true;
+
+            return companyCreditDebitBalanceDetail;
+        }
+        #endregion
     }
 }

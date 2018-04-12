@@ -24,9 +24,9 @@ namespace TomasGreen.Model.Models
         public int CurrencyID { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
-        public Guid? Guid { get; set; }
        
         [Display(Name = "Total price")]
+        [DataType(DataType.Currency)]
         public decimal TotalPrice { get; set; } = 0;
         
         [DataType(DataType.Date)]

@@ -6,6 +6,7 @@ namespace TomasGreen.Model.Models
 {
     public class PaymentType :BaseEntity
     {
+        public int? CompanyCreditDebitBalanceDetailTypeID { get; set; }
         public string Name { get; set; }
         public bool UsedBySystem { get; set; }
     }

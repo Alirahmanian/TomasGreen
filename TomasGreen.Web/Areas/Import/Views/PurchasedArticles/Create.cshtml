@@ -19,17 +19,17 @@
             &nbsp;&nbsp;<a asp-action="Index"><span class="glyphicon glyphicon-hand-left"></span> </a> &nbsp;| &nbsp;<a asp-action="Create" asp-route-id="@Model?.PurchasedArticle?.ID"><span class="glyphicon glyphicon-refresh"></span></a>
             <span> &nbsp;&nbsp; | &nbsp;&nbsp;</span><input type="submit" name="SavePurchasedArticle" id="SavePurchasedArticle" value='@localizer["Save"]' class='@((Model?.PurchasedArticle?.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchasedArticle()" />
             @{
-            if (Model?.PurchasedArticle?.ID > 0)
-            {
-                <span> &nbsp;&nbsp; | &nbsp;</span><a asp-action="DeletePurchasedArticle" asp-route-id="@Model?.PurchasedArticle?.ID" onclick="return window.confirm('Are you sure you want to delete this purchase with @Model?.PurchasedArticle?.PurchasedArticleDetails?.Count() rows?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
-            }
+                if (Model?.PurchasedArticle?.ID > 0)
+                {
+                    <span> &nbsp;&nbsp; | &nbsp;</span><a asp-action="DeletePurchasedArticle" asp-route-id="@Model?.PurchasedArticle?.ID" onclick="return window.confirm('Are you sure you want to delete this purchase with @Model?.PurchasedArticle?.PurchasedArticleDetails?.Count() rows?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
+                }
             }
 
 
         </div>
-        <input asp-for="@Model.ActiveTab" class="form-control"   type="hidden"/>
+        <input asp-for="@Model.ActiveTab" class="form-control" type="hidden" />
         <input asp-for="@Model.PurchasedArticle.ID" class="form-control" style="visibility:hidden" />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="All" class="text-danger"></div>
         <div>@ViewBag.ErrorMessage</div>
         <div class="container-fluid">
             <div class="row">
@@ -67,7 +67,7 @@
                     <div class="row">
                         <div class="bg-warning">&nbsp;<b>Filled by system</b></div>
                         <div class="col-md-6">
-                            <span>Tot. price: </span><span>@Model.PurchasedArticle.GetTotalPrice()</span>
+                            <span>Tot. price: </span><span>@Model.PurchasedArticle.GetTotalPrice().ToString("C")</span>
                         </div>
                         <div class="col-md-6">
                             <span>Arrived: </span>
@@ -78,19 +78,19 @@
                         <div class="col-md-6">
                             <span>Has issue:</span>
                             @{
-                            if (Model.PurchasedArticle.HasIssue)
-                            {
-                                <span class="alert-danger">
-                                    @localizer["yes"]
-                                </span>
+                                if (Model.PurchasedArticle.HasIssue)
+                                {
+                                    <span class="alert-danger">
+                                        @localizer["yes"]
+                                    </span>
 
-                        }
-                        else
-                        {
-                            <span>
-                                @localizer["no"]
-                            </span>
-                    }
+                                }
+                                else
+                                {
+                                    <span>
+                                        @localizer["no"]
+                                    </span>
+                                }
                             }
 
 
@@ -118,7 +118,7 @@
                     <div><br /></div>
                     <div id="PurchasedArticleDetail_Mess"></div>
                     <input asp-for="@Model.PurchasedArticleDetail.ID" class="form-control" style="display:none;" />
-                    <input asp-for="@Model.PurchasedArticle.ID" class="form-control"  style="display:none;" />
+                    <input asp-for="@Model.PurchasedArticle.ID" class="form-control" style="display:none;" />
                     <div class="col-md-12">
                         <div class="col-md-2">
                             <div class="form-group">
@@ -167,10 +167,10 @@
                     <div><br /></div>
                     <div id="SavedPurchasedArticleDetailsList">
                         @{
-                        if (Model.PurchasedArticle.PurchasedArticleDetails?.Count() > 0)
-                        {
-                            @Html.Partial("_PurchasedArticleDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleDetails)
-                    }
+                            if (Model.PurchasedArticle.PurchasedArticleDetails?.Count() > 0)
+                            {
+                                @Html.Partial("_PurchasedArticleDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleDetails)
+                            }
                         }
 
                     </div>
@@ -181,11 +181,11 @@
                         <div id="PurchasedArticleCostDetail_Mess"></div>
                         <div class="col-md-12">
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleCostDetail.PurchasedArticleCostTypeID" class="control-label">@localizer["Cost type"]</label>
-                                <select asp-for="@Model.PurchasedArticleCostDetail.PurchasedArticleCostTypeID" class="form-control" asp-items="ViewBag.CostTypeID">
+                                <label asp-for="@Model.PurchasedArticleCostDetail.PaymentTypeID" class="control-label">@localizer["Cost type"]</label>
+                                <select asp-for="@Model.PurchasedArticleCostDetail.PaymentTypeID" class="form-control" asp-items="ViewBag.PaymentTypeID">
                                     <option>Select</option>
                                 </select>
-                                <span asp-validation-for="@Model.PurchasedArticleCostDetail.CurrencyID" class="text-danger"></span>
+                                <span asp-validation-for="@Model.PurchasedArticleCostDetail.PaymentTypeID" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-3">
                                 <label asp-for="@Model.PurchasedArticleCostDetail.CompanyID" class="control-label"></label>
@@ -214,7 +214,7 @@
                             <div class="col-md-1">
                                 <div class="form-group">
                                     <br />
-                                    <input type="submit" name="SavePurchasedArticleCostDetail" id="SavePurchasedArticleCostDetail" value='@((Model.PurchasedArticleCostDetail.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchasedArticleCostDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' />
+                                    <input type="submit" name="SavePurchasedArticleCostDetail" id="SavePurchasedArticleCostDetail" value='@((Model.PurchasedArticleCostDetail.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchasedArticleCostDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchasedArticleCostDetail()" />
                                 </div>
                             </div>
                         </div>
@@ -222,10 +222,10 @@
                         <div><br /></div>
                         <div id="SavedPurchasedArticleCostDetailsList">
                             @{
-                            if (Model.PurchasedArticle.PurchasedArticleCostDetails?.Count() > 0)
-                            {
-                                @Html.Partial("_PurchasedArticleCostDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleCostDetails)
-                            }
+                                if (Model.PurchasedArticle.PurchasedArticleCostDetails?.Count() > 0)
+                                {
+                                    @Html.Partial("_PurchasedArticleCostDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleCostDetails)
+                                }
                             }
                         </div>
                     </div>
@@ -272,9 +272,9 @@
                             @{
                                 if (Model.PurchasedArticle.PurchasedArticleShortageDealingDetails?.Count() > 0)
                                 {
-                                  @Html.Partial("_PurchasedArticleShortageDealingDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleShortageDealingDetails)
+                                    @Html.Partial("_PurchasedArticleShortageDealingDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleShortageDealingDetails)
                                 }
-                             }
+                            }
                         </div>
                     </div>
                 </div>
@@ -295,28 +295,28 @@
                                 </div>
                             </div>
                         </div>
-                            <div><br /></div>
-                            <div id="SavedPurchasedArticleContainerDetailsList">
-                                @{
-                                    if (Model.PurchasedArticle.PurchasedArticleContainerDetails?.Count() > 0)
-                                    {
-                                        @Html.Partial("_PurchasedArticleContainerDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleContainerDetails)
-                                    }
+                        <div><br /></div>
+                        <div id="SavedPurchasedArticleContainerDetailsList">
+                            @{
+                                if (Model.PurchasedArticle.PurchasedArticleContainerDetails?.Count() > 0)
+                                {
+                                    @Html.Partial("_PurchasedArticleContainerDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleContainerDetails)
                                 }
+                            }
 
-                            </div>
                         </div>
-                        <div class="tab-pane fade in " id="Report" role="tabpanel">
-                            <div id="ReportPlaceHolder">
-                                <div class="row">
-                                   
-                                </div>
+                    </div>
+                    <div class="tab-pane fade in " id="Report" role="tabpanel">
+                        <div id="ReportPlaceHolder">
+                            <div class="row">
+
                             </div>
                         </div>
                     </div>
-        </div>
+                </div>
+            </div>
 
-        <!-- Tab stop -->
+            <!-- Tab stop -->
     </form>
 
 </div>

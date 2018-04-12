@@ -61,7 +61,6 @@ namespace TomasGreen.Model.Models
         public bool OrderPaid { get; set; } = false;
         public bool Cash { get; set; } = false;
         public bool Confirmed { get; set; } = false;
-        public Guid? Guid { get; set; }
         public bool HasIssue { get; set; }
 
         //Currency

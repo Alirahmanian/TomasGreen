@@ -11,6 +11,9 @@ function EnableDisablePurchasedArticleTabs() {
         PutActiveTab();
     }
     $("#PurchasedArticleDetail_TotalPerUnit").prop('disabled', true);
+    $("#PurchasedArticleCostDetail_PaymentTypeID  option").filter(function () {
+        return $.trim($(this).text()) == 'Shortage'
+    }).remove(); //.prop('disabled', 'disabled');
 }
 function ChangeActiveTab(index) {
     $("#ActiveTab").val(index);
@@ -54,9 +57,15 @@ function ValidatePurchasedArticle() {
 //=======================================
 function ValidatePurchasedArticleDetail() {
     var isPurchasedArticleDetailValid = true;
+    $(".valid_WarehouseID").remove();
     $(".valid_ArticleID").remove();
     $(".valid_QtyPackages").remove();
     $(".valid_UnitPrice").remove();
+
+    if ($('#PurchasedArticleDetail_WarehouseID').val() === "0" || $('#PurchasedArticleDetail_WarehouseID').val() === "Select") {
+        $("#PurchasedArticleDetail_WarehouseID").closest('div').append('<p class="valid_WarehouseID" style="color:red">Please choose a warehouse.</p>');
+        isPurchasedArticleDetailValid = false;
+    }
 
     if ($('#PurchasedArticleDetail_ArticleID').val() === "0" || $('#PurchasedArticleDetail_ArticleID').val() === "Select") {
         $("#PurchasedArticleDetail_ArticleID").closest('div').append('<p class="valid_ArticleID" style="color:red">Please choose an article.</p>');
@@ -74,6 +83,37 @@ function ValidatePurchasedArticleDetail() {
     }
     
     return isPurchasedArticleDetailValid;
+}
+//=======================================
+//=======================================
+function ValidatePurchasedArticleCostDetail() {
+    var isPurchasedArticleCostDetailValid = true;
+    $(".valid_PaymentTypeID").remove();
+    $(".valid_CompanyID").remove();
+    $(".valid_CurrencyID").remove();
+    $(".valid_Amount").remove();
+    
+    
+    if ($('#PurchasedArticleCostDetail_PaymentTypeID').val() === "0" || $('#PurchasedArticleCostDetail_PaymentTypeID').val() === "Select") {
+        $("#PurchasedArticleCostDetail_PaymentTypeID").closest('div').append('<p class="valid_PaymentID" style="color:red">Please choose a payment type.</p>');
+        isPurchasedArticleCostDetailValid = false;
+    }
+    if ($('#PurchasedArticleCostDetail_CompanyID').val() === "0" || $('#PurchasedArticleCostDetail_CompanyID').val() === "Select") {
+        $("#PurchasedArticleCostDetail_CompanyID").closest('div').append('<p class="valid_CompanyID" style="color:red">Please choose a company.</p>');
+        isPurchasedArticleCostDetailValid = false;
+    }
+    if ($('#PurchasedArticleCostDetail_CurrencyID').val() === "0" || $('#PurchasedArticleCostDetail_CurrencyID').val() === "Select") {
+        $("#PurchasedArticleCostDetail_CurrencyID").closest('div').append('<p class="valid_CurrencyID" style="color:red">Please choose a currency.</p>');
+        isPurchasedArticleCostDetailValid = false;
+    }
+    if (parseInt($('#PurchasedArticleCostDetail_Amount').val(), 10) === 0 ) {
+        $("#PurchasedArticleCostDetail_Amount").closest('div').append('<p class="valid_Amount" style="color:red">Please put amount.</p>');
+        isPurchasedArticleCostDetailValid = false;
+    }
+
+    
+
+    return isPurchasedArticleCostDetailValid;
 }
 //=======================================
 //=======================================

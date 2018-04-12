@@ -20,6 +20,7 @@ namespace TomasGreen.Model.Models
         [DisplayName("Saved by")]
         public string UserName { get; set; }
         public bool Archive { get; set; } = false;
+        public Guid? Guid { get; set; }
 
     }
 }

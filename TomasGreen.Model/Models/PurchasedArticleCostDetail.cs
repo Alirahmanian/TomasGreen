@@ -9,7 +9,7 @@ namespace TomasGreen.Model.Models
     {
         public int PurchasedArticleID { get; set; }
         [Required(ErrorMessage = "Please choose a cost type.")]
-        public int PurchasedArticleCostTypeID { get; set; }
+        public int PaymentTypeID { get; set; }
         [Display(Name = "Company")]
         [Required(ErrorMessage = "Please choose a company.")]
         public int CompanyID { get; set; }
@@ -19,12 +19,11 @@ namespace TomasGreen.Model.Models
         public decimal Amount { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
-        public Guid? Guid { get; set; }
 
         //nav.
         public PurchasedArticle PurchasedArticle { get; set; }
         public Company Company { get; set; }
         public Currency Currency { get; set; }
-        public PurchasedArticleCostType PurchasedArticleCostType { get; set; }
+        public PaymentType PaymentType { get; set; }
     }
 }
