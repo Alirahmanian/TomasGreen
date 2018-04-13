@@ -36,6 +36,18 @@ namespace TomasGreen.Web.Balances
 
             return 0;
         }
+        public static ArticleOnhand GetArticleOnhands(ApplicationDbContext _contex, int articleId, int warehouseId, int companyId)
+        {
+            var articleOnhand = new ArticleOnhand();
+            var articleWarehouseBalance = _contex.ArticleWarehouseBalances.Where(a => a.ArticleID == articleId && a.WarehouseID == warehouseId &&
+                                          a.CompanyID == companyId).FirstOrDefault();
+            if(articleWarehouseBalance != null)
+            {
+                articleOnhand.QtyPackages = articleWarehouseBalance.QtyPackagesOnhand;
+                articleOnhand.QtyExtra = articleWarehouseBalance.QtyExtraOnhand;
+            }
+            return articleOnhand;
+        }
         private static PropertyValidation ValidateValues(ArticleWarehouseBalance model)
         {
             var result = new PropertyValidation(true, "Validate", "ArticleWarehouseBalance", "", "");

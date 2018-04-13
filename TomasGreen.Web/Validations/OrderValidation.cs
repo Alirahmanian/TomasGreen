@@ -37,7 +37,7 @@ namespace TomasGreen.Web.Validations
             }
             if (model.WarehouseID == 0)
             {
-                result.Value = false; result.Property = nameof(model.WarehouseID); result.Message = "Please choose an warehouse.";
+                result.Value = false; result.Property = nameof(model.WarehouseID); result.Message = "Please choose a warehouse.";
                 return result;
             }
             if(model.QtyPackages < 0 )

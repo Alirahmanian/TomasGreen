@@ -15,6 +15,7 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Currency")]
         [Required(ErrorMessage = "Please choose a currency.")]
         public int CurrencyID { get; set; }
+        public bool Cash { get; set; }
         [Display(Name = "Balance Changer type")]
         [Required(ErrorMessage = "Please choose a balance Changer type.")]
         public int CompanyCreditDebitBalanceDetailTypeID { get; set; }

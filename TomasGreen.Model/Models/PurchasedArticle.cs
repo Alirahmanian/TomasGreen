@@ -22,6 +22,7 @@ namespace TomasGreen.Model.Models
         public int CompanyID { get; set; }
         [Display(Name = "Currency")]
         public int CurrencyID { get; set; }
+        public bool Cash { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
        

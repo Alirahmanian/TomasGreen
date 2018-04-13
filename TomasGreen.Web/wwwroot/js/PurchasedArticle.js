@@ -2,24 +2,29 @@
 //=======================================
 function EnableDisablePurchasedArticleTabs() {
     if ($("#PurchasedArticle_ID").val() === "" || $("#PurchasedArticle_ID").val() === "0") {
-        $("#PurchasedArticleTaps").find(":input").prop("disabled", true);
+        $('#PurchasedArticleTabs').hide();
+        //$("#PurchasedArticleTabs").find(".tab").prop("disabled", true);
         //$("#PurchasedArticleDetail_Mess").text('Please save order header first.');
 
     }
     else {
-        $("#PurchasedArticleTaps").find(":input").prop("disabled", false);
+        $('#PurchasedArticleTabs').show();
+        //$("#PurchasedArticleTabs").find(".tab").prop("disabled", false);
         PutActiveTab();
+        $("#PurchasedArticleCostDetail_PaymentTypeID  option").filter(function () {
+            return $.trim($(this).text()) == 'Shortage'
+        }).remove(); 
     }
-    $("#PurchasedArticleDetail_TotalPerUnit").prop('disabled', true);
-    $("#PurchasedArticleCostDetail_PaymentTypeID  option").filter(function () {
-        return $.trim($(this).text()) == 'Shortage'
-    }).remove(); //.prop('disabled', 'disabled');
+   
 }
+//=======================================
+//=======================================
 function ChangeActiveTab(index) {
     $("#ActiveTab").val(index);
     PutActiveTab();
 }
-
+//=======================================
+//=======================================
 function PutActiveTab() {
     if ($("#ActiveTab").val() !== "") {
         $('.PurchasedArticle_Taps li').removeClass('active');
@@ -118,11 +123,6 @@ function ValidatePurchasedArticleCostDetail() {
 //=======================================
 //=======================================
 $(document).ready(
-    EnableDisablePurchasedArticleTabs(),
-   
-   
-
-
-
+    EnableDisablePurchasedArticleTabs()
 
 );

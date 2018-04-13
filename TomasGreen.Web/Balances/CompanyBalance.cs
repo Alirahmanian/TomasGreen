@@ -46,6 +46,17 @@ namespace TomasGreen.Web.Balances
         {
             return _context.CompanyCreditDebitBalances.Where(b => b.CompanyID == comapnyId && b.CurrencyID == currencyId).FirstOrDefault();
         }
+        public static CreditDebit GetCompanyCreditDebit(ApplicationDbContext _context, int comapnyId, int currencyId)
+        {
+            var creditDebit = new CreditDebit();
+            var companyCreditDebitBalance = _context.CompanyCreditDebitBalances.Where(b => b.CompanyID == comapnyId && b.CurrencyID == currencyId).FirstOrDefault();
+            if(companyCreditDebitBalance != null)
+            {
+                creditDebit.Credit = companyCreditDebitBalance.Credit;
+                creditDebit.Debit = companyCreditDebitBalance.Debit;
+            }
+            return creditDebit;
+        }
         public static PropertyValidation Add(ApplicationDbContext _context, CompanyCreditDebitBalance model)
         {
             var result = Validate(model, false);

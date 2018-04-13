@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180413162724_CashPropertytoPurshasedArticle")]
+    partial class CashPropertytoPurshasedArticle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -472,8 +473,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<bool>("Cash");
-
                     b.Property<int>("CompanyID");
 
                     b.Property<decimal>("Credit")
@@ -510,8 +509,6 @@ namespace TomasGreen.Web.Migrations
                     b.Property<bool>("Archive");
 
                     b.Property<int>("BalanceChangerID");
-
-                    b.Property<bool>("Cash");
 
                     b.Property<string>("Comment");
 
@@ -1289,8 +1286,6 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
-                    b.Property<bool>("Cash");
-
                     b.Property<int>("CompanyID");
 
                     b.Property<int>("CurrencyID");
@@ -1416,8 +1411,6 @@ namespace TomasGreen.Web.Migrations
                         .HasColumnType("decimal(18, 4)");
 
                     b.Property<bool>("Archive");
-
-                    b.Property<bool>("Cash");
 
                     b.Property<int>("CompanyID");
 

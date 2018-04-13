@@ -241,7 +241,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                         {
                             var totalPerUnit = ArticleHelper.TotalPerUnit(_context, model.PurchasedArticleDetail.ArticleID, model.PurchasedArticleDetail.QtyPackages, model.PurchasedArticleDetail.QtyExtra);
                             var totalPrice = totalPerUnit * model.PurchasedArticleDetail.UnitPrice;
-                            model.PurchasedArticleDetail.TotalPerUnit = totalPerUnit;
+                            model.PurchasedArticleDetail.TotalPerUnit = totalPrice;
 
                             var guid = Guid.NewGuid();
                             model.PurchasedArticleDetail.Guid = guid;
@@ -260,6 +260,19 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             }
 
                             //***** Article balance go *****
+                            //Add ArticleBalanceDetails
+                            var articleWarehouseBalanceDetail = GetArticleWarehouseBalanceDetail(savedPurchasedArticleDetail);
+                            if(articleWarehouseBalanceDetail == null)
+                            {
+                                ModelState.AddModelError("", "Couldn't save.");
+                                if (_hostingEnvironment.IsDevelopment())
+                                {
+                                    ModelState.AddModelError("", $"Couldn't create an articleWarehouseBalanceDetail.");
+                                }
+                                AddPurchasedArticleLists(model);
+                                return View(model);
+                            }
+                            _context.ArticleWarehouseBalanceDetails.Add(articleWarehouseBalanceDetail);
                             var articleInOut = new ArticleInOut
                             {
                                 ArticleID = model.PurchasedArticleDetail.ArticleID,
@@ -279,24 +292,24 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddPurchasedArticleLists(model);
                                 return View(model);
                             }
-                            await _context.SaveChangesAsync();
-                            //Add ArticleBalanceDetails
-                            var articleWarehouseBalanceDetail = GetArticleWarehouseBalanceDetail(savedPurchasedArticleDetail);
-                            if(articleWarehouseBalanceDetail == null)
+                            //***** Article balance stop *****
+
+                            //***** Company balance go *****
+                            //Add CompanyCreditDebitBalanceDetail
+                            var companyCreditDebitBalanceDetail = GetCompanyCreditDebitBalanceDetailForArticle(savedPurchasedArticleDetail, true);
+                            if(companyCreditDebitBalanceDetail == null)
                             {
                                 ModelState.AddModelError("", "Couldn't save.");
                                 if (_hostingEnvironment.IsDevelopment())
                                 {
-                                    ModelState.AddModelError("", $"Couldn't create an articleWarehouseBalanceDetail.");
+                                    ModelState.AddModelError("", $"Couldn't create a companyCreditDebitBalanceDetail to save.");
                                 }
                                 AddPurchasedArticleLists(model);
                                 return View(model);
                             }
-                            _context.ArticleWarehouseBalanceDetails.Add(articleWarehouseBalanceDetail);
+                            _context.CompanyCreditDebitBalanceDetails.Add(companyCreditDebitBalanceDetail);
 
-                            //***** Article balance stop *****
-
-                            //***** Company balance go *****
+                            //Add or change Company Credit and debit
                             var companyCreditDebitBalance = new CompanyCreditDebitBalance
                             {
                                 CompanyID = model.PurchasedArticle.CompanyID,
@@ -314,20 +327,6 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddPurchasedArticleLists(model);
                                 return View(model);
                             }
-
-                            //Add CompanyCreditDebitBalanceDetail
-                            var companyCreditDebitBalanceDetail = GetCompanyCreditDebitBalanceDetailForArticle(savedPurchasedArticleDetail, true);
-                            if(companyCreditDebitBalanceDetail == null)
-                            {
-                                ModelState.AddModelError("", "Couldn't save.");
-                                if (_hostingEnvironment.IsDevelopment())
-                                {
-                                    ModelState.AddModelError("", $"Couldn't create a companyCreditDebitBalanceDetail to save.");
-                                }
-                                AddPurchasedArticleLists(model);
-                                return View(model);
-                            }
-                            _context.CompanyCreditDebitBalanceDetails.Add(companyCreditDebitBalanceDetail);
                             //***** Company balance stop *****
 
                             //successful
@@ -513,8 +512,16 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                                 AddPurchasedArticleLists(model);
                                 return View(model);
                             }
-                            using (var dbContextTransaction = _context.Database.BeginTransaction())
+                            if (savedPurchasedArticleDetailforDelete.WarehouseID != model.PurchasedArticleDetail.WarehouseID 
+                                || savedPurchasedArticleDetailforDelete.ArticleID != model.PurchasedArticleDetail.ArticleID)
                             {
+                                // RollBack balances and delete saved purchasedArticleDetail
+
+                            }
+                           
+                                using (var dbContextTransaction = _context.Database.BeginTransaction())
+                            {
+                                
                                 var articleInOut = new ArticleInOut
                                 {
                                     ArticleID = savedPurchasedArticleDetailforDelete.ArticleID,
@@ -664,6 +671,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
                             AddPurchasedArticleLists(model);
                             return RedirectToAction(nameof(Create), new { id = model.PurchasedArticle.ID });
                         }
+                        //To here
                     }
                 }
                
@@ -997,17 +1005,14 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 model.PurchasedArticle = _context.PurchasedArticles.Where(p => p.ID == model.PurchasedArticleID).FirstOrDefault();
             }
-            var articleWarehouseBalanceCompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == model.WarehouseID).FirstOrDefault());
-            var articlewarehouseBalance = _context.ArticleWarehouseBalances.Where(b => b.ArticleID == model.ArticleID && b.WarehouseID == model.WarehouseID && b.CompanyID == articleWarehouseBalanceCompanyID).FirstOrDefault();
-            if (articlewarehouseBalance == null)
-            {
-                return articleWarehouseBalanceDetail;
-            }
             var articleBalanceDetailType = _context.ArticleWarehouseBalanceDetailTypes.Where(t => t.Name == ArticleBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
             if (articleBalanceDetailType == null)
             {
                 return articleWarehouseBalanceDetail;
             }
+            var articleWarehouseBalanceCompanyID = ArticleBalance.GetWarehouseCompany(_context, _context.Warehouses.Where(w => w.ID == model.WarehouseID).FirstOrDefault());
+            var articleOnhand = ArticleBalance.GetArticleOnhands(_context, model.ArticleID, model.WarehouseID, articleWarehouseBalanceCompanyID);
+
             articleWarehouseBalanceDetail = new ArticleWarehouseBalanceDetail();
             articleWarehouseBalanceDetail.ArticleID = model.ArticleID;
             articleWarehouseBalanceDetail.WarehouseID = model.WarehouseID;
@@ -1017,8 +1022,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             articleWarehouseBalanceDetail.Date = model.PurchasedArticle.Date;
             articleWarehouseBalanceDetail.QtyPackages = model.QtyPackages;
             articleWarehouseBalanceDetail.QtyExtra = model.QtyExtra;
-            articleWarehouseBalanceDetail.QtyPackagesOnHandBeforeChange = articlewarehouseBalance.QtyPackagesOnhand;
-            articleWarehouseBalanceDetail.QtyExtraOnHandBeforeChange = articlewarehouseBalance.QtyExtraOnhand;
+            articleWarehouseBalanceDetail.QtyPackagesOnHandBeforeChange = articleOnhand.QtyPackages;
+            articleWarehouseBalanceDetail.QtyExtraOnHandBeforeChange = articleOnhand.QtyExtra;
             articleWarehouseBalanceDetail.RowCreatedBySystem = true;
 
             return articleWarehouseBalanceDetail;
@@ -1043,12 +1048,7 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return companyCreditDebitBalanceDetail;
             }
-            var companyCreditDeitBalance = _context.CompanyCreditDebitBalances.Where(b => b.CompanyID == model.PurchasedArticle.CompanyID 
-            && b.CurrencyID == model.PurchasedArticle.CurrencyID).FirstOrDefault();
-            if (companyCreditDeitBalance == null)
-            {
-                return companyCreditDebitBalanceDetail;
-            }
+                    
             var paymentType = _context.PaymentTypes.Where(p => p.Name == CompanyPaymentTypeLookUp.Article).FirstOrDefault();
             var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
             if (companyBalanceDetailType == null || paymentType == null)
@@ -1070,8 +1070,9 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 companyCreditDebitBalanceDetail.Debit = model.TotalPerUnit;
             }
-            companyCreditDebitBalanceDetail.CreditBeforeChange = companyCreditDeitBalance.Credit;
-            companyCreditDebitBalanceDetail.DebitBeforeChange = companyCreditDeitBalance.Debit;
+            var creditDebit = CompanyBalance.GetCompanyCreditDebit(_context, model.PurchasedArticle.CompanyID, model.PurchasedArticle.CurrencyID);
+            companyCreditDebitBalanceDetail.CreditBeforeChange = creditDebit.Credit;
+            companyCreditDebitBalanceDetail.DebitBeforeChange = creditDebit.Debit;
             companyCreditDebitBalanceDetail.RowCreatedBySystem = true;
             
             return companyCreditDebitBalanceDetail;
@@ -1096,12 +1097,8 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 return companyCreditDebitBalanceDetail;
             }
-            var companyCreditDeitBalance = _context.CompanyCreditDebitBalances.Where(b => b.CompanyID == model.CompanyID
-            && b.CurrencyID == model.CurrencyID).FirstOrDefault();
-            if (companyCreditDeitBalance == null)
-            {
-                return companyCreditDebitBalanceDetail;
-            }
+           
+            
             var paymentType = _context.PaymentTypes.Where(t => t.ID == model.PaymentTypeID).FirstOrDefault();
             var companyBalanceDetailType = _context.CompanyCreditDebitBalanceDetailTypes.Where(t => t.Name == CompanyBalanceDetailTypeLookUp.Purchase).FirstOrDefault();
             if (companyBalanceDetailType == null || paymentType == null)
@@ -1123,8 +1120,9 @@ namespace TomasGreen.Web.Areas.Import.Controllers
             {
                 companyCreditDebitBalanceDetail.Debit = model.Amount;
             }
-            companyCreditDebitBalanceDetail.CreditBeforeChange = companyCreditDeitBalance.Credit;
-            companyCreditDebitBalanceDetail.DebitBeforeChange = companyCreditDeitBalance.Debit;
+            var creditDebit = CompanyBalance.GetCompanyCreditDebit(_context, model.CompanyID, model.CurrencyID);
+            companyCreditDebitBalanceDetail.CreditBeforeChange = creditDebit.Credit;
+            companyCreditDebitBalanceDetail.DebitBeforeChange = creditDebit.Debit;
             companyCreditDebitBalanceDetail.RowCreatedBySystem = true;
 
             return companyCreditDebitBalanceDetail;

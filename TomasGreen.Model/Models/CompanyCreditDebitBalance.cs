@@ -9,6 +9,7 @@ namespace TomasGreen.Model.Models
     {
         public int CompanyID { get; set; }
         public int CurrencyID { get; set; }
+        public bool Cash { get; set; }
         [Column(TypeName = "decimal(18,4)")]
         public decimal Credit { get; set; }
         [Column(TypeName = "decimal(18,4)")]
