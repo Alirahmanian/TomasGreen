@@ -57,6 +57,7 @@ namespace TomasGreen.Web.Data
         public DbSet<PurchasedArticleShortageDealingDetail> PurchasedArticleShortageDealingDetails { get; set; }
         public DbSet<ArticleWarehouseBalanceDetail> ArticleWarehouseBalanceDetails { get; set; }
         public DbSet<ArticleWarehouseBalanceDetailType> ArticleWarehouseBalanceDetailTypes { get; set; }
+        public DbSet<CompanyToCompanyPayment> CompanyToCompanyPayments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

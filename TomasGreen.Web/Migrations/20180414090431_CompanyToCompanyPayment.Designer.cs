@@ -11,9 +11,10 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180414090431_CompanyToCompanyPayment")]
+    partial class CompanyToCompanyPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -616,60 +617,6 @@ namespace TomasGreen.Web.Migrations
                         .IsUnique();
 
                     b.ToTable("CompanySections");
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.CompanyToCompanyPayment", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AddedDate");
-
-                    b.Property<bool>("Archive");
-
-                    b.Property<bool>("Cash");
-
-                    b.Property<int>("CurrencyID");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18, 4)");
-
-                    b.Property<decimal>("ExhangedAmount")
-                        .HasColumnType("decimal(18, 4)");
-
-                    b.Property<Guid?>("Guid");
-
-                    b.Property<bool>("IsDiscountRate");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<decimal>("PaidAmount")
-                        .HasColumnType("decimal(18, 4)");
-
-                    b.Property<int>("PaidCurrencyID");
-
-                    b.Property<int>("PayingCompanyID");
-
-                    b.Property<decimal>("Rate")
-                        .HasColumnType("decimal(18, 4)");
-
-                    b.Property<int>("ReceivingCompanyID");
-
-                    b.Property<string>("UserName");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CurrencyID");
-
-                    b.HasIndex("PaidCurrencyID");
-
-                    b.HasIndex("PayingCompanyID");
-
-                    b.HasIndex("ReceivingCompanyID");
-
-                    b.ToTable("CompanyToCompanyPayments");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.Country", b =>
@@ -1861,29 +1808,6 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany("Sections")
                         .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("TomasGreen.Model.Models.CompanyToCompanyPayment", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Currency", "PaidCurrency")
-                        .WithMany()
-                        .HasForeignKey("PaidCurrencyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "PayingCompany")
-                        .WithMany()
-                        .HasForeignKey("PayingCompanyID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TomasGreen.Model.Models.Company", "ReceivingCompany")
-                        .WithMany()
-                        .HasForeignKey("ReceivingCompanyID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

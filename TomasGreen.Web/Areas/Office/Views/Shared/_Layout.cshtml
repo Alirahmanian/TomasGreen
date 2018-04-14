@@ -4,11 +4,12 @@
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@localizer[@ViewBag.Title]</title>
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/CustomSite.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -18,8 +19,9 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-full bg-info">
-        <div class="container">
+    <div class="bg-warning"><a asp-area="Admin" asp-controller="Currencies" asp-action="Index">@await Component.InvokeAsync(nameof(LatestCurrencyRates))</a></div>
+    <nav class="navbar navbar-inverse navbar-fixed-top nav-bg-green nav-text-black">
+        <div class="container leftMargin">
             <div class="nav-tabs">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -28,29 +30,68 @@
                     <span class="icon-bar"></span>
                 </button>
                 @await Html.PartialAsync("_LanguagePartial")
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">@localizer["TomasGreen"]</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">@localizer["TomasGreen"] </a>
             </div>
-            <div class="navbar-collapse collapse avbar navbar-toggleable-md navbar-dark bg-company-red">
+            <div class="avbar navbar-collapse collapse navbar-toggleable-md nav-text-black">
                 <ul class="nav nav-pills">
-                    <li><a asp-area="Office" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Office"]</a></li>
+                    <li><a asp-area="Import" asp-controller="Home" asp-action="Index" class="navbar-brand" style="text-decoration-line:underline">@localizer["Office"]</a></li>
                     <li role="presentation" class="dropdown">
-                        <a class=" dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            @localizer["Office"] <span class="caret"></span>
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            @localizer["Accounting"] <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="Office" asp-controller="Offices" asp-action="Index">@localizer["Office"]</a></li>
+                            <li><a asp-area="Office" asp-controller="CompanyToCompanyPayments" asp-action="Index">@localizer["Payment"]</a></li>
                         </ul>
                     </li>
+                    <li role="presentation" class="dropdown">
+                        <a class="nav-link dropdown-toggle nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            @localizer["Management"] <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-area="Office" asp-controller="Employees" asp-action="Index">@localizer["Employee"]</a></li>
+                            <li><a asp-area="Office" asp-controller="Companies" asp-action="Index">@localizer["Company"]</a></li>
+                            <li><a asp-area="Office" asp-controller="CompanySections" asp-action="Index">@localizer["Section"]</a></li>
 
+                        </ul>
+                    </li>
+                    <li role="presentation" class="dropdown">
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            @localizer["Purchase"] <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-area="Office" asp-controller="PurchasedArticles" asp-action="Index">@localizer["Purchase article"]</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation" class="dropdown">
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            @localizer["Article and warhouse"] <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-area="Office" asp-controller="Articles" asp-action="Index">@localizer["Article"]</a></li>
+                            <li><a asp-area="Office" asp-controller="ArticleCategories" asp-action="Index">@localizer["Article category"]</a></li>
+                            <li><a asp-area="Office" asp-controller="Countries" asp-action="Index">@localizer["Country"] </a></li>
+                            <li><a asp-area="Office" asp-controller="ArticleUnits" asp-action="Index">@localizer["Article unit"] </a></li>
+                            <li><a asp-area="Office" asp-controller="ArticlePackageForms" asp-action="Index">@localizer["Article package form"] </a></li>
+                            <li><a asp-area="Office" asp-controller="Warehouses" asp-action="Index">@localizer["Warehouse"]</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation" class="dropdown">
+                        <a class="nav-link dropdown-togglev nav-text-black" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            @localizer["Sales"] <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-area="Office" asp-controller="Orders" asp-action="Index">@localizer["Order"]</a></li>
+                        </ul>
+                    </li>
                 </ul>
 
             </div>
         </div>
     </nav>
-    
 
 
-    <div class="container body-content">
+
+    <div class="container leftMargin body-content">
         @RenderBody()
 
 
@@ -75,5 +116,6 @@
             <script src="~/js/site.min.js" asp-append-version="true"></script>
         </environment>
         @RenderSection("scripts", required: false)
+    </div>
 </body>
 </html>
