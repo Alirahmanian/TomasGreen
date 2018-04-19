@@ -1,5 +1,5 @@
 ﻿@inject TomasGreen.Web.CustomLocalizer localizer
-@model TomasGreen.Web.Areas.Import.ViewModels.SavePurchasedArticleViewModel
+@model TomasGreen.Web.Areas.Import.ViewModels.SavePurchaseArticleViewModel
 @{
     ViewData["Title"] = @localizer["Purchase articles"];
 }
@@ -16,19 +16,19 @@
 <div class="row">
     <form asp-action="Create">
         <div class="row">
-            &nbsp;&nbsp;<a asp-action="Index"><span class="glyphicon glyphicon-hand-left"></span> </a> &nbsp;| &nbsp;<a asp-action="Create" asp-route-id="@Model?.PurchasedArticle?.ID"><span class="glyphicon glyphicon-refresh"></span></a>
-            <span> &nbsp;&nbsp; | &nbsp;&nbsp;</span><input type="submit" name="SavePurchasedArticle" id="SavePurchasedArticle" value='@localizer["Save"]' class='@((Model?.PurchasedArticle?.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchasedArticle()" />
+            &nbsp;&nbsp;<a asp-action="Index"><span class="glyphicon glyphicon-hand-left"></span> </a> &nbsp;| &nbsp;<a asp-action="Create" asp-route-id="@Model?.PurchaseArticle?.ID"><span class="glyphicon glyphicon-refresh"></span></a>
+            <span> &nbsp;&nbsp; | &nbsp;&nbsp;</span><input type="submit" name="SavePurchaseArticle" id="SavePurchaseArticle" value='@localizer["Save"]' class='@((Model?.PurchaseArticle?.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchaseArticle()" />
             @{
-                if (Model?.PurchasedArticle?.ID > 0)
+                if (Model?.PurchaseArticle?.ID > 0)
                 {
-                    <span> &nbsp;&nbsp; | &nbsp;</span><a asp-action="DeletePurchasedArticle" asp-route-id="@Model?.PurchasedArticle?.ID" onclick="return window.confirm('Are you sure you want to delete this purchase with @Model?.PurchasedArticle?.PurchasedArticleDetails?.Count() rows?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
+                    <span> &nbsp;&nbsp; | &nbsp;</span><a asp-action="DeletePurchaseArticle" asp-route-id="@Model?.PurchaseArticle?.ID" onclick="return window.confirm('Are you sure you want to delete this purchase with @Model?.PurchaseArticle?.PurchaseArticleDetails?.Count() rows?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
                 }
             }
 
 
         </div>
         <input asp-for="@Model.ActiveTab" class="form-control" type="hidden" />
-        <input asp-for="@Model.PurchasedArticle.ID" class="form-control" style="visibility:hidden" />
+        <input asp-for="@Model.PurchaseArticle.ID" class="form-control" style="visibility:hidden" />
         <div asp-validation-summary="All" class="text-danger"></div>
         <div>@ViewBag.ErrorMessage</div>
         <div class="container-fluid">
@@ -37,29 +37,29 @@
 
                 <div class="col-sm-8">
                     <div class="form-group col-sm-3">
-                        <label asp-for="@Model.PurchasedArticle.Date" class="control-label"></label>
-                        <input asp-for="@Model.PurchasedArticle.Date" class="form-control" />
-                        <span asp-validation-for="@Model.PurchasedArticle.Date" class="text-danger"></span>
+                        <label asp-for="@Model.PurchaseArticle.Date" class="control-label"></label>
+                        <input asp-for="@Model.PurchaseArticle.Date" class="form-control" />
+                        <span asp-validation-for="@Model.PurchaseArticle.Date" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-3">
-                        <label asp-for="@Model.PurchasedArticle.CompanyID" class="control-label"></label>
-                        <select asp-for="@Model.PurchasedArticle.CompanyID" class="form-control" asp-items="ViewBag.CompanyID">
+                        <label asp-for="@Model.PurchaseArticle.CompanyID" class="control-label"></label>
+                        <select asp-for="@Model.PurchaseArticle.CompanyID" class="form-control" asp-items="ViewBag.CompanyID">
                             <option>Select</option>
                         </select>
-                        <span asp-validation-for="@Model.PurchasedArticle.CompanyID" class="text-danger"></span>
+                        <span asp-validation-for="@Model.PurchaseArticle.CompanyID" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="@Model.PurchasedArticle.CurrencyID" class="control-label"></label>
-                        <select asp-for="@Model.PurchasedArticle.CurrencyID" class="form-control" asp-items="ViewBag.CurrencyID">
+                        <label asp-for="@Model.PurchaseArticle.CurrencyID" class="control-label"></label>
+                        <select asp-for="@Model.PurchaseArticle.CurrencyID" class="form-control" asp-items="ViewBag.CurrencyID">
                             <option>Select</option>
                         </select>
-                        <span asp-validation-for="@Model.PurchasedArticle.CurrencyID" class="text-danger"></span>
+                        <span asp-validation-for="@Model.PurchaseArticle.CurrencyID" class="text-danger"></span>
                     </div>
 
                     <div class="form-group col-sm-3">
-                        <label asp-for="@Model.PurchasedArticle.Description" class="control-label"></label>
-                        <textarea asp-for="@Model.PurchasedArticle.Description" class="form-control" cols="5"></textarea>
-                        <span asp-validation-for="@Model.PurchasedArticle.Description" class="text-danger"></span>
+                        <label asp-for="@Model.PurchaseArticle.Description" class="control-label"></label>
+                        <textarea asp-for="@Model.PurchaseArticle.Description" class="form-control" cols="5"></textarea>
+                        <span asp-validation-for="@Model.PurchaseArticle.Description" class="text-danger"></span>
                     </div>
 
                 </div>
@@ -67,18 +67,18 @@
                     <div class="row">
                         <div class="bg-warning">&nbsp;<b>Filled by system</b></div>
                         <div class="col-md-6">
-                            <span>Tot. price: </span><span>@Model.PurchasedArticle.GetTotalPrice().ToString("C")</span>
+                            <span>Tot. price: </span><span>@Model.PurchaseArticle.GetTotalPrice().ToString("C")</span>
                         </div>
                         <div class="col-md-6">
                             <span>Arrived: </span>
                             <span>
-                                @((Model.PurchasedArticle.Arrived == true) ? localizer["yes"] : localizer["no"])
+                                @((Model.PurchaseArticle.Arrived == true) ? localizer["yes"] : localizer["no"])
                             </span>
                         </div>
                         <div class="col-md-6">
                             <span>Has issue:</span>
                             @{
-                                if (Model.PurchasedArticle.HasIssue)
+                                if (Model.PurchaseArticle.HasIssue)
                                 {
                                     <span class="alert-danger">
                                         @localizer["yes"]
@@ -102,9 +102,9 @@
         </div>
         <!--Tab go -->
 
-        <div id="PurchasedArticleTabs" class="tab" role="tabpanel">
+        <div id="PurchaseArticleTabs" class="tab" role="tabpanel">
             <!-- Nav tabs -->
-            <ul class="nav nav-tabs PurchasedArticle_Taps" role="tablist">
+            <ul class="nav nav-tabs PurchaseArticle_Taps" role="tablist">
                 <li id="ArticleDetail_Tab" class="active" role="presentation"><a role="tab" aria-controls="home" href="#ArticleDetails" data-toggle="tab" onclick=" return ChangeActiveTab(0)"> @localizer["Articles"] &nbsp;</a></li>
                 <li id="CostDetail_Tab" role="presentation"><a role="tab" aria-controls="Costs" href="#CostDetails" data-toggle="tab" onclick=" return ChangeActiveTab(1)"> @localizer["Costs"] &nbsp;</a></li>
                 <li id="ShortageDetail_Tab" role="presentation"><a role="tab" aria-controls="Shortage" href="#ShortageDetails" data-toggle="tab" onclick=" return ChangeActiveTab(2)"> @localizer["Shortage"] &nbsp;</a></li>
@@ -116,60 +116,60 @@
             <div class="tab-content tabs">
                 <div class="tab-pane fade in active" id="ArticleDetails" role="tabpanel">
                     <div><br /></div>
-                    <div id="PurchasedArticleDetail_Mess"></div>
-                    <input asp-for="@Model.PurchasedArticleDetail.ID" class="form-control" style="display:none;" />
-                    <input asp-for="@Model.PurchasedArticle.ID" class="form-control" style="display:none;" />
+                    <div id="PurchaseArticleDetail_Mess"></div>
+                    <input asp-for="@Model.PurchaseArticleDetail.ID" class="form-control" style="display:none;" />
+                    <input asp-for="@Model.PurchaseArticle.ID" class="form-control" style="display:none;" />
                     <div class="col-md-12">
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label asp-for="@Model.PurchasedArticleDetail.WarehouseID" class="control-label">@localizer["Warehouse"]</label>
-                                <select asp-for="@Model.PurchasedArticleDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID">
+                                <label asp-for="@Model.PurchaseArticleDetail.WarehouseID" class="control-label">@localizer["Warehouse"]</label>
+                                <select asp-for="@Model.PurchaseArticleDetail.WarehouseID" class="form-control" asp-items="ViewBag.WarehouseID">
                                     <option>@localizer["Select"]</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label asp-for="@Model.PurchasedArticleDetail.ArticleID" class="control-label">@localizer["Article"]</label>
-                                <select asp-for="@Model.PurchasedArticleDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID">
+                                <label asp-for="@Model.PurchaseArticleDetail.ArticleID" class="control-label">@localizer["Article"]</label>
+                                <select asp-for="@Model.PurchaseArticleDetail.ArticleID" class="form-control" asp-items="ViewBag.ArticleID">
                                     <option>@localizer["Select"]</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label asp-for="@Model.PurchasedArticleDetail.QtyPackages" class="control-label">Package</label>
-                                <input asp-for="@Model.PurchasedArticleDetail.QtyPackages" class="form-control" />
-                                <span asp-validation-for="@Model.PurchasedArticleDetail.QtyPackages" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleDetail.QtyPackages" class="control-label">Package</label>
+                                <input asp-for="@Model.PurchaseArticleDetail.QtyPackages" class="form-control" />
+                                <span asp-validation-for="@Model.PurchaseArticleDetail.QtyPackages" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label asp-for="@Model.PurchasedArticleDetail.QtyExtra" class="control-label">Extra</label>
-                                <input asp-for="@Model.PurchasedArticleDetail.QtyExtra" class="form-control" />
-                                <span asp-validation-for="@Model.PurchasedArticleDetail.QtyExtra" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleDetail.QtyExtra" class="control-label">Extra</label>
+                                <input asp-for="@Model.PurchaseArticleDetail.QtyExtra" class="form-control" />
+                                <span asp-validation-for="@Model.PurchaseArticleDetail.QtyExtra" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label asp-for="@Model.PurchasedArticleDetail.UnitPrice" class="control-label">Price</label>
-                                <input asp-for="@Model.PurchasedArticleDetail.UnitPrice" class="form-control" />
-                                <span asp-validation-for="@Model.PurchasedArticleDetail.UnitPrice" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleDetail.UnitPrice" class="control-label">Price</label>
+                                <input asp-for="@Model.PurchaseArticleDetail.UnitPrice" class="form-control" />
+                                <span asp-validation-for="@Model.PurchaseArticleDetail.UnitPrice" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-1">
                             <div class="form-group">
                                 <br />
-                                <input type="submit" name="SavePurchasedArticleDetail" id="SavePurchasedArticleDetail" value='@((Model?.PurchasedArticleDetail?.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model?.PurchasedArticleDetail?.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchasedArticleDetail()" />
+                                <input type="submit" name="SavePurchaseArticleDetail" id="SavePurchaseArticleDetail" value='@((Model?.PurchaseArticleDetail?.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model?.PurchaseArticleDetail?.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchaseArticleDetail()" />
                             </div>
                         </div>
                     </div>
                     <div><br /></div>
-                    <div id="SavedPurchasedArticleDetailsList">
+                    <div id="SavedPurchaseArticleDetailsList">
                         @{
-                            if (Model.PurchasedArticle.PurchasedArticleDetails?.Count() > 0)
+                            if (Model.PurchaseArticle.PurchaseArticleDetails?.Count() > 0)
                             {
-                                @Html.Partial("_PurchasedArticleDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleDetails)
+                                @Html.Partial("_PurchaseArticleDetailsPartialView.cshtml", Model.PurchaseArticle.PurchaseArticleDetails)
                             }
                         }
 
@@ -178,53 +178,53 @@
                 <div class="tab-pane fade in " id="CostDetails" role="tabpanel">
                     <div id="CostsPlaceHolder">
                         <div><br /></div>
-                        <div id="PurchasedArticleCostDetail_Mess"></div>
+                        <div id="PurchaseArticleCostDetail_Mess"></div>
                         <div class="col-md-12">
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleCostDetail.PaymentTypeID" class="control-label">@localizer["Cost type"]</label>
-                                <select asp-for="@Model.PurchasedArticleCostDetail.PaymentTypeID" class="form-control" asp-items="ViewBag.PaymentTypeID">
+                                <label asp-for="@Model.PurchaseArticleCostDetail.PaymentTypeID" class="control-label">@localizer["Cost type"]</label>
+                                <select asp-for="@Model.PurchaseArticleCostDetail.PaymentTypeID" class="form-control" asp-items="ViewBag.PaymentTypeID">
                                     <option>Select</option>
                                 </select>
-                                <span asp-validation-for="@Model.PurchasedArticleCostDetail.PaymentTypeID" class="text-danger"></span>
+                                <span asp-validation-for="@Model.PurchaseArticleCostDetail.PaymentTypeID" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-3">
-                                <label asp-for="@Model.PurchasedArticleCostDetail.CompanyID" class="control-label"></label>
-                                <select asp-for="@Model.PurchasedArticleCostDetail.CompanyID" class="form-control" asp-items="ViewBag.CostCompanyID">
+                                <label asp-for="@Model.PurchaseArticleCostDetail.CompanyID" class="control-label"></label>
+                                <select asp-for="@Model.PurchaseArticleCostDetail.CompanyID" class="form-control" asp-items="ViewBag.CostCompanyID">
                                     <option>Select</option>
                                 </select>
-                                <span asp-validation-for="@Model.PurchasedArticleCostDetail.CompanyID" class="text-danger"></span>
+                                <span asp-validation-for="@Model.PurchaseArticleCostDetail.CompanyID" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleCostDetail.CurrencyID" class="control-label"></label>
-                                <select asp-for="@Model.PurchasedArticleCostDetail.CurrencyID" class="form-control" asp-items="ViewBag.CostCurrencyID">
+                                <label asp-for="@Model.PurchaseArticleCostDetail.CurrencyID" class="control-label"></label>
+                                <select asp-for="@Model.PurchaseArticleCostDetail.CurrencyID" class="form-control" asp-items="ViewBag.CostCurrencyID">
                                     <option>Select</option>
                                 </select>
-                                <span asp-validation-for="@Model.PurchasedArticleCostDetail.CurrencyID" class="text-danger"></span>
+                                <span asp-validation-for="@Model.PurchaseArticleCostDetail.CurrencyID" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleCostDetail.Amount" class="control-label"></label>
-                                <input asp-for="@Model.PurchasedArticleCostDetail.Amount" class="form-control" />
-                                <span asp-validation-for="@Model.PurchasedArticleCostDetail.Amount" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleCostDetail.Amount" class="control-label"></label>
+                                <input asp-for="@Model.PurchaseArticleCostDetail.Amount" class="form-control" />
+                                <span asp-validation-for="@Model.PurchaseArticleCostDetail.Amount" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleCostDetail.Description" class="control-label"></label>
-                                <textarea asp-for="@Model.PurchasedArticleCostDetail.Description" class="form-control"></textarea>
-                                <span asp-validation-for="@Model.PurchasedArticleCostDetail.Description" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleCostDetail.Description" class="control-label"></label>
+                                <textarea asp-for="@Model.PurchaseArticleCostDetail.Description" class="form-control"></textarea>
+                                <span asp-validation-for="@Model.PurchaseArticleCostDetail.Description" class="text-danger"></span>
                             </div>
                             <div class="col-md-1">
                                 <div class="form-group">
                                     <br />
-                                    <input type="submit" name="SavePurchasedArticleCostDetail" id="SavePurchasedArticleCostDetail" value='@((Model.PurchasedArticleCostDetail.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchasedArticleCostDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchasedArticleCostDetail()" />
+                                    <input type="submit" name="SavePurchaseArticleCostDetail" id="SavePurchaseArticleCostDetail" value='@((Model.PurchaseArticleCostDetail.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchaseArticleCostDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' onclick="return ValidatePurchaseArticleCostDetail()" />
                                 </div>
                             </div>
                         </div>
 
                         <div><br /></div>
-                        <div id="SavedPurchasedArticleCostDetailsList">
+                        <div id="SavedPurchaseArticleCostDetailsList">
                             @{
-                                if (Model.PurchasedArticle.PurchasedArticleCostDetails?.Count() > 0)
+                                if (Model.PurchaseArticle.PurchaseArticleCostDetails?.Count() > 0)
                                 {
-                                    @Html.Partial("_PurchasedArticleCostDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleCostDetails)
+                                    @Html.Partial("_PurchaseArticleCostDetailsPartialView.cshtml", Model.PurchaseArticle.PurchaseArticleCostDetails)
                                 }
                             }
                         </div>
@@ -233,46 +233,46 @@
                 <div class="tab-pane fade in " id="ShortageDetails" role="tabpanel">
                     <div id="ShortagePlaceHolder">
                         <div><br /></div>
-                        <div id="PurchasedArticleShortageDealingDetail_Mess"></div>
+                        <div id="PurchaseArticleShortageDealingDetail_Mess"></div>
                         <div class="col-md-12">
                             <div class="form-group col-sm-3">
-                                <label asp-for="@Model.PurchasedArticleShortageDealingDetail.CompanyID" class="control-label"></label>
-                                <select asp-for="@Model.PurchasedArticleShortageDealingDetail.CompanyID" class="form-control" asp-items="ViewBag.ShortageDealingCompanyID">
+                                <label asp-for="@Model.PurchaseArticleShortageDealingDetail.CompanyID" class="control-label"></label>
+                                <select asp-for="@Model.PurchaseArticleShortageDealingDetail.CompanyID" class="form-control" asp-items="ViewBag.ShortageDealingCompanyID">
                                     <option>Select</option>
                                 </select>
-                                <span asp-validation-for="@Model.PurchasedArticleShortageDealingDetail.CompanyID" class="text-danger"></span>
+                                <span asp-validation-for="@Model.PurchaseArticleShortageDealingDetail.CompanyID" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleShortageDealingDetail.CurrencyID" class="control-label"></label>
-                                <select asp-for="@Model.PurchasedArticleShortageDealingDetail.CurrencyID" class="form-control" asp-items="ViewBag.ShortageDealingCurrencyID">
+                                <label asp-for="@Model.PurchaseArticleShortageDealingDetail.CurrencyID" class="control-label"></label>
+                                <select asp-for="@Model.PurchaseArticleShortageDealingDetail.CurrencyID" class="form-control" asp-items="ViewBag.ShortageDealingCurrencyID">
                                     <option>Select</option>
                                 </select>
-                                <span asp-validation-for="@Model.PurchasedArticleShortageDealingDetail.CurrencyID" class="text-danger"></span>
+                                <span asp-validation-for="@Model.PurchaseArticleShortageDealingDetail.CurrencyID" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleShortageDealingDetail.Amount" class="control-label"></label>
-                                <input asp-for="@Model.PurchasedArticleShortageDealingDetail.Amount" class="form-control" />
-                                <span asp-validation-for="@Model.PurchasedArticleShortageDealingDetail.Amount" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleShortageDealingDetail.Amount" class="control-label"></label>
+                                <input asp-for="@Model.PurchaseArticleShortageDealingDetail.Amount" class="form-control" />
+                                <span asp-validation-for="@Model.PurchaseArticleShortageDealingDetail.Amount" class="text-danger"></span>
                             </div>
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleShortageDealingDetail.Description" class="control-label"></label>
-                                <textarea asp-for="@Model.PurchasedArticleShortageDealingDetail.Description" class="form-control"></textarea>
-                                <span asp-validation-for="@Model.PurchasedArticleShortageDealingDetail.Description" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleShortageDealingDetail.Description" class="control-label"></label>
+                                <textarea asp-for="@Model.PurchaseArticleShortageDealingDetail.Description" class="form-control"></textarea>
+                                <span asp-validation-for="@Model.PurchaseArticleShortageDealingDetail.Description" class="text-danger"></span>
                             </div>
                             <div class="col-md-1">
                                 <div class="form-group">
                                     <br />
-                                    <input type="submit" name="SavePurchasedArticleShortageDealingDetail" id="SavePurchasedArticleShortageDealingDetail" value='@((Model.PurchasedArticleShortageDealingDetail.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchasedArticleShortageDealingDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' />
+                                    <input type="submit" name="SavePurchaseArticleShortageDealingDetail" id="SavePurchaseArticleShortageDealingDetail" value='@((Model.PurchaseArticleShortageDealingDetail.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchaseArticleShortageDealingDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' />
                                 </div>
                             </div>
                         </div>
 
                         <div><br /></div>
-                        <div id="SavedPurchasedArticleShortageDealingDetailsList">
+                        <div id="SavedPurchaseArticleShortageDealingDetailsList">
                             @{
-                                if (Model.PurchasedArticle.PurchasedArticleShortageDealingDetails?.Count() > 0)
+                                if (Model.PurchaseArticle.PurchaseArticleShortageDealingDetails?.Count() > 0)
                                 {
-                                    @Html.Partial("_PurchasedArticleShortageDealingDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleShortageDealingDetails)
+                                    @Html.Partial("_PurchaseArticleShortageDealingDetailsPartialView.cshtml", Model.PurchaseArticle.PurchaseArticleShortageDealingDetails)
                                 }
                             }
                         </div>
@@ -281,26 +281,26 @@
                 <div class="tab-pane fade in " id="ContainerDetails" role="tabpanel">
                     <div id="ContainerPlaceHolder">
                         <div><br /></div>
-                        <div id="PurchasedArticleCostDetail_Mess"></div>
+                        <div id="PurchaseArticleCostDetail_Mess"></div>
                         <div class="col-md-12">
                             <div class="form-group col-sm-2">
-                                <label asp-for="@Model.PurchasedArticleContainerDetail.ContainerNumber" class="control-label"></label>
-                                <input asp-for="@Model.PurchasedArticleContainerDetail.ContainerNumber" class="form-control" />
-                                <span asp-validation-for="@Model.PurchasedArticleContainerDetail.ContainerNumber" class="text-danger"></span>
+                                <label asp-for="@Model.PurchaseArticleContainerDetail.ContainerNumber" class="control-label"></label>
+                                <input asp-for="@Model.PurchaseArticleContainerDetail.ContainerNumber" class="form-control" />
+                                <span asp-validation-for="@Model.PurchaseArticleContainerDetail.ContainerNumber" class="text-danger"></span>
                             </div>
                             <div class="col-md-1">
                                 <div class="form-group">
                                     <br />
-                                    <input type="submit" name="SavePurchasedArticleContainerDetail" id="SavePurchasedArticleContainerDetail" value='@((Model.PurchasedArticleContainerDetail?.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchasedArticleContainerDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' />
+                                    <input type="submit" name="SavePurchaseArticleContainerDetail" id="SavePurchaseArticleContainerDetail" value='@((Model.PurchaseArticleContainerDetail?.ID == 0)? localizer["Add"]: localizer["Edit"])' class='@((Model.PurchaseArticleContainerDetail.ID == 0)? "btn btn-primary": "btn btn-warning")' />
                                 </div>
                             </div>
                         </div>
                         <div><br /></div>
-                        <div id="SavedPurchasedArticleContainerDetailsList">
+                        <div id="SavedPurchaseArticleContainerDetailsList">
                             @{
-                                if (Model.PurchasedArticle.PurchasedArticleContainerDetails?.Count() > 0)
+                                if (Model.PurchaseArticle.PurchaseArticleContainerDetails?.Count() > 0)
                                 {
-                                    @Html.Partial("_PurchasedArticleContainerDetailsPartialView.cshtml", Model.PurchasedArticle.PurchasedArticleContainerDetails)
+                                    @Html.Partial("_PurchaseArticleContainerDetailsPartialView.cshtml", Model.PurchaseArticle.PurchaseArticleContainerDetails)
                                 }
                             }
 
@@ -321,4 +321,4 @@
 
 </div>
 
-<script src="~/js/PurchasedArticle.js"></script>
+<script src="~/js/PurchaseArticle.js"></script>

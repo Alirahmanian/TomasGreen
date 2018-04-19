@@ -6,10 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TomasGreen.Model.Models
 {
-    public class PurchasedArticleDetail : BaseEntity
+    public class PurchaseArticleDetail : BaseEntity
     {
         [Required(ErrorMessage = "Please choose an article.")]
-        public int PurchasedArticleID { get; set; }
+        public int PurchaseArticleID { get; set; }
         [Required(ErrorMessage = "Please choose an Article.")]
         public int ArticleID { get; set; }
         [Required(ErrorMessage = "Please choose a warehouse.")]
@@ -27,7 +27,6 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Total per unit")]
         [Column(TypeName = "decimal(18, 4)")]
         public decimal TotalPerUnit { get; set; } = 0;
-        public Guid? Guid { get; set; }
 
         //Arrived
         public DateTime? ArrivedDate{ get; set; }
@@ -44,7 +43,7 @@ namespace TomasGreen.Model.Models
 
         //nav
         public virtual Article Article { get; set; }
-        public virtual PurchasedArticle PurchasedArticle { get; set; }
+        public virtual PurchaseArticle PurchaseArticle { get; set; }
         public virtual Warehouse OntheWayWarehouse { get; set; }
         public virtual Warehouse ArrivedAtWarehouse { get; set; }
 

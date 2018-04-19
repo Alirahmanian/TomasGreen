@@ -30,8 +30,8 @@ namespace TomasGreen.Web.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
-        public DbSet<PurchasedArticle> PurchasedArticles { get; set; }
-        public DbSet<PurchasedArticleDetail> PurchasedArticleDetails { get; set; }
+        public DbSet<PurchaseArticle> PurchaseArticles { get; set; }
+        public DbSet<PurchaseArticleDetail> PurchaseArticleDetails { get; set; }
         public DbSet<ArticleWarehouseBalance> ArticleWarehouseBalances { get; set; }
         public DbSet<ArticleUnit> ArticleUnits { get; set; }
         public DbSet<ArticlePackageForm> ArticlePakageForms { get; set; }
@@ -51,10 +51,10 @@ namespace TomasGreen.Web.Data
         public DbSet<CompanyCreditDebitBalanceDetail> CompanyCreditDebitBalanceDetails { get; set; }
         public DbSet<CompanyCreditDebitBalanceDetailType> CompanyCreditDebitBalanceDetailTypes { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
-        public DbSet<PurchasedArticleCostType> PurchasedArticleCostTypes { get; set; }
-        public DbSet<PurchasedArticleCostDetail> PurchasedArticleCostDetails { get; set; }
-        public DbSet<PurchasedArticleContainerDetail> PurchasedArticleContainerDetails { get; set; }
-        public DbSet<PurchasedArticleShortageDealingDetail> PurchasedArticleShortageDealingDetails { get; set; }
+        public DbSet<PurchaseArticleCostType> PurchaseArticleCostTypes { get; set; }
+        public DbSet<PurchaseArticleCostDetail> PurchaseArticleCostDetails { get; set; }
+        public DbSet<PurchaseArticleContainerDetail> PurchaseArticleContainerDetails { get; set; }
+        public DbSet<PurchaseArticleShortageDealingDetail> PurchaseArticleShortageDealingDetails { get; set; }
         public DbSet<ArticleWarehouseBalanceDetail> ArticleWarehouseBalanceDetails { get; set; }
         public DbSet<ArticleWarehouseBalanceDetailType> ArticleWarehouseBalanceDetailTypes { get; set; }
         public DbSet<CompanyToCompanyPayment> CompanyToCompanyPayments { get; set; }
@@ -64,10 +64,10 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<ArticleWarehouseBalanceDetailType>().HasIndex(p => new { p.Name }).IsUnique(true);
             modelBuilder.Entity<ArticleWarehouseBalanceDetail>()
              .HasIndex(p => new { p.ArticleID, p.WarehouseID, p.CompanyID, p.ArticleWarehouseBalanceDetailTypeID, p.BalanceChangerID }).IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleShortageDealingDetail>().HasIndex(p => new { p.PurchasedArticleID, p.CompanyID, p.CurrencyID }).IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleContainerDetail>().HasIndex(p => new { p.PurchasedArticleID, p.ContainerNumber }).IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleCostType>().HasIndex(p => new { p.Name }).IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleCostDetail>().HasIndex(p => new {p.PurchasedArticleID, p.PaymentTypeID, p.CompanyID, p.CurrencyID  }).IsUnique(true);
+            modelBuilder.Entity<PurchaseArticleShortageDealingDetail>().HasIndex(p => new { p.PurchaseArticleID, p.CompanyID, p.CurrencyID }).IsUnique(true);
+            modelBuilder.Entity<PurchaseArticleContainerDetail>().HasIndex(p => new { p.PurchaseArticleID, p.ContainerNumber }).IsUnique(true);
+            modelBuilder.Entity<PurchaseArticleCostType>().HasIndex(p => new { p.Name }).IsUnique(true);
+            modelBuilder.Entity<PurchaseArticleCostDetail>().HasIndex(p => new {p.PurchaseArticleID, p.PaymentTypeID, p.CompanyID, p.CurrencyID  }).IsUnique(true);
             modelBuilder.Entity<CompanyCreditDebitBalance>()
             .HasIndex(p => new { p.CompanyID, p.CurrencyID })
             .IsUnique(true);
@@ -89,7 +89,6 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Currency>()
             .HasIndex(p => p.Code)
             .IsUnique(true);
-            modelBuilder.Entity<Currency>().Property(x => x.Rate).HasColumnType("decimal(18, 4)");
             modelBuilder.Entity<WarehouseToWarehouse>()
             .HasIndex(p => new { p.Date, p.SenderWarehouseID, p.RecipientWarehouseID, p.ArticleID })
             .IsUnique(true);
@@ -140,18 +139,18 @@ namespace TomasGreen.Web.Data
             modelBuilder.Entity<Warehouse>()
             .HasIndex(p => p.Name)
             .IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleDetail>()
-                .HasIndex(p => new { p.PurchasedArticleID, p.WarehouseID })
+            modelBuilder.Entity<PurchaseArticleDetail>()
+                .HasIndex(p => new { p.PurchaseArticleID, p.WarehouseID })
                 .IsUnique(true);
-            modelBuilder.Entity<PurchasedArticleDetail>()
-                .HasOne(p => p.PurchasedArticle)
-                .WithMany(p => p.PurchasedArticleDetails)
-                .HasForeignKey(p => p.PurchasedArticleID)
+            modelBuilder.Entity<PurchaseArticleDetail>()
+                .HasOne(p => p.PurchaseArticle)
+                .WithMany(p => p.PurchaseArticleDetails)
+                .HasForeignKey(p => p.PurchaseArticleID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<PurchasedArticleDetail>()
+            modelBuilder.Entity<PurchaseArticleDetail>()
                 .HasOne(p => p.OntheWayWarehouse)
-                .WithMany(p => p.PurchasedArticleDetails)
+                .WithMany(p => p.PurchaseArticleDetails)
                 .HasForeignKey(p => p.WarehouseID)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -159,7 +158,7 @@ namespace TomasGreen.Web.Data
                .HasIndex(p => new { p.ArticleID, p.WarehouseID, p.CompanyID })
                .IsUnique(true);
 
-            //modelBuilder.Entity<PurchasedArticle>().Property(x => x.TotalPrice).HasColumnType("decimal(18, 4)");
+            //modelBuilder.Entity<PurchaseArticle>().Property(x => x.TotalPrice).HasColumnType("decimal(18, 4)");
             //modelBuilder.Entity<Article>().Property(x => x.MinimumPricePerUSD).HasColumnType("decimal(18, 4)");
             //modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Credit).HasColumnType("decimal(18, 4)");
             //modelBuilder.Entity<CompanyCreditDebitBalance>().Property(x => x.Debit).HasColumnType("decimal(18, 4)");

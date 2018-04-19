@@ -11,8 +11,8 @@ using TomasGreen.Web.Data;
 namespace TomasGreen.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180409134533_PurchasedArticleGUID")]
-    partial class PurchasedArticleGUID
+    [Migration("20180415084151_InitDB")]
+    partial class InitDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -148,6 +148,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<decimal>("MinimumPricePerUSD")
                         .HasColumnType("decimal(18, 4)");
 
@@ -187,6 +189,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name");
@@ -210,6 +214,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -235,6 +241,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<decimal>("MeasurePerKg")
                         .HasColumnType("decimal(18, 4)");
@@ -276,6 +284,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("CompanyID");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<decimal>("QtyExtraIn")
@@ -309,6 +319,89 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("ArticleWarehouseBalances");
                 });
 
+            modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalanceDetail", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddedDate");
+
+                    b.Property<bool>("Archive");
+
+                    b.Property<int>("ArticleID");
+
+                    b.Property<int>("ArticleWarehouseBalanceDetailTypeID");
+
+                    b.Property<int>("BalanceChangerID");
+
+                    b.Property<string>("Comment");
+
+                    b.Property<int>("CompanyID");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<Guid?>("Guid");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<decimal>("QtyExtra")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal>("QtyExtraOnHandBeforeChange")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<int>("QtyPackages");
+
+                    b.Property<int>("QtyPackagesOnHandBeforeChange");
+
+                    b.Property<bool>("RowCreatedBySystem");
+
+                    b.Property<string>("UserName");
+
+                    b.Property<int>("WarehouseID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ArticleWarehouseBalanceDetailTypeID");
+
+                    b.HasIndex("CompanyID");
+
+                    b.HasIndex("WarehouseID");
+
+                    b.HasIndex("ArticleID", "WarehouseID", "CompanyID", "ArticleWarehouseBalanceDetailTypeID", "BalanceChangerID")
+                        .IsUnique();
+
+                    b.ToTable("ArticleWarehouseBalanceDetails");
+                });
+
+            modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalanceDetailType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddedDate");
+
+                    b.Property<bool>("Archive");
+
+                    b.Property<Guid?>("Guid");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Name");
+
+                    b.Property<bool>("UsedBySystem");
+
+                    b.Property<string>("UserName");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[Name] IS NOT NULL");
+
+                    b.ToTable("ArticleWarehouseBalanceDetailTypes");
+                });
+
             modelBuilder.Entity("TomasGreen.Model.Models.Company", b =>
                 {
                     b.Property<int>("ID")
@@ -329,6 +422,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18, 4)");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<bool>("IsOwner");
 
@@ -378,6 +473,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
+                    b.Property<bool>("Cash");
+
                     b.Property<int>("CompanyID");
 
                     b.Property<decimal>("Credit")
@@ -387,6 +484,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("Debit")
                         .HasColumnType("decimal(18, 4)");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -413,6 +512,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("BalanceChangerID");
 
+                    b.Property<bool>("Cash");
+
                     b.Property<string>("Comment");
 
                     b.Property<int>("CompanyCreditDebitBalanceDetailTypeID");
@@ -434,6 +535,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("DebitBeforeChange")
                         .HasColumnType("decimal(18, 4)");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -466,6 +569,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name")
@@ -494,6 +599,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("CompanyID");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name")
@@ -512,6 +619,60 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("CompanySections");
                 });
 
+            modelBuilder.Entity("TomasGreen.Model.Models.CompanyToCompanyPayment", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddedDate");
+
+                    b.Property<bool>("Archive");
+
+                    b.Property<bool>("Cash");
+
+                    b.Property<int>("CurrencyID");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal>("ExhangedAmount")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<Guid?>("Guid");
+
+                    b.Property<bool>("IsDiscountRate");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<int>("PaidCurrencyID");
+
+                    b.Property<int>("PayingCompanyID");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<int>("ReceivingCompanyID");
+
+                    b.Property<string>("UserName");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CurrencyID");
+
+                    b.HasIndex("PaidCurrencyID");
+
+                    b.HasIndex("PayingCompanyID");
+
+                    b.HasIndex("ReceivingCompanyID");
+
+                    b.ToTable("CompanyToCompanyPayments");
+                });
+
             modelBuilder.Entity("TomasGreen.Model.Models.Country", b =>
                 {
                     b.Property<int>("ID")
@@ -520,6 +681,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -550,6 +713,8 @@ namespace TomasGreen.Web.Migrations
                         .IsRequired();
 
                     b.Property<DateTime>("Date");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<bool>("IsBase");
 
@@ -632,6 +797,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("DicingPlanID");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<decimal>("QtyExtra")
@@ -676,6 +843,8 @@ namespace TomasGreen.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(255);
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<string>("ImageUrl");
 
                     b.Property<string>("LastName")
@@ -704,6 +873,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<string>("Key")
                         .IsRequired();
@@ -739,6 +910,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<bool>("Archive");
 
                     b.Property<int>("ExternalApiID");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -801,6 +974,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("PaymentWarning");
 
+                    b.Property<int?>("SellingCompanySectionID");
+
                     b.Property<decimal?>("TotalPrice")
                         .HasColumnType("decimal(18, 4)");
 
@@ -821,6 +996,8 @@ namespace TomasGreen.Web.Migrations
                         .IsUnique()
                         .HasFilter("[OrderNumber] IS NOT NULL");
 
+                    b.HasIndex("SellingCompanySectionID");
+
                     b.ToTable("Orders");
                 });
 
@@ -837,6 +1014,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("Extended_Price")
                         .HasColumnType("decimal(18, 4)");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -877,6 +1056,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name");
@@ -903,6 +1084,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<decimal>("Dimensions")
                         .HasColumnType("decimal(18, 4)");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -1022,6 +1205,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<int>("ArticleID");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<decimal>("MixPercent")
                         .HasColumnType("decimal(18, 4)");
 
@@ -1061,6 +1246,10 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
+                    b.Property<int?>("CompanyCreditDebitBalanceDetailTypeID");
+
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name");
@@ -1078,7 +1267,7 @@ namespace TomasGreen.Web.Migrations
                     b.ToTable("PaymentTypes");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticle", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -1088,6 +1277,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<bool>("Archive");
 
                     b.Property<bool>("Arrived");
+
+                    b.Property<bool>("Cash");
 
                     b.Property<int>("CompanyID");
 
@@ -1105,6 +1296,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
+                    b.Property<int>("PurchaserCompanySectionID");
+
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18, 4)");
 
@@ -1114,10 +1307,12 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("CompanyID");
 
-                    b.ToTable("PurchasedArticles");
+                    b.HasIndex("PurchaserCompanySectionID");
+
+                    b.ToTable("PurchaseArticles");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleContainerDetail", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleContainerDetail", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -1128,22 +1323,24 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("ContainerNumber");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("PurchasedArticleID");
+                    b.Property<int>("PurchaseArticleID");
 
                     b.Property<string>("UserName");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("PurchasedArticleID", "ContainerNumber")
+                    b.HasIndex("PurchaseArticleID", "ContainerNumber")
                         .IsUnique()
                         .HasFilter("[ContainerNumber] IS NOT NULL");
 
-                    b.ToTable("PurchasedArticleContainerDetails");
+                    b.ToTable("PurchaseArticleContainerDetails");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleCostDetail", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleCostDetail", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -1155,6 +1352,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
+                    b.Property<bool>("Cash");
+
                     b.Property<int>("CompanyID");
 
                     b.Property<int>("CurrencyID");
@@ -1165,9 +1364,9 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("PurchasedArticleCostTypeID");
+                    b.Property<int>("PaymentTypeID");
 
-                    b.Property<int>("PurchasedArticleID");
+                    b.Property<int>("PurchaseArticleID");
 
                     b.Property<string>("UserName");
 
@@ -1177,15 +1376,15 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("CurrencyID");
 
-                    b.HasIndex("PurchasedArticleCostTypeID");
+                    b.HasIndex("PaymentTypeID");
 
-                    b.HasIndex("PurchasedArticleID", "PurchasedArticleCostTypeID", "CompanyID", "CurrencyID")
+                    b.HasIndex("PurchaseArticleID", "PaymentTypeID", "CompanyID", "CurrencyID")
                         .IsUnique();
 
-                    b.ToTable("PurchasedArticleCostDetails");
+                    b.ToTable("PurchaseArticleCostDetails");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleCostType", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleCostType", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -1193,6 +1392,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("AddedDate");
 
                     b.Property<bool>("Archive");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -1207,10 +1408,10 @@ namespace TomasGreen.Web.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("PurchasedArticleCostTypes");
+                    b.ToTable("PurchaseArticleCostTypes");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleDetail", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleDetail", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -1231,7 +1432,7 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Notes");
 
-                    b.Property<int>("PurchasedArticleID");
+                    b.Property<int>("PurchaseArticleID");
 
                     b.Property<decimal>("QtyExtra")
                         .HasColumnType("decimal(18, 4)");
@@ -1261,13 +1462,13 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("WarehouseID");
 
-                    b.HasIndex("PurchasedArticleID", "WarehouseID")
+                    b.HasIndex("PurchaseArticleID", "WarehouseID")
                         .IsUnique();
 
-                    b.ToTable("PurchasedArticleDetails");
+                    b.ToTable("PurchaseArticleDetails");
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleShortageDealingDetail", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleShortageDealingDetail", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -1279,15 +1480,19 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<bool>("Archive");
 
+                    b.Property<bool>("Cash");
+
                     b.Property<int>("CompanyID");
 
                     b.Property<int>("CurrencyID");
+
+                    b.Property<string>("Description");
 
                     b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("PurchasedArticleID");
+                    b.Property<int>("PurchaseArticleID");
 
                     b.Property<string>("UserName");
 
@@ -1297,10 +1502,10 @@ namespace TomasGreen.Web.Migrations
 
                     b.HasIndex("CurrencyID");
 
-                    b.HasIndex("PurchasedArticleID", "CompanyID", "CurrencyID")
+                    b.HasIndex("PurchaseArticleID", "CompanyID", "CurrencyID")
                         .IsUnique();
 
-                    b.ToTable("PurchasedArticleShortageDealingDetails");
+                    b.ToTable("PurchaseArticleShortageDealingDetails");
                 });
 
             modelBuilder.Entity("TomasGreen.Model.Models.RoastingPlan", b =>
@@ -1321,6 +1526,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<DateTime>("Date");
 
                     b.Property<int>("FromWarehouseID");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<int>("ManagerID");
 
@@ -1396,6 +1603,8 @@ namespace TomasGreen.Web.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<Guid?>("Guid");
+
                     b.Property<bool>("IsCustomers");
 
                     b.Property<bool>("IsOnTheWay");
@@ -1432,6 +1641,8 @@ namespace TomasGreen.Web.Migrations
                     b.Property<int>("ArticleID");
 
                     b.Property<DateTime>("Date");
+
+                    b.Property<Guid?>("Guid");
 
                     b.Property<DateTime?>("ModifiedDate");
 
@@ -1595,6 +1806,29 @@ namespace TomasGreen.Web.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("TomasGreen.Model.Models.ArticleWarehouseBalanceDetail", b =>
+                {
+                    b.HasOne("TomasGreen.Model.Models.Article", "Article")
+                        .WithMany()
+                        .HasForeignKey("ArticleID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.ArticleWarehouseBalanceDetailType", "ArticleWarehouseBalanceDetailType")
+                        .WithMany("ArticleWarehouseBalanceDetails")
+                        .HasForeignKey("ArticleWarehouseBalanceDetailTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseID")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("TomasGreen.Model.Models.CompanyCreditDebitBalance", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
@@ -1636,6 +1870,29 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany("Sections")
                         .HasForeignKey("CompanyID")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("TomasGreen.Model.Models.CompanyToCompanyPayment", b =>
+                {
+                    b.HasOne("TomasGreen.Model.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.Currency", "PaidCurrency")
+                        .WithMany()
+                        .HasForeignKey("PaidCurrencyID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.Company", "PayingCompany")
+                        .WithMany()
+                        .HasForeignKey("PayingCompanyID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.Company", "ReceivingCompany")
+                        .WithMany()
+                        .HasForeignKey("ReceivingCompanyID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -1703,6 +1960,11 @@ namespace TomasGreen.Web.Migrations
                     b.HasOne("TomasGreen.Model.Models.Employee", "Employee")
                         .WithMany("Orders")
                         .HasForeignKey("EmployeeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TomasGreen.Model.Models.CompanySection", "SellingCompanySection")
+                        .WithMany("Orders")
+                        .HasForeignKey("SellingCompanySectionID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -1773,23 +2035,28 @@ namespace TomasGreen.Web.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticle", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticle", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyID")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleContainerDetail", b =>
-                {
-                    b.HasOne("TomasGreen.Model.Models.PurchasedArticle", "PurchasedArticle")
-                        .WithMany("PurchasedArticleContainerDetails")
-                        .HasForeignKey("PurchasedArticleID")
+                    b.HasOne("TomasGreen.Model.Models.CompanySection", "PurchaserCompanySection")
+                        .WithMany("Purchases")
+                        .HasForeignKey("PurchaserCompanySectionID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleCostDetail", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleContainerDetail", b =>
+                {
+                    b.HasOne("TomasGreen.Model.Models.PurchaseArticle", "PurchaseArticle")
+                        .WithMany("PurchaseArticleContainerDetails")
+                        .HasForeignKey("PurchaseArticleID")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleCostDetail", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany()
@@ -1801,18 +2068,18 @@ namespace TomasGreen.Web.Migrations
                         .HasForeignKey("CurrencyID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TomasGreen.Model.Models.PurchasedArticleCostType", "PurchasedArticleCostType")
+                    b.HasOne("TomasGreen.Model.Models.PaymentType", "PaymentType")
                         .WithMany()
-                        .HasForeignKey("PurchasedArticleCostTypeID")
+                        .HasForeignKey("PaymentTypeID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TomasGreen.Model.Models.PurchasedArticle", "PurchasedArticle")
-                        .WithMany("PurchasedArticleCostDetails")
-                        .HasForeignKey("PurchasedArticleID")
+                    b.HasOne("TomasGreen.Model.Models.PurchaseArticle", "PurchaseArticle")
+                        .WithMany("PurchaseArticleCostDetails")
+                        .HasForeignKey("PurchaseArticleID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleDetail", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleDetail", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Warehouse", "ArrivedAtWarehouse")
                         .WithMany()
@@ -1824,18 +2091,18 @@ namespace TomasGreen.Web.Migrations
                         .HasForeignKey("ArticleID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TomasGreen.Model.Models.PurchasedArticle", "PurchasedArticle")
-                        .WithMany("PurchasedArticleDetails")
-                        .HasForeignKey("PurchasedArticleID")
+                    b.HasOne("TomasGreen.Model.Models.PurchaseArticle", "PurchaseArticle")
+                        .WithMany("PurchaseArticleDetails")
+                        .HasForeignKey("PurchaseArticleID")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TomasGreen.Model.Models.Warehouse", "OntheWayWarehouse")
-                        .WithMany("PurchasedArticleDetails")
+                        .WithMany("PurchaseArticleDetails")
                         .HasForeignKey("WarehouseID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("TomasGreen.Model.Models.PurchasedArticleShortageDealingDetail", b =>
+            modelBuilder.Entity("TomasGreen.Model.Models.PurchaseArticleShortageDealingDetail", b =>
                 {
                     b.HasOne("TomasGreen.Model.Models.Company", "Company")
                         .WithMany()
@@ -1847,9 +2114,9 @@ namespace TomasGreen.Web.Migrations
                         .HasForeignKey("CurrencyID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TomasGreen.Model.Models.PurchasedArticle", "PurchasedArticle")
-                        .WithMany("PurchasedArticleShortageDealingDetails")
-                        .HasForeignKey("PurchasedArticleID")
+                    b.HasOne("TomasGreen.Model.Models.PurchaseArticle", "PurchaseArticle")
+                        .WithMany("PurchaseArticleShortageDealingDetails")
+                        .HasForeignKey("PurchaseArticleID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

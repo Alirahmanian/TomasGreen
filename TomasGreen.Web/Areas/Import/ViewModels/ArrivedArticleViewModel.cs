@@ -9,7 +9,7 @@ namespace TomasGreen.Web.Areas.Import.ViewModels
 {
     public class ArrivedArticleViewModel
     {
-        public int PurchasedArticleWarehouseID { get; set; }
+        public int PurchaseArticleWarehouseID { get; set; }
         public string ContainerNumber { get; set; }
         public Article Article { get; set; }
         [DataType(DataType.Date)]

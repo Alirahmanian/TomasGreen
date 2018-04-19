@@ -21,6 +21,8 @@ namespace TomasGreen.Model.Models
         [Display(Name = "Currency")]
         [Required(ErrorMessage = "Please choose a currency.")]
         public int CurrencyID { get; set; }
+        [Display(Name = "Section")]
+        public int? SellingCompanySectionID { get; set; }
 
         //Properties
         [Display(Name = "Order number")]
@@ -63,7 +65,7 @@ namespace TomasGreen.Model.Models
         public bool Confirmed { get; set; } = false;
         public bool HasIssue { get; set; }
 
-        //Currency
+        
        
        
 
@@ -73,6 +75,7 @@ namespace TomasGreen.Model.Models
         public Currency Currency { get; set; }
         public Company Company { get; set; }
         public Employee Employee { get; set; }
+        public CompanySection SellingCompanySection { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
 
         public decimal GetTotalPrice()

@@ -4,16 +4,16 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-   public class PurchasedArticleShortageDealingDetail : BaseEntity
+   public class PurchaseArticleShortageDealingDetail : BaseEntity
     {
-        public int PurchasedArticleID { get; set; }
+        public int PurchaseArticleID { get; set; }
         public int CompanyID { get; set; }
         public int CurrencyID { get; set; }
         public bool Cash { get; set; }
         public decimal Amount { get; set; }
         public string Description { get; set; }
 
-        public PurchasedArticle PurchasedArticle { get; set; }
+        public PurchaseArticle PurchaseArticle { get; set; }
         public Company Company { get; set; }
         public Currency Currency { get; set; }
     }

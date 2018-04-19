@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TomasGreen.Model.Models.PurchasedArticleCostDetail>
+﻿@model IEnumerable<TomasGreen.Model.Models.PurchaseArticleCostDetail>
 
 
 <table class="table table-responsive table-hover table-striped">
@@ -41,8 +41,8 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <a asp-action="EditPurchasedArticleCostDetail" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit alert-warning"></span></a>&nbsp;&nbsp; |&nbsp;&nbsp;
-                <a asp-action="DeletePurchasedArticleCostDetail" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure you want to delete this post?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a> 
+                <a asp-action="EditPurchaseArticleCostDetail" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit alert-warning"></span></a>&nbsp;&nbsp; |&nbsp;&nbsp;
+                <a asp-action="DeletePurchaseArticleCostDetail" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure you want to delete this post?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a> 
             </td>
         </tr>
 }

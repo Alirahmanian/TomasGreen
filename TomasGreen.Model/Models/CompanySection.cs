@@ -14,5 +14,7 @@ namespace TomasGreen.Model.Models
 
         //
         public Company Company { get; set; }
+        public ICollection<Order> Orders { get; set; }
+        public ICollection<PurchaseArticle> Purchases { get; set; }
     }
 }

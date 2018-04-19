@@ -22,7 +22,7 @@ namespace TomasGreen.Model.Models
 
         //nav
         public virtual CompanySection Section { get; set; }
-        public  ICollection<PurchasedArticleDetail> PurchasedArticleDetails { get; set; }
+        public  ICollection<PurchaseArticleDetail> PurchaseArticleDetails { get; set; }
         public virtual ICollection<ArticleWarehouseBalance> ArticleWarehouseBalances { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
 

@@ -22,6 +22,10 @@ namespace TomasGreen.Web.Services
                     var latest = CurrencyRates.GetLatest(_context);
                 }
             }
+            else
+            {
+                var latest = CurrencyRates.GetLatest(_context);
+            }
         }
         private static bool GetLatest(ApplicationDbContext _context)
         {
@@ -69,8 +73,13 @@ namespace TomasGreen.Web.Services
         }
         public static DateTime GetLatestRateDate(ApplicationDbContext _context)
         {
-            return _context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Date).FirstOrDefault().Date;
-
+            var firstCurrency = _context.Currencies.Where(c => c.Archive == false).OrderBy(c => c.Date).FirstOrDefault();
+            if(firstCurrency != null)
+            {
+                return firstCurrency.Date;
+            }
+            return new DateTime();
+            
         }
         private static DateTime ConvertFromUnixTimestamp(double timestamp)
         {

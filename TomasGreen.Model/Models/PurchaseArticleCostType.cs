@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class PurchasedArticleCostType : BaseEntity
+    public class PurchaseArticleCostType : BaseEntity
     {
         [Required(ErrorMessage = "Name is required")]
         [StringLength(255, MinimumLength = 3, ErrorMessage = "Invalid string lenght")]

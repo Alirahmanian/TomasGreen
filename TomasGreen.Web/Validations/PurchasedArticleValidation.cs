@@ -7,11 +7,11 @@ using TomasGreen.Web.Data;
 
 namespace TomasGreen.Web.Validations
 {
-    public static class PurchasedArticleValidation 
+    public static class PurchaseArticleValidation 
     {
-        public static PropertyValidation PurchasedArticleIsValid(ApplicationDbContext _context, PurchasedArticle model)
+        public static PropertyValidation PurchaseArticleIsValid(ApplicationDbContext _context, PurchaseArticle model)
         {
-            var result = new PropertyValidation(true, "PurchasedArticleIsValid", "PurchasedArticle", "", "");
+            var result = new PropertyValidation(true, "PurchaseArticleIsValid", "PurchaseArticle", "", "");
             if (model.Date == null)
             {
                 result.Value = false; result.Property = nameof(model.Date); result.Message = "Please choose a date.";
@@ -30,9 +30,9 @@ namespace TomasGreen.Web.Validations
            
             return result;
         }
-        public static PropertyValidation PurchasedArticleDetailIsValid(ApplicationDbContext _context, PurchasedArticleDetail model)
+        public static PropertyValidation PurchaseArticleDetailIsValid(ApplicationDbContext _context, PurchaseArticleDetail model)
         {
-            var result = new PropertyValidation(true, "PurchasedArticleDetailIsValid", "PurchasedArticleDetail", "", "");
+            var result = new PropertyValidation(true, "PurchaseArticleDetailIsValid", "PurchaseArticleDetail", "", "");
             if (model.WarehouseID == 0)
             {
                 result.Value = false; result.Property = nameof(model.WarehouseID); result.Message = "Warehouse is missing.";
@@ -53,12 +53,12 @@ namespace TomasGreen.Web.Validations
                 result.Value = false; result.Property = nameof(model.UnitPrice); result.Message = "Please put price.";
                 return result;
             }
-            if (model.PurchasedArticleID == 0)
+            if (model.PurchaseArticleID == 0)
             {
-                result.Value = false; result.Property = nameof(model.PurchasedArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchasedArticleID is missing.";
+                result.Value = false; result.Property = nameof(model.PurchaseArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchaseArticleID is missing.";
                 return result;
             }
-            if(!PurchasedArticleDetailIsUnique(_context, model))
+            if(!PurchaseArticleDetailIsUnique(_context, model))
             {
                 result.Value = false; result.Property = nameof(model.ID); result.Message = "Model is not unique."; 
                 return result;
@@ -66,22 +66,22 @@ namespace TomasGreen.Web.Validations
 
             return result;
         }
-        public static bool PurchasedArticleDetailIsUnique(ApplicationDbContext _context, PurchasedArticleDetail model)
+        public static bool PurchaseArticleDetailIsUnique(ApplicationDbContext _context, PurchaseArticleDetail model)
         {
-            var savedPurchasedArticleDetail = _context.PurchasedArticleDetails.Where(d => d.PurchasedArticleID == model.PurchasedArticleID &&
+            var savedPurchaseArticleDetail = _context.PurchaseArticleDetails.Where(d => d.PurchaseArticleID == model.PurchaseArticleID &&
             d.WarehouseID == model.WarehouseID && d.ArticleID == model.ArticleID).FirstOrDefault();
-            if(savedPurchasedArticleDetail != null)
+            if(savedPurchaseArticleDetail != null)
             {
-                if(savedPurchasedArticleDetail.ID != model.ID)
+                if(savedPurchaseArticleDetail.ID != model.ID)
                 {
                     return false;
                 }
             }
             return true;
         }
-        public static PropertyValidation PurchasedArticleCostDetailIsValid(ApplicationDbContext _context, PurchasedArticleCostDetail model)
+        public static PropertyValidation PurchaseArticleCostDetailIsValid(ApplicationDbContext _context, PurchaseArticleCostDetail model)
         {
-            var result = new PropertyValidation(true, "PurchasedArticleCostDetailIsValid", "PurchasedArticleCostDetail", "", "");
+            var result = new PropertyValidation(true, "PurchaseArticleCostDetailIsValid", "PurchaseArticleCostDetail", "", "");
             if (model.CompanyID == 0)
             {
                 result.Value = false; result.Property = nameof(model.CompanyID); result.Message = "please select a company.";
@@ -97,35 +97,35 @@ namespace TomasGreen.Web.Validations
                 result.Value = false; result.Property = nameof(model.Amount); result.Message = "Please put amount.";
                 return result;
             }
-            if (model.PurchasedArticleID == 0)
+            if (model.PurchaseArticleID == 0)
             {
-                result.Value = false; result.Property = nameof(model.PurchasedArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchasedArticleID is missing.";
+                result.Value = false; result.Property = nameof(model.PurchaseArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchaseArticleID is missing.";
                 return result;
             }
-            if(!PurchasedArticleCostDetailIsUnique(_context, model))
+            if(!PurchaseArticleCostDetailIsUnique(_context, model))
             {
                 result.Value = false; result.Property = nameof(model.ID); result.Message = "Model is not unique.";
                 return result;
             }
             return result;
         }
-        public static bool PurchasedArticleCostDetailIsUnique(ApplicationDbContext _context, PurchasedArticleCostDetail model)
+        public static bool PurchaseArticleCostDetailIsUnique(ApplicationDbContext _context, PurchaseArticleCostDetail model)
         {
-            var savedPurchasedArticleCostDetail = _context.PurchasedArticleCostDetails.Where(d => d.PurchasedArticleID == model.PurchasedArticleID &&
+            var savedPurchaseArticleCostDetail = _context.PurchaseArticleCostDetails.Where(d => d.PurchaseArticleID == model.PurchaseArticleID &&
             d.CompanyID == model.CompanyID && d.CurrencyID == model.CurrencyID &&
             d.PaymentTypeID == model.PaymentTypeID).FirstOrDefault();
-            if (savedPurchasedArticleCostDetail != null)
+            if (savedPurchaseArticleCostDetail != null)
             {
-                if (savedPurchasedArticleCostDetail.ID != model.ID)
+                if (savedPurchaseArticleCostDetail.ID != model.ID)
                 {
                     return false;
                 }
             }
             return true;
         }
-        public static PropertyValidation PurchasedArticleShortageDealingDetailIsValid(ApplicationDbContext _context, PurchasedArticleShortageDealingDetail model)
+        public static PropertyValidation PurchaseArticleShortageDealingDetailIsValid(ApplicationDbContext _context, PurchaseArticleShortageDealingDetail model)
         {
-            var result = new PropertyValidation(true, "PurchasedArticleShortageDealingDetailIsValid", "PurchasedArticleShortageDealingDetail", "", "");
+            var result = new PropertyValidation(true, "PurchaseArticleShortageDealingDetailIsValid", "PurchaseArticleShortageDealingDetail", "", "");
             if (model.CompanyID == 0)
             {
                 result.Value = false; result.Property = nameof(model.CompanyID); result.Message = "please select a company.";
@@ -141,58 +141,58 @@ namespace TomasGreen.Web.Validations
                 result.Value = false; result.Property = nameof(model.Amount); result.Message = "Please put amount.";
                 return result;
             }
-            if (model.PurchasedArticleID == 0)
+            if (model.PurchaseArticleID == 0)
             {
-                result.Value = false; result.Property = nameof(model.PurchasedArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchasedArticleID is missing.";
+                result.Value = false; result.Property = nameof(model.PurchaseArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchaseArticleID is missing.";
                 return result;
             }
-            if(!PurchasedArticleShortageDealingDetailIsUnique(_context, model))
+            if(!PurchaseArticleShortageDealingDetailIsUnique(_context, model))
             {
                 result.Value = false; result.Property = nameof(model.ID); result.Message = "Model is not Unique.";
                 return result;
             }
             return result;
         }
-        public static bool PurchasedArticleShortageDealingDetailIsUnique(ApplicationDbContext _context, PurchasedArticleShortageDealingDetail model)
+        public static bool PurchaseArticleShortageDealingDetailIsUnique(ApplicationDbContext _context, PurchaseArticleShortageDealingDetail model)
         {
-            var savedPurchasedArticleShortageDealingDetail = _context.PurchasedArticleShortageDealingDetails.Where(d => d.PurchasedArticleID == model.PurchasedArticleID &&
+            var savedPurchaseArticleShortageDealingDetail = _context.PurchaseArticleShortageDealingDetails.Where(d => d.PurchaseArticleID == model.PurchaseArticleID &&
             d.CompanyID == model.CompanyID && d.CurrencyID == model.CurrencyID).FirstOrDefault();
-            if (savedPurchasedArticleShortageDealingDetail != null)
+            if (savedPurchaseArticleShortageDealingDetail != null)
             {
-                if (savedPurchasedArticleShortageDealingDetail.ID != model.ID)
+                if (savedPurchaseArticleShortageDealingDetail.ID != model.ID)
                 {
                     return false;
                 }
             }
             return true;
         }
-        public static PropertyValidation PurchasedArticleContainerDetailIsValid(ApplicationDbContext _context, PurchasedArticleContainerDetail model)
+        public static PropertyValidation PurchaseArticleContainerDetailIsValid(ApplicationDbContext _context, PurchaseArticleContainerDetail model)
         {
-            var result = new PropertyValidation(true, "PurchasedArticleContainerDetailIsValid", "PurchasedArticleContainerDetail", "", "");
+            var result = new PropertyValidation(true, "PurchaseArticleContainerDetailIsValid", "PurchaseArticleContainerDetail", "", "");
             if (model.ContainerNumber == "")
             {
                 result.Value = false; result.Property = nameof(model.ContainerNumber); result.Message = "please put container number.";
                 return result;
             }
-            if (model.PurchasedArticleID == 0)
+            if (model.PurchaseArticleID == 0)
             {
-                result.Value = false; result.Property = nameof(model.PurchasedArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchasedArticleID is missing.";
+                result.Value = false; result.Property = nameof(model.PurchaseArticleID); result.Message = "Model is not valid."; result.SystemMessage = "PurchaseArticleID is missing.";
                 return result;
             }
-            if(!PurchasedArticleContainerDetailIsUnique(_context, model))
+            if(!PurchaseArticleContainerDetailIsUnique(_context, model))
             {
                 result.Value = false; result.Property = nameof(model.ID); result.Message = "Model is not unique."; 
                 return result;
             }
             return result;
         }
-        public static bool PurchasedArticleContainerDetailIsUnique(ApplicationDbContext _context, PurchasedArticleContainerDetail model)
+        public static bool PurchaseArticleContainerDetailIsUnique(ApplicationDbContext _context, PurchaseArticleContainerDetail model)
         {
-            var savedPurchasedArticleContainerDetail = _context.PurchasedArticleContainerDetails.Where(d => d.PurchasedArticleID == model.PurchasedArticleID &&
+            var savedPurchaseArticleContainerDetail = _context.PurchaseArticleContainerDetails.Where(d => d.PurchaseArticleID == model.PurchaseArticleID &&
             d.ContainerNumber == model.ContainerNumber).FirstOrDefault();
-            if (savedPurchasedArticleContainerDetail != null)
+            if (savedPurchaseArticleContainerDetail != null)
             {
-                if (savedPurchasedArticleContainerDetail.ID != model.ID)
+                if (savedPurchaseArticleContainerDetail.ID != model.ID)
                 {
                     return false;
                 }

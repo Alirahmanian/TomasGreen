@@ -25,6 +25,10 @@ namespace TomasGreen.Web.Components
             var hours = DateTime.Now.Subtract(CurrencyRates.GetLatestRateDate(_context)).Hours;
             var result = $"<b>rates</b>";
             var baseCurrency = _context.Currencies.Where(c => c.IsBase == true).FirstOrDefault();
+            if(baseCurrency == null)
+            {
+                return new HtmlContentViewComponentResult(new HtmlString(result));
+            }
             result += $" updated: <b>{hours.ToString()} </b>hour(s) ago";
             result += $" | <b>Base: {baseCurrency.Code}</b>";
             var mainCurrencies = _context.Currencies.Where(c => c.Archive == false && c.IsBase == false).OrderBy(c => c.Code);

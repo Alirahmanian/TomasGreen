@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TomasGreen.Model.Models.PurchasedArticleContainerDetail>
+﻿@model IEnumerable<TomasGreen.Model.Models.PurchaseArticleContainerDetail>
 
 
 <table class="table table-responsive table-hover table-striped">
@@ -17,8 +17,8 @@
                 @Html.DisplayFor(modelItem => item.ContainerNumber)
             </td>
             <td>
-                <a asp-action="EditPurchasedArticleContainerDetail" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit alert-warning"></span></a>&nbsp;&nbsp; |&nbsp;&nbsp;
-                <a asp-action="DeletePurchasedArticleContainerDetail" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure you want to delete this post?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
+                <a asp-action="EditPurchaseArticleContainerDetail" asp-route-id="@item.ID"><span class="glyphicon glyphicon-edit alert-warning"></span></a>&nbsp;&nbsp; |&nbsp;&nbsp;
+                <a asp-action="DeletePurchaseArticleContainerDetail" asp-route-id="@item.ID" onclick="return window.confirm('Are you sure you want to delete this post?')"><span class="glyphicon glyphicon-trash alert-danger"></span></a>
             </td>
         </tr>
 }

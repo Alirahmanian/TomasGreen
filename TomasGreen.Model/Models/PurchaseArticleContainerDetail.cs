@@ -5,12 +5,12 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-   public class PurchasedArticleContainerDetail : BaseEntity
+   public class PurchaseArticleContainerDetail : BaseEntity
     {
-        public int PurchasedArticleID { get; set; }
+        public int PurchaseArticleID { get; set; }
         [Display(Name = "Container")]
         public string ContainerNumber { get; set; }
 
-        public PurchasedArticle PurchasedArticle { get; set; }
+        public PurchaseArticle PurchaseArticle { get; set; }
     }
 }

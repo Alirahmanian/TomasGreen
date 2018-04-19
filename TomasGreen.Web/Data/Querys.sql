@@ -1,1 +1,1 @@
-﻿exec getBalances
+﻿Delete from Orders

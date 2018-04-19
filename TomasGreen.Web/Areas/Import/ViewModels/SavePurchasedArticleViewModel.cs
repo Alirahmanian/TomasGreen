@@ -7,13 +7,13 @@ using TomasGreen.Model.Models;
 
 namespace TomasGreen.Web.Areas.Import.ViewModels
 {
-    public class SavePurchasedArticleViewModel
+    public class SavePurchaseArticleViewModel
     {
-        public PurchasedArticle PurchasedArticle { get; set; }
-        public PurchasedArticleDetail PurchasedArticleDetail { get; set; }
-        public PurchasedArticleCostDetail PurchasedArticleCostDetail { get; set; }
-        public PurchasedArticleShortageDealingDetail PurchasedArticleShortageDealingDetail { get; set; }
-        public PurchasedArticleContainerDetail PurchasedArticleContainerDetail { get; set; }
+        public PurchaseArticle PurchaseArticle { get; set; }
+        public PurchaseArticleDetail PurchaseArticleDetail { get; set; }
+        public PurchaseArticleCostDetail PurchaseArticleCostDetail { get; set; }
+        public PurchaseArticleShortageDealingDetail PurchaseArticleShortageDealingDetail { get; set; }
+        public PurchaseArticleContainerDetail PurchaseArticleContainerDetail { get; set; }
         public int ActiveTab { get; set; }
     }
 }

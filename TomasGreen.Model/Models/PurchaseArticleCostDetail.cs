@@ -5,9 +5,9 @@ using System.Text;
 
 namespace TomasGreen.Model.Models
 {
-    public class PurchasedArticleCostDetail :BaseEntity
+    public class PurchaseArticleCostDetail :BaseEntity
     {
-        public int PurchasedArticleID { get; set; }
+        public int PurchaseArticleID { get; set; }
         [Required(ErrorMessage = "Please choose a cost type.")]
         public int PaymentTypeID { get; set; }
         [Display(Name = "Company")]
@@ -22,7 +22,7 @@ namespace TomasGreen.Model.Models
         public string Description { get; set; }
 
         //nav.
-        public PurchasedArticle PurchasedArticle { get; set; }
+        public PurchaseArticle PurchaseArticle { get; set; }
         public Company Company { get; set; }
         public Currency Currency { get; set; }
         public PaymentType PaymentType { get; set; }
